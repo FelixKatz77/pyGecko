@@ -21,7 +21,7 @@ class FID_Base_Parser:
         '''
 
         xy_directory = Path(xy_directory)
-        xy_files = xy_directory.glob('*.xy')
+        xy_files = xy_directory.glob('*.xy') + xy_directory.glob('*.CSV')
         injections = {}
         for xy_file in xy_files:
             injection = FID_Base_Parser.load_injection(xy_file, solvent_delay, pos=pos)
@@ -43,7 +43,7 @@ class FID_Base_Parser:
         '''
 
         xy_array = FID_Base_Parser.__read_xy_array(Path(xy_file))
-        sample_name = xy_file.stem
+        sample_name = xy_file.stem.split('.')[0]
         injection = FID_Injection({'SampleName':sample_name}, xy_array, solvent_delay, pos=pos)
         return injection
 
@@ -56,3 +56,4 @@ class FID_Base_Parser:
         array = np.loadtxt(path)
         array = np.transpose(array)
         return array
+
