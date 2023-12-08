@@ -30,7 +30,7 @@ class FID_Base_Parser:
 
 
     @staticmethod
-    def load_injection(xy_file: Path, solvent_delay:float, pos:bool=False) -> FID_Injection:
+    def load_injection(xy_file: Path|str, solvent_delay:float, pos:bool=False) -> FID_Injection:
         '''
         Returns an FID_Injection object.
 
@@ -42,7 +42,8 @@ class FID_Base_Parser:
             FID_Injection: An FID_Injection object.
         '''
 
-        xy_array = FID_Base_Parser.__read_xy_array(Path(xy_file))
+        xy_file = Path(xy_file)
+        xy_array = FID_Base_Parser.__read_xy_array(xy_file)
         sample_name = xy_file.stem.split('.')[0]
         injection = FID_Injection({'SampleName':sample_name}, xy_array, solvent_delay, pos=pos)
         return injection
@@ -53,7 +54,10 @@ class FID_Base_Parser:
 
         '''Takes in the path to a xy-file, returns the xy_array.'''
 
-        array = np.loadtxt(path)
+        if path.suffix == '.xy':
+            array = np.loadtxt(path, delimiter='\t')
+        elif path.suffix == '.CSV':
+            array = np.loadtxt(path, delimiter=',', converters={0: float})
         array = np.transpose(array)
         return array
 

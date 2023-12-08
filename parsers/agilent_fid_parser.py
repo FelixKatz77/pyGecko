@@ -16,32 +16,32 @@ class Agilent_FID_Parser:
     '''
 
     @classmethod
-    def load_sequence(cls, acaml_file:str, xy_directory:str, solvent_delay:float|int, pos:bool=False) -> FID_Sequence:
+    def load_sequence(cls, raw_directory:str, solvent_delay:float|int, pos:bool=False) -> FID_Sequence:
         '''
         Returns an FID_Sequence object.
 
         Args:
-            acaml_file (str): Path to an acaml-file from an Agilent GC
-            xy_directory (str): Path to the directory containing the corresponding xy-files.
+            raw_directory (str): Path to the directory containing the corresponding xy-files and the acaml-file.
+            solvent_delay (float): Retention time of the solvent peak in minutes.
             pos (bool, optional): Indicates if plate position is given in the injection names. Defaults to False.
 
         Returns:
             FID_Sequence: An FID_Sequence object
         '''
 
-        sequence_metadata, injections = cls.__load_sequence_data(acaml_file, xy_directory, solvent_delay, pos=pos)
+        acaml_file = list(Path(raw_directory).glob('*.acaml'))[0]
+        sequence_metadata, injections = cls.__load_sequence_data(acaml_file, raw_directory, solvent_delay, pos=pos)
         return FID_Sequence(sequence_metadata, injections)
 
     @classmethod
-    def load_ri_calibration(cls, acaml_file:str, xy_directory:str, solvent_delay, c_count:int, rt:float) -> RI_Calibration:
+    def load_ri_calibration(cls, raw_directory:str, solvent_delay, c_count:int, rt:float) -> RI_Calibration:
 
         '''
         Returns an RI_Calibration object.
 
         Args:
-            acaml_file(str): Path to an acaml-file from an Agilent GC.
-            xy_directory (str): Path to the directory containing the corresponding xy-files.
-            solvent_delay (float): Retention time  of the solvent peak in minutes.
+            raw_directory (str): Path to the directory containing the corresponding xy-files and the acaml-file.
+            solvent_delay (float): Retention time of the solvent peak in minutes.
             c_count (int): Carbon count of the alkane the retention time is provided for.
             rt (float): Retention time of the alkane the c_count is provided for.
 
@@ -49,35 +49,36 @@ class Agilent_FID_Parser:
             RI_Calibration: An RI_Calibration object.
         '''
 
-        sequence_metadata, injections = cls.__load_sequence_data(acaml_file, xy_directory, solvent_delay)
+        acaml_file = list(Path(raw_directory).glob('*.acaml'))[0]
+        sequence_metadata, injections = cls.__load_sequence_data(acaml_file, raw_directory, solvent_delay)
         return RI_Calibration(sequence_metadata, injections, c_count, rt)
 
     @classmethod
-    def load_injection(cls, acaml_file:str, xy_path:str, solvent_delay:float|int) -> FID_Injection:
+    def load_injection(cls, raw_path:str, solvent_delay:float|int) -> FID_Injection:
 
         '''
         Returns an FID_Injection object.
 
         Args:
-            acaml_file (str): Path to an acaml-file from an Agilent GC.
-            xy_directory (str): Path to the directory containing the corresponding xy-files.
-            solvent_delay (float): Retention time  of the solvent peak in minutes.
+            raw_path (str): Path to the directory containing the corresponding xy-file and the acaml-file.
+            solvent_delay (float): Retention time of the solvent peak in minutes.
 
         Returns:
             FID_Injection: An FID_Injection object.
         '''
 
-        injection = cls.__load_injection_data(acaml_file, xy_path, solvent_delay)
+        acaml_file = list(Path(raw_path).glob('*.acaml'))[0]
+        injection = cls.__load_injection_data(acaml_file, raw_path, solvent_delay)
         return injection
 
     @staticmethod
-    def __load_injection_data(acaml_file:str, xy_file:str, solvent_delay:float|int) -> FID_Injection:
+    def __load_injection_data(acaml_file:Path, xy_file:str, solvent_delay:float|int) -> FID_Injection:
 
         '''
         Returns an FID_Injection object.
 
         Args:
-            acaml_file (str): Path to an acaml-file from an Agilent GC.
+            acaml_file (Path): Path to an acaml-file from an Agilent GC.
             xy_file (str): Path to the corresponding xy-file.
             solvent_delay (float): Retention time  of the solvent peak in minutes.
 
@@ -95,13 +96,13 @@ class Agilent_FID_Parser:
 
 
     @staticmethod
-    def __load_sequence_data(acaml_file:str, xy_directory:str, solvent_delay:float|int, pos:bool=False) -> (dict, dict[str:FID_Injection]):
+    def __load_sequence_data(acaml_file:Path, xy_directory:str, solvent_delay:float|int, pos:bool=False) -> (dict, dict[str:FID_Injection]):
 
         '''
         Returns a dict containing the sequence metadata and a dict containing the injections.
 
         Args:
-            acaml_file (str): Path to an acaml-file from an Agilent GC
+            acaml_file (Path): Path to an acaml-file from an Agilent GC
             xy_directory (str): Path to the directory containing the corresponding xy-files.
             solvent_delay (float): Retention time  of the solvent peak in minutes.
             pos (bool, optional): Indicates if plate position is given in the injection names. Defaults to False.
