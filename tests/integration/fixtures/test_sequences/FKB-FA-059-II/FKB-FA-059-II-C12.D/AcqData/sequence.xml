@@ -1,0 +1,57 @@
+﻿<SequenceTableDataSet SchemaVersion="1.0" SequenceComment="" SequenceOperator="" SequenceSeqPathFileName="D:\MASSHUNTER\GCMS\1\DATA\" SequencePreSeqAcqCommand="" SequencePostSeqAcqCommand="" SequencePreSeqDACommand="" SequencePostSeqDACommand="" SequenceReProcessing="False" SequenceInjectBarCodeMismatch="OnBarcodeMismatchInjectAnyway" SequenceOverwriteExistingData="False" SequenceModifiedTimeStamp="" SequenceFileECMPath="">
+  <Sequence>
+    <SequenceID>0</SequenceID>
+    <SampleID>0</SampleID>
+    <AcqMethodFileName>110_20_320_2_1,4_MINSD</AcqMethodFileName>
+    <AcqMethodPathName>D:\MassHunter\PCDL\Methods\</AcqMethodPathName>
+    <Comment />
+    <Completed>false</Completed>
+    <DAMethodFileName />
+    <DAMethodPathName />
+    <DAReportPathFileName />
+    <DataFileName>FKB-FA-059-II-C12</DataFileName>
+    <DataPathName>D:\MASSHUNTER\GCMS\1\DATA\</DataPathName>
+    <Dilution>1</Dilution>
+    <DualInjector>false</DualInjector>
+    <DualInjectorExpectedBarcode />
+    <DualInjectorVial>12</DualInjectorVial>
+    <DualInjectorVolume>0</DualInjectorVolume>
+    <EquilibrationTime>0</EquilibrationTime>
+    <ExpectedBarcode />
+    <InjectionsPerPosition>1</InjectionsPerPosition>
+    <InjectorVolume>2</InjectorVolume>
+    <InstrumentName>GCMS 4</InstrumentName>
+    <InstrumentType>SingleQuadrupole</InstrumentType>
+    <Keyword />
+    <KeywordString />
+    <LevelName />
+    <MatrixSpikeGroup />
+    <Locked>false</Locked>
+    <PlateCode />
+    <PlatePosition>0</PlatePosition>
+    <RackCode />
+    <SampleGroup />
+    <SampleInformation />
+    <SampleName>FKB-FA-059-II-C12</SampleName>
+    <SamplePosition>dummy</SamplePosition>
+    <SamplePrepFileName />
+    <SamplePrepPathName />
+    <SampleType>Sample</SampleType>
+    <TrayName />
+    <UpdateResponseFactor>None</UpdateResponseFactor>
+    <UpdateRetentionTime>None</UpdateRetentionTime>
+    <UpdateQualifierRatios>None</UpdateQualifierRatios>
+    <UpdateMassAssignments>None</UpdateMassAssignments>
+    <UserDefined />
+    <UserDefined1 />
+    <UserDefined2 />
+    <UserDefined3 />
+    <UserDefined4 />
+    <UserDefined5 />
+    <UserDefined6 />
+    <UserDefined7 />
+    <UserDefined8 />
+    <UserDefined9 />
+    <Vial>12</Vial>
+  </Sequence>
+</SequenceTableDataSet>

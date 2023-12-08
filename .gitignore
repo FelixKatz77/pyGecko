@@ -12,3 +12,9 @@ gc_tools/__pycache__/
 .idea/
 
 visualization/__pycache__/
+
+parsers/__pycache__/
+
+tests/__pycache__/
+
+tests/integration/__pycache__/

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Devices>
+    <Version>1</Version>
+    <Device DeviceID="1">
+        <Name>SingleQuadrupole</Name>
+        <DriverVersion />
+        <FirmwareVersion />
+        <ModelNumber />
+        <OrdinalNumber>1</OrdinalNumber>
+        <SerialNumber>1</SerialNumber>
+        <Type>2</Type>
+        <StoredDataType>8</StoredDataType>
+        <Delay>0</Delay>
+        <Vendor>1</Vendor>
+    </Device>
+</Devices>

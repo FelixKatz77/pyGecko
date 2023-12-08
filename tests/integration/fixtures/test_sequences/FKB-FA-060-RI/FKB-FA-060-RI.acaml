@@ -1,0 +1,861 @@
+<?xml version="1.0"?>
+<ACAML xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaversion="2.1.30.999" xmlns="urn:schemas-agilent-com:acaml21">
+  <Checksum Algorithm="MD5">
+    <Value>kw9Le2Yhu+SwElmGQmAsMg==</Value>
+  </Checksum>
+  <MigrationHistory>
+    <MigrationStep>
+      <FromNamespace>urn:schemas-agilent-com:acaml21</FromNamespace>
+      <ToNamespace>urn:schemas-agilent-com:acaml21v2.1.30.999</ToNamespace>
+      <Date>2023-08-11T19:18:11.4743805+02:00</Date>
+      <Application>Agilent.Acaml.Core, Assembly Version: 1.0.0.0, File Version: 2.1.41.2</Application>
+    </MigrationStep>
+  </MigrationHistory>
+  <Doc>
+    <DocID>c4287a96-2fa1-4475-8ed1-75db57926b91</DocID>
+    <DocInfo>
+      <Description>FKB-FA-060-RI</Description>
+      <CreatedByUser>Admin</CreatedByUser>
+      <CreatedByApplication>
+        <AgilentApp>
+          <Name>IntelligentDataAnalysis</Name>
+          <Version>Version 2.6 - Build 2.206.0.780</Version>
+        </AgilentApp>
+      </CreatedByApplication>
+      <CreationDate>2023-08-11T17:18:11.4743805Z</CreationDate>
+      <ClientName>DESKTOP-2R378LK</ClientName>
+      <CustomField Name="CreatedByUserDisplayName">
+        <Value>Admin (Admin)</Value>
+      </CustomField>
+      <CustomField Name="OriginalApplicationName">
+        <Value>IntelligentDataAnalysis</Value>
+      </CustomField>
+      <CustomField Name="InjectionMetaDataItems">
+        <Xml>
+          <ArrayOfInjectionMetaData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
+            <InjectionMetaData AcqMethodName="Polyarc_110_20_320_2" DaMethodName="Polyarc_EtOAc" ExpectedBarcode="" InjectionAcqDateTime="2023-08-12T02:49:21.675Z" InjectionId="9c21d359-cb56-4dff-a3c7-65209b0f38a7" InjectorPosition="Back" InstrumentName="GC-FID" LastModifiedDateTime="2023-08-12T05:01:54.1844065+02:00" BracketingType="Undefined" RawDataFileName="20230811.dx" SampleDescription="" SampleLabel="" SampleName="20230811" SampleSetupId="6e4764b4-2f91-49b2-b967-1e0aa49c94e0" SampleType="Blank" SequenceName="FKB-FA-060-RI" VialNumber="150">
+              <Dil>1;1;1;1;1</Dil>
+              <LimsIds key="" />
+              <LimsIds key="" />
+              <LimsIds key="" />
+              <Locked>false</Locked>
+              <Mult>1;1;1;1;1</Mult>
+              <ReplicateNumber val="1" />
+              <SampleAmount val="0" unit="" />
+              <SampleInjectionsCount val="1" />
+              <SampleOrderNumber val="1" />
+            </InjectionMetaData>
+            <InjectionMetaData AcqMethodName="Polyarc_110_20_320_2" DaMethodName="Polyarc_EtOAc" ExpectedBarcode="" InjectionAcqDateTime="2023-08-12T03:05:25.067Z" InjectionId="8eb0c292-23ba-4fa7-a8a3-e2c632a48145" InjectorPosition="Back" InstrumentName="GC-FID" LastModifiedDateTime="2023-08-12T05:17:56.7863227+02:00" BracketingType="Undefined" RawDataFileName="FKB-FA-060-RI.dx" SampleDescription="" SampleLabel="" SampleName="FKB-FA-060-RI" SampleSetupId="6cb950c2-63f3-48c8-8ec8-04d9f05eae84" SampleType="Sample" SequenceName="FKB-FA-060-RI" VialNumber="97">
+              <Dil>1;1;1;1;1</Dil>
+              <LimsIds key="" />
+              <LimsIds key="" />
+              <LimsIds key="" />
+              <Locked>false</Locked>
+              <Mult>1;1;1;1;1</Mult>
+              <ReplicateNumber val="1" />
+              <SampleAmount val="0" unit="" />
+              <SampleInjectionsCount val="1" />
+              <SampleOrderNumber val="2" />
+            </InjectionMetaData>
+          </ArrayOfInjectionMetaData>
+        </Xml>
+      </CustomField>
+    </DocInfo>
+    <Content>
+      <Resources>
+        <Instrument id="d2b095ee-9a39-41b8-9f86-9cff50fc59f2" ver="0">
+          <Info>
+            <CreatedDate>0001-01-01T00:00:00</CreatedDate>
+            <LastModifiedBy>
+              <Username>Admin</Username>
+            </LastModifiedBy>
+            <LastModifiedDate>2023-08-12T05:17:56.5587363+02:00</LastModifiedDate>
+            <AuditTrail />
+          </Info>
+          <ComplexCustomFields>
+            <CustomField Name="IsCombined">
+              <Value>False</Value>
+            </CustomField>
+            <CustomField Name="871730a6-457f-478e-9641-417bbd782c75">
+              <CustomField Name="InternalModuleId">
+                <Value>7890B</Value>
+              </CustomField>
+            </CustomField>
+            <CustomField Name="8a2f84b9-7eea-4abd-9a4e-cbe21434e78e">
+              <CustomField Name="InternalModuleId">
+                <Value>7890B</Value>
+              </CustomField>
+            </CustomField>
+            <CustomField Name="c4478fcc-4ec0-4348-895c-2504d7cd6c0b">
+              <CustomField Name="InternalModuleId">
+                <Value>7890B</Value>
+              </CustomField>
+            </CustomField>
+            <CustomField Name="dba62dfe-2ef4-4e23-9fa3-d6fc8fcc5b62">
+              <CustomField Name="InternalModuleId">
+                <Value>7890B</Value>
+              </CustomField>
+            </CustomField>
+          </ComplexCustomFields>
+          <Name>GC-FID</Name>
+          <Technique>GasChromatography</Technique>
+          <Module id="cdd79676-ef5d-4f08-9dd0-0b97341a6ff8">
+            <Name>Agilent 7890B</Name>
+            <Manufacturer>Agilent Technologies</Manufacturer>
+            <Type />
+            <PartNo>7890B</PartNo>
+            <SerialNo>CN18243228</SerialNo>
+            <FirmwareRevision>B.02.05.1</FirmwareRevision>
+            <DriverVersion />
+            <ConnectionInfo />
+            <AdditionalInformation />
+            <Instance>1</Instance>
+          </Module>
+          <Module id="871730a6-457f-478e-9641-417bbd782c75">
+            <Name>GC ALS</Name>
+            <Manufacturer>Agilent Technologies</Manufacturer>
+            <Type />
+            <PartNo>G3430A</PartNo>
+            <SerialNo>[NoMfgID]</SerialNo>
+            <FirmwareRevision>A.02.18</FirmwareRevision>
+            <DriverVersion />
+            <ConnectionInfo />
+            <AdditionalInformation />
+            <ParentInstrumentModule_ID id="cdd79676-ef5d-4f08-9dd0-0b97341a6ff8" />
+            <Instance>1</Instance>
+          </Module>
+          <Module id="8a2f84b9-7eea-4abd-9a4e-cbe21434e78e">
+            <Name>Front Injector</Name>
+            <Manufacturer>Agilent Technologies</Manufacturer>
+            <Type />
+            <PartNo>G4513A</PartNo>
+            <SerialNo>CN18200303</SerialNo>
+            <FirmwareRevision>A.11.02</FirmwareRevision>
+            <DriverVersion />
+            <ConnectionInfo />
+            <AdditionalInformation />
+            <ParentInstrumentModule_ID id="cdd79676-ef5d-4f08-9dd0-0b97341a6ff8" />
+            <Instance>1</Instance>
+          </Module>
+          <Module id="c4478fcc-4ec0-4348-895c-2504d7cd6c0b">
+            <Name>Back Injector</Name>
+            <Manufacturer>Agilent Technologies</Manufacturer>
+            <Type />
+            <PartNo>G4513A</PartNo>
+            <SerialNo>CN18200317</SerialNo>
+            <FirmwareRevision>A.11.02</FirmwareRevision>
+            <DriverVersion />
+            <ConnectionInfo />
+            <AdditionalInformation />
+            <ParentInstrumentModule_ID id="cdd79676-ef5d-4f08-9dd0-0b97341a6ff8" />
+            <Instance>1</Instance>
+          </Module>
+          <Module id="dba62dfe-2ef4-4e23-9fa3-d6fc8fcc5b62">
+            <Name>Tray</Name>
+            <Manufacturer>Agilent Technologies</Manufacturer>
+            <Type />
+            <PartNo>G4514A</PartNo>
+            <SerialNo>CN18170114</SerialNo>
+            <FirmwareRevision>A.11.03</FirmwareRevision>
+            <DriverVersion />
+            <ConnectionInfo />
+            <AdditionalInformation />
+            <ParentInstrumentModule_ID id="cdd79676-ef5d-4f08-9dd0-0b97341a6ff8" />
+            <Instance>1</Instance>
+          </Module>
+          <SeparationMedium_ID id="22755d7c-1186-4cca-9482-64320df9a398" ver="0" />
+          <SeparationMedium_ID id="0ee492a7-16f3-40b9-bbc4-40a259fe4698" ver="0" />
+          <SeparationMedium_ID id="5517c3bd-fd8d-4cd9-880d-e63e9268f66c" ver="0" />
+          <SeparationMedium_ID id="5f20065b-d64c-4c14-88af-ff5fae1fbb4f" ver="0" />
+        </Instrument>
+        <SeparationMedium id="22755d7c-1186-4cca-9482-64320df9a398" ver="0">
+          <Info>
+            <CreatedDate>0001-01-01T00:00:00</CreatedDate>
+            <LastModifiedBy>
+              <Username>Admin</Username>
+            </LastModifiedBy>
+            <LastModifiedDate>2023-08-12T05:01:53.8762285+02:00</LastModifiedDate>
+            <AuditTrail />
+          </Info>
+          <ComplexCustomFields />
+          <Name>HP-5</Name>
+          <Description>HP-5</Description>
+          <Type>
+            <Column>
+              <SerialNo>1</SerialNo>
+              <ProdNo>19091J-413</ProdNo>
+              <BubbleCap>false</BubbleCap>
+              <Diameter val="320" unit="μm" />
+              <Length val="30" unit="m" />
+              <MaxTemp val="325" unit="°C" />
+              <FilmThickness val="0.25" />
+              <Manufacturer>Agilent</Manufacturer>
+              <ColumnId>1</ColumnId>
+            </Column>
+          </Type>
+        </SeparationMedium>
+        <SeparationMedium id="0ee492a7-16f3-40b9-bbc4-40a259fe4698" ver="0">
+          <Info>
+            <CreatedDate>0001-01-01T00:00:00</CreatedDate>
+            <LastModifiedBy>
+              <Username>Admin</Username>
+            </LastModifiedBy>
+            <LastModifiedDate>2023-08-12T05:01:53.8762285+02:00</LastModifiedDate>
+            <AuditTrail />
+          </Info>
+          <ComplexCustomFields />
+          <Name>HP-5</Name>
+          <Description>HP-5</Description>
+          <Type>
+            <Column>
+              <SerialNo />
+              <ProdNo>19091J-413</ProdNo>
+              <BubbleCap>false</BubbleCap>
+              <Diameter val="320" unit="μm" />
+              <Length val="30" unit="m" />
+              <MaxTemp val="325" unit="°C" />
+              <FilmThickness val="0.25" />
+              <Manufacturer>Agilent</Manufacturer>
+              <ColumnId>2</ColumnId>
+            </Column>
+          </Type>
+        </SeparationMedium>
+        <SeparationMedium id="5517c3bd-fd8d-4cd9-880d-e63e9268f66c" ver="0">
+          <Info>
+            <CreatedDate>0001-01-01T00:00:00</CreatedDate>
+            <LastModifiedBy>
+              <Username>Admin</Username>
+            </LastModifiedBy>
+            <LastModifiedDate>2023-08-12T05:17:56.5587363+02:00</LastModifiedDate>
+            <AuditTrail />
+          </Info>
+          <ComplexCustomFields />
+          <Name>HP-5</Name>
+          <Description>HP-5</Description>
+          <Type>
+            <Column>
+              <SerialNo>1</SerialNo>
+              <ProdNo>19091J-413</ProdNo>
+              <BubbleCap>false</BubbleCap>
+              <Diameter val="320" unit="μm" />
+              <Length val="30" unit="m" />
+              <MaxTemp val="325" unit="°C" />
+              <FilmThickness val="0.25" />
+              <Manufacturer>Agilent</Manufacturer>
+              <ColumnId>1</ColumnId>
+            </Column>
+          </Type>
+        </SeparationMedium>
+        <SeparationMedium id="5f20065b-d64c-4c14-88af-ff5fae1fbb4f" ver="0">
+          <Info>
+            <CreatedDate>0001-01-01T00:00:00</CreatedDate>
+            <LastModifiedBy>
+              <Username>Admin</Username>
+            </LastModifiedBy>
+            <LastModifiedDate>2023-08-12T05:17:56.5587363+02:00</LastModifiedDate>
+            <AuditTrail />
+          </Info>
+          <ComplexCustomFields />
+          <Name>HP-5</Name>
+          <Description>HP-5</Description>
+          <Type>
+            <Column>
+              <SerialNo />
+              <ProdNo>19091J-413</ProdNo>
+              <BubbleCap>false</BubbleCap>
+              <Diameter val="320" unit="μm" />
+              <Length val="30" unit="m" />
+              <MaxTemp val="325" unit="°C" />
+              <FilmThickness val="0.25" />
+              <Manufacturer>Agilent</Manufacturer>
+              <ColumnId>2</ColumnId>
+            </Column>
+          </Type>
+        </SeparationMedium>
+      </Resources>
+      <Method id="8764830e-670d-4afe-9b10-c37539e7d1f9" ver="0">
+        <Info>
+          <CreatedBy>
+            <Username>Admin</Username>
+          </CreatedBy>
+          <CreatedDate>2023-08-08T18:15:56.4714134+02:00</CreatedDate>
+          <LastModifiedBy>
+            <Username>Admin</Username>
+          </LastModifiedBy>
+          <LastModifiedDate>2023-08-08T18:15:56.4714134+02:00</LastModifiedDate>
+          <AuditTrail />
+        </Info>
+        <ComplexCustomFields />
+        <BinaryData>
+          <DataItem>
+            <Name>Polyarc_110_20_320_2.amx</Name>
+            <OriginalFilePath>Polyarc_110_20_320_2.amx</OriginalFilePath>
+            <Data>
+              <DataFileReference>
+                <Path>Polyarc_110_20_320_2.amx</Path>
+              </DataFileReference>
+            </Data>
+          </DataItem>
+        </BinaryData>
+        <Name>Polyarc_110_20_320_2</Name>
+        <Description />
+        <OriginalVersion>2023-0808-1615-56471</OriginalVersion>
+      </Method>
+      <SampleContexts>
+        <Setup id="5a174962-af77-48e3-be74-1f1ce1b688bd" ver="0">
+          <Info>
+            <CreatedBy>
+              <Username>Admin</Username>
+            </CreatedBy>
+            <CreatedDate>2023-08-11T19:18:11.4753781+02:00</CreatedDate>
+            <LastModifiedBy>
+              <Username>Admin</Username>
+            </LastModifiedBy>
+            <LastModifiedDate>2023-08-12T05:17:58.5010516+02:00</LastModifiedDate>
+          </Info>
+          <ComplexCustomFields />
+          <BinaryData>
+            <DataItem>
+              <Name>FKB-FA-060-RI.sqx</Name>
+              <OriginalFilePath>FKB-FA-060-RI.sqx</OriginalFilePath>
+              <Data>
+                <DataFileReference>
+                  <Path>FKB-FA-060-RI.sqx</Path>
+                </DataFileReference>
+              </Data>
+            </DataItem>
+          </BinaryData>
+          <IdentParam>
+            <Name>FKB-FA-060-RI</Name>
+            <ContextInfo>
+              <ContentType>Sequence</ContentType>
+              <SourceType>Undefined</SourceType>
+              <ContentIntegrity>Complete</ContentIntegrity>
+            </ContextInfo>
+          </IdentParam>
+          <AcqParam>
+            <Instrument_ID id="d2b095ee-9a39-41b8-9f86-9cff50fc59f2" ver="0" />
+          </AcqParam>
+          <DAParam>
+            <BracketingMode>None</BracketingMode>
+          </DAParam>
+          <SampleSetup_ID id="6e4764b4-2f91-49b2-b967-1e0aa49c94e0" ver="0" />
+          <SampleSetup_ID id="6cb950c2-63f3-48c8-8ec8-04d9f05eae84" ver="0" />
+          <PackagingMode>FullResultSet</PackagingMode>
+        </Setup>
+        <MeasData id="51f717f8-7215-4cf9-8c6b-3673cc0c997b" ver="0">
+          <Info>
+            <CreatedBy>
+              <Username>Admin</Username>
+            </CreatedBy>
+            <CreatedDate>2023-08-11T19:18:11.4753781+02:00</CreatedDate>
+            <LastModifiedBy>
+              <Username>Admin</Username>
+            </LastModifiedBy>
+            <LastModifiedDate>2023-08-12T05:17:58.5010516+02:00</LastModifiedDate>
+          </Info>
+          <ComplexCustomFields />
+          <SampleSetupContext_ID id="5a174962-af77-48e3-be74-1f1ce1b688bd" ver="0" />
+          <IdentParam>
+            <Name>FKB-FA-060-RI</Name>
+            <ContextInfo>
+              <ContentType>Undefined</ContentType>
+              <SourceType>Undefined</SourceType>
+              <ContentIntegrity>Undefined</ContentIntegrity>
+            </ContextInfo>
+          </IdentParam>
+          <AcqParam>
+            <Instrument_ID id="d2b095ee-9a39-41b8-9f86-9cff50fc59f2" ver="0" />
+          </AcqParam>
+          <SampleMeasData_ID id="90193c42-5263-462b-b7bf-f0e15a48ef30" ver="0" />
+          <SampleMeasData_ID id="21ebe09d-0da5-44d1-ac4c-8b7068bf20ff" ver="0" />
+          <DiagnosticData />
+        </MeasData>
+      </SampleContexts>
+      <Samples>
+        <Setup id="6e4764b4-2f91-49b2-b967-1e0aa49c94e0" ver="0">
+          <Info>
+            <CreatedBy>
+              <Username>Admin</Username>
+            </CreatedBy>
+            <CreatedDate>2023-08-12T05:01:53.8213931+02:00</CreatedDate>
+            <LastModifiedBy>
+              <Username>Admin</Username>
+            </LastModifiedBy>
+            <LastModifiedDate>2023-08-12T05:01:53.8213931+02:00</LastModifiedDate>
+            <AuditTrail />
+          </Info>
+          <ComplexCustomFields>
+            <CustomField Name="CompoundCustomFields" />
+          </ComplexCustomFields>
+          <IdentParam>
+            <Name>20230811</Name>
+            <Description />
+            <LimsID key="" />
+            <LimsID key="" />
+            <LimsID key="" />
+            <ProjectID>GC-FID</ProjectID>
+            <ExpectedBarcode />
+          </IdentParam>
+          <AcqParam>
+            <OrderNo val="1" />
+            <VialNumber>150</VialNumber>
+            <NumberOfInjections val="1" />
+            <InjectionVolume val="1" unit="μL" />
+            <InjectorPosition>Back</InjectorPosition>
+            <InjectionSourceInfo>Back</InjectionSourceInfo>
+          </AcqParam>
+          <DAParam>
+            <Type>Blank</Type>
+            <SampleAmount val="0" unit="" />
+            <DilutionFactor>
+              <CorrectionFactor val="1" />
+            </DilutionFactor>
+            <DilutionFactor>
+              <CorrectionFactor val="1" />
+            </DilutionFactor>
+            <DilutionFactor>
+              <CorrectionFactor val="1" />
+            </DilutionFactor>
+            <DilutionFactor>
+              <CorrectionFactor val="1" />
+            </DilutionFactor>
+            <DilutionFactor>
+              <CorrectionFactor val="1" />
+            </DilutionFactor>
+            <Multiplier>
+              <CorrectionFactor val="1" />
+            </Multiplier>
+            <Multiplier>
+              <CorrectionFactor val="1" />
+            </Multiplier>
+            <Multiplier>
+              <CorrectionFactor val="1" />
+            </Multiplier>
+            <Multiplier>
+              <CorrectionFactor val="1" />
+            </Multiplier>
+            <Multiplier>
+              <CorrectionFactor val="1" />
+            </Multiplier>
+          </DAParam>
+        </Setup>
+        <Setup id="6cb950c2-63f3-48c8-8ec8-04d9f05eae84" ver="0">
+          <Info>
+            <CreatedBy>
+              <Username>Admin</Username>
+            </CreatedBy>
+            <CreatedDate>2023-08-12T05:17:56.5246025+02:00</CreatedDate>
+            <LastModifiedBy>
+              <Username>Admin</Username>
+            </LastModifiedBy>
+            <LastModifiedDate>2023-08-12T05:17:56.5246025+02:00</LastModifiedDate>
+            <AuditTrail />
+          </Info>
+          <ComplexCustomFields>
+            <CustomField Name="CompoundCustomFields" />
+          </ComplexCustomFields>
+          <IdentParam>
+            <Name>FKB-FA-060-RI</Name>
+            <Description />
+            <LimsID key="" />
+            <LimsID key="" />
+            <LimsID key="" />
+            <ProjectID>GC-FID</ProjectID>
+            <ExpectedBarcode />
+          </IdentParam>
+          <AcqParam>
+            <OrderNo val="2" />
+            <VialNumber>97</VialNumber>
+            <NumberOfInjections val="1" />
+            <InjectionVolume val="1" unit="μL" />
+            <InjectorPosition>Back</InjectorPosition>
+            <InjectionSourceInfo>Back</InjectionSourceInfo>
+          </AcqParam>
+          <DAParam>
+            <Type>Sample</Type>
+            <SampleAmount val="0" unit="" />
+            <DilutionFactor>
+              <CorrectionFactor val="1" />
+            </DilutionFactor>
+            <DilutionFactor>
+              <CorrectionFactor val="1" />
+            </DilutionFactor>
+            <DilutionFactor>
+              <CorrectionFactor val="1" />
+            </DilutionFactor>
+            <DilutionFactor>
+              <CorrectionFactor val="1" />
+            </DilutionFactor>
+            <DilutionFactor>
+              <CorrectionFactor val="1" />
+            </DilutionFactor>
+            <Multiplier>
+              <CorrectionFactor val="1" />
+            </Multiplier>
+            <Multiplier>
+              <CorrectionFactor val="1" />
+            </Multiplier>
+            <Multiplier>
+              <CorrectionFactor val="1" />
+            </Multiplier>
+            <Multiplier>
+              <CorrectionFactor val="1" />
+            </Multiplier>
+            <Multiplier>
+              <CorrectionFactor val="1" />
+            </Multiplier>
+          </DAParam>
+        </Setup>
+        <MeasData id="90193c42-5263-462b-b7bf-f0e15a48ef30" ver="0">
+          <Info>
+            <CreatedBy>
+              <Username>Admin</Username>
+            </CreatedBy>
+            <CreatedDate>2023-08-12T05:01:53.8213931+02:00</CreatedDate>
+            <LastModifiedBy>
+              <Username>Admin</Username>
+            </LastModifiedBy>
+            <LastModifiedDate>2023-08-12T05:01:53.8213931+02:00</LastModifiedDate>
+            <AuditTrail />
+          </Info>
+          <ComplexCustomFields />
+          <IdentParam>
+            <Name>20230811</Name>
+            <Description />
+            <LimsID key="" />
+            <LimsID key="" />
+            <LimsID key="" />
+            <ProjectID>GC-FID</ProjectID>
+            <ExpectedBarcode />
+          </IdentParam>
+          <AcqParam>
+            <VialNumber>150</VialNumber>
+            <NumberOfInjections val="1" />
+            <InjectionVolume val="1" unit="μL" />
+            <InjectorPosition>Back</InjectorPosition>
+            <InjectionSourceInfo>Back</InjectionSourceInfo>
+          </AcqParam>
+          <SampleSetup_ID id="6e4764b4-2f91-49b2-b967-1e0aa49c94e0" ver="0" />
+          <InjectionMeasData_ID id="9c21d359-cb56-4dff-a3c7-65209b0f38a7" ver="0" />
+          <DiagnosticData />
+        </MeasData>
+        <MeasData id="21ebe09d-0da5-44d1-ac4c-8b7068bf20ff" ver="0">
+          <Info>
+            <CreatedBy>
+              <Username>Admin</Username>
+            </CreatedBy>
+            <CreatedDate>2023-08-12T05:17:56.5246025+02:00</CreatedDate>
+            <LastModifiedBy>
+              <Username>Admin</Username>
+            </LastModifiedBy>
+            <LastModifiedDate>2023-08-12T05:17:56.5246025+02:00</LastModifiedDate>
+            <AuditTrail />
+          </Info>
+          <ComplexCustomFields />
+          <IdentParam>
+            <Name>FKB-FA-060-RI</Name>
+            <Description />
+            <LimsID key="" />
+            <LimsID key="" />
+            <LimsID key="" />
+            <ProjectID>GC-FID</ProjectID>
+            <ExpectedBarcode />
+          </IdentParam>
+          <AcqParam>
+            <VialNumber>97</VialNumber>
+            <NumberOfInjections val="1" />
+            <InjectionVolume val="1" unit="μL" />
+            <InjectorPosition>Back</InjectorPosition>
+            <InjectionSourceInfo>Back</InjectionSourceInfo>
+          </AcqParam>
+          <SampleSetup_ID id="6cb950c2-63f3-48c8-8ec8-04d9f05eae84" ver="0" />
+          <InjectionMeasData_ID id="8eb0c292-23ba-4fa7-a8a3-e2c632a48145" ver="0" />
+          <DiagnosticData />
+        </MeasData>
+      </Samples>
+      <Injections>
+        <MeasData id="9c21d359-cb56-4dff-a3c7-65209b0f38a7" ver="0">
+          <Info>
+            <CreatedBy>
+              <Username>Admin</Username>
+            </CreatedBy>
+            <CreatedDate>2023-08-12T02:49:21.675Z</CreatedDate>
+            <LastModifiedBy>
+              <Username>Admin</Username>
+            </LastModifiedBy>
+            <LastModifiedDate>2023-08-12T05:01:54.1844065+02:00</LastModifiedDate>
+            <AuditTrail />
+          </Info>
+          <ComplexCustomFields />
+          <BinaryData>
+            <DataItem>
+              <Name>20230811.dx</Name>
+              <OriginalFilePath>D:\Data\GC-FID\Results\FKB\FKB-FA-060-RI.rslt</OriginalFilePath>
+              <Data>
+                <DataFileReference>
+                  <Path>20230811.dx</Path>
+                </DataFileReference>
+              </Data>
+            </DataItem>
+          </BinaryData>
+          <AcqParam>
+            <Method_ID id="8764830e-670d-4afe-9b10-c37539e7d1f9" ver="0" />
+            <OrderNo val="1" />
+          </AcqParam>
+          <AcquitionStatus>
+            <Status>Completed</Status>
+            <Message>Acquisition completed for injection: 1</Message>
+          </AcquitionStatus>
+          <Signal id="84a5b50a-844b-4aea-b749-93d9f3de7a0f" ver="0">
+            <Info>
+              <CreatedDate>0001-01-01T00:00:00Z</CreatedDate>
+              <LastModifiedBy>
+                <Username>Admin</Username>
+              </LastModifiedBy>
+              <LastModifiedDate>2023-08-12T05:01:54.1844065+02:00</LastModifiedDate>
+              <AuditTrail />
+            </Info>
+            <ComplexCustomFields />
+            <BinaryData>
+              <DataItem>
+                <Name>20230811.dx</Name>
+                <OriginalFilePath>20230811.dx</OriginalFilePath>
+                <Data>
+                  <DataFileReference>
+                    <Path>20230811.dx</Path>
+                  </DataFileReference>
+                </Data>
+              </DataItem>
+            </BinaryData>
+            <Name>FID1A</Name>
+            <Description>FID1A</Description>
+            <Type>Chromatogram</Type>
+            <YAxisScalingFactor val="1" unit="Minutes" />
+            <TraceID>38ff0c7a-fd36-4838-bdbd-78c0cfb09d63</TraceID>
+            <UserGenerated>false</UserGenerated>
+            <AutomationGenerated>false</AutomationGenerated>
+            <DetectorName>FID</DetectorName>
+            <DetectorInstance>1</DetectorInstance>
+            <ChannelName>A</ChannelName>
+            <PeakDeletions />
+            <InstrumentModule_ID id="cdd79676-ef5d-4f08-9dd0-0b97341a6ff8" />
+          </Signal>
+          <Signal id="9b2fb471-5d94-46dc-ae2d-0620a0176ee7" ver="0">
+            <Info>
+              <CreatedDate>0001-01-01T00:00:00Z</CreatedDate>
+              <LastModifiedBy>
+                <Username>Admin</Username>
+              </LastModifiedBy>
+              <LastModifiedDate>2023-08-12T05:01:54.1873985+02:00</LastModifiedDate>
+              <AuditTrail />
+            </Info>
+            <ComplexCustomFields />
+            <BinaryData>
+              <DataItem>
+                <Name>20230811.dx</Name>
+                <OriginalFilePath>20230811.dx</OriginalFilePath>
+                <Data>
+                  <DataFileReference>
+                    <Path>20230811.dx</Path>
+                  </DataFileReference>
+                </Data>
+              </DataItem>
+            </BinaryData>
+            <Name>FID2B</Name>
+            <Description>FID2B</Description>
+            <Type>Chromatogram</Type>
+            <YAxisScalingFactor val="1" unit="Minutes" />
+            <TraceID>ef274849-9ae1-4a32-b178-de3957b7e131</TraceID>
+            <UserGenerated>false</UserGenerated>
+            <AutomationGenerated>false</AutomationGenerated>
+            <DetectorName>FID</DetectorName>
+            <DetectorInstance>2</DetectorInstance>
+            <ChannelName>B</ChannelName>
+            <PeakDeletions />
+            <InstrumentModule_ID id="cdd79676-ef5d-4f08-9dd0-0b97341a6ff8" />
+          </Signal>
+          <InjectionSeparationMedium>
+            <AutoDetect>false</AutoDetect>
+            <Position>Unknown</Position>
+            <InjectionCount val="0" />
+            <UsedForInjection>true</UsedForInjection>
+            <SeparationMedium_ID id="0ee492a7-16f3-40b9-bbc4-40a259fe4698" ver="0" />
+          </InjectionSeparationMedium>
+          <InjectionSeparationMedium>
+            <AutoDetect>false</AutoDetect>
+            <Position>Unknown</Position>
+            <InjectionCount val="0" />
+            <UsedForInjection>false</UsedForInjection>
+            <SeparationMedium_ID id="22755d7c-1186-4cca-9482-64320df9a398" ver="0" />
+          </InjectionSeparationMedium>
+          <InjectionVolume val="1" unit="μL" />
+          <DiagnosticData>
+            <Item Name="ADVANCED_RUN_INFORMATION">
+              <CustomField Name="Agilent 7890B : 1" Description="Agilent 7890B">
+                <CustomField Name="Column1" Description="Column 1">
+                  <Value>19091J-413 : 1</Value>
+                </CustomField>
+                <CustomField Name="Column2" Description="Column 2">
+                  <Value>19091J-413 : </Value>
+                </CustomField>
+                <CustomField Name="BackLiner" Description="Back Liner">
+                  <Value>5183-4647 : </Value>
+                </CustomField>
+              </CustomField>
+            </Item>
+          </DiagnosticData>
+          <AcquisitionApplication>
+            <AgilentApp>
+              <Name>OpenLabCDS</Name>
+              <Version>2.6 - Build  2.6.0-REL_2.6.0.691</Version>
+            </AgilentApp>
+          </AcquisitionApplication>
+          <AcquisitionSoftware>Agilent OpenLab Acquisition Version 2.6 - Build  2.6.0-REL_2.6.0.691 </AcquisitionSoftware>
+          <AcquisitionMethodVersion>2023-0808-1615-56471</AcquisitionMethodVersion>
+          <ExternalResultPath>20230811.rx</ExternalResultPath>
+          <SampleLabel />
+        </MeasData>
+        <MeasData id="8eb0c292-23ba-4fa7-a8a3-e2c632a48145" ver="0">
+          <Info>
+            <CreatedBy>
+              <Username>Admin</Username>
+            </CreatedBy>
+            <CreatedDate>2023-08-12T03:05:25.067Z</CreatedDate>
+            <LastModifiedBy>
+              <Username>Admin</Username>
+            </LastModifiedBy>
+            <LastModifiedDate>2023-08-12T05:17:56.7863227+02:00</LastModifiedDate>
+          </Info>
+          <ComplexCustomFields />
+          <BinaryData>
+            <DataItem>
+              <Name>FKB-FA-060-RI.dx</Name>
+              <OriginalFilePath>D:\Data\GC-FID\Results\FKB\FKB-FA-060-RI.rslt</OriginalFilePath>
+              <Data>
+                <DataFileReference>
+                  <Path>FKB-FA-060-RI.dx</Path>
+                </DataFileReference>
+              </Data>
+            </DataItem>
+          </BinaryData>
+          <AcqParam>
+            <Method_ID id="8764830e-670d-4afe-9b10-c37539e7d1f9" ver="0" />
+            <OrderNo val="1" />
+          </AcqParam>
+          <AcquitionStatus>
+            <Status>Completed</Status>
+            <Message>Acquisition completed for injection: 2</Message>
+          </AcquitionStatus>
+          <Signal id="826a0a09-e678-438f-aa99-bf9fa1482181" ver="0">
+            <Info>
+              <CreatedDate>0001-01-01T00:00:00Z</CreatedDate>
+              <LastModifiedBy>
+                <Username>Admin</Username>
+              </LastModifiedBy>
+              <LastModifiedDate>2023-08-12T05:17:56.7863227+02:00</LastModifiedDate>
+            </Info>
+            <ComplexCustomFields />
+            <BinaryData>
+              <DataItem>
+                <Name>FKB-FA-060-RI.dx</Name>
+                <OriginalFilePath>FKB-FA-060-RI.dx</OriginalFilePath>
+                <Data>
+                  <DataFileReference>
+                    <Path>FKB-FA-060-RI.dx</Path>
+                  </DataFileReference>
+                </Data>
+              </DataItem>
+            </BinaryData>
+            <Name>FID1A</Name>
+            <Description>FID1A</Description>
+            <Type>Chromatogram</Type>
+            <YAxisScalingFactor val="1" unit="Minutes" />
+            <TraceID>9b5cf8e5-0010-424b-b406-11184a0148a8</TraceID>
+            <UserGenerated>false</UserGenerated>
+            <AutomationGenerated>false</AutomationGenerated>
+            <DetectorName>FID</DetectorName>
+            <DetectorInstance>1</DetectorInstance>
+            <ChannelName>A</ChannelName>
+            <PeakDeletions />
+            <InstrumentModule_ID id="cdd79676-ef5d-4f08-9dd0-0b97341a6ff8" />
+          </Signal>
+          <Signal id="eaf53025-053f-4629-b4cb-bcf48e4d8acd" ver="0">
+            <Info>
+              <CreatedDate>0001-01-01T00:00:00Z</CreatedDate>
+              <LastModifiedBy>
+                <Username>Admin</Username>
+              </LastModifiedBy>
+              <LastModifiedDate>2023-08-12T05:17:56.7933034+02:00</LastModifiedDate>
+            </Info>
+            <ComplexCustomFields />
+            <BinaryData>
+              <DataItem>
+                <Name>FKB-FA-060-RI.dx</Name>
+                <OriginalFilePath>FKB-FA-060-RI.dx</OriginalFilePath>
+                <Data>
+                  <DataFileReference>
+                    <Path>FKB-FA-060-RI.dx</Path>
+                  </DataFileReference>
+                </Data>
+              </DataItem>
+            </BinaryData>
+            <Name>FID2B</Name>
+            <Description>FID2B</Description>
+            <Type>Chromatogram</Type>
+            <YAxisScalingFactor val="1" unit="Minutes" />
+            <TraceID>3c4a7134-f72b-427b-83a2-f817bfaa9c17</TraceID>
+            <UserGenerated>false</UserGenerated>
+            <AutomationGenerated>false</AutomationGenerated>
+            <DetectorName>FID</DetectorName>
+            <DetectorInstance>2</DetectorInstance>
+            <ChannelName>B</ChannelName>
+            <PeakDeletions />
+            <InstrumentModule_ID id="cdd79676-ef5d-4f08-9dd0-0b97341a6ff8" />
+          </Signal>
+          <InjectionSeparationMedium>
+            <AutoDetect>false</AutoDetect>
+            <Position>Unknown</Position>
+            <InjectionCount val="0" />
+            <UsedForInjection>false</UsedForInjection>
+            <SeparationMedium_ID id="5517c3bd-fd8d-4cd9-880d-e63e9268f66c" ver="0" />
+          </InjectionSeparationMedium>
+          <InjectionSeparationMedium>
+            <AutoDetect>false</AutoDetect>
+            <Position>Unknown</Position>
+            <InjectionCount val="0" />
+            <UsedForInjection>true</UsedForInjection>
+            <SeparationMedium_ID id="5f20065b-d64c-4c14-88af-ff5fae1fbb4f" ver="0" />
+          </InjectionSeparationMedium>
+          <InjectionVolume val="1" unit="μL" />
+          <DiagnosticData>
+            <Item Name="ADVANCED_RUN_INFORMATION">
+              <CustomField Name="Agilent 7890B : 1" Description="Agilent 7890B">
+                <CustomField Name="Column1" Description="Column 1">
+                  <Value>19091J-413 : 1</Value>
+                </CustomField>
+                <CustomField Name="Column2" Description="Column 2">
+                  <Value>19091J-413 : </Value>
+                </CustomField>
+                <CustomField Name="BackLiner" Description="Back Liner">
+                  <Value>5183-4647 : </Value>
+                </CustomField>
+              </CustomField>
+            </Item>
+          </DiagnosticData>
+          <AcquisitionApplication>
+            <AgilentApp>
+              <Name>OpenLabCDS</Name>
+              <Version>2.6 - Build  2.6.0-REL_2.6.0.691</Version>
+            </AgilentApp>
+          </AcquisitionApplication>
+          <AcquisitionSoftware>Agilent OpenLab Acquisition Version 2.6 - Build  2.6.0-REL_2.6.0.691 </AcquisitionSoftware>
+          <AcquisitionMethodVersion>2023-0808-1615-56471</AcquisitionMethodVersion>
+          <ExternalResultPath>FKB-FA-060-RI.rx</ExternalResultPath>
+          <SampleLabel />
+        </MeasData>
+      </Injections>
+      <Actions />
+    </Content>
+  </Doc>
+</ACAML>

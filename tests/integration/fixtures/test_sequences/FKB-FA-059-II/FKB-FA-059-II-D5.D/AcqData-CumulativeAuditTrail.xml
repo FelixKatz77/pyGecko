@@ -1,0 +1,17 @@
+<?xml version="1.0" standalone="yes"?>
+<AuditTrailDataSet xmlns="http://tempuri.org/AuditTrailDataSet.xsd">
+  <AuditTrailEntry>
+    <ID>0</ID>
+    <ComputerName>AKGLORIUS-GCMS4</ComputerName>
+    <User>system</User>
+    <TimeStamp>2023-08-08T21:01:12.8133855+02:00</TimeStamp>
+    <Comment>Data collection has been initiated.</Comment>
+  </AuditTrailEntry>
+  <AuditTrailEntry>
+    <ID>1</ID>
+    <ComputerName>AKGLORIUS-GCMS4</ComputerName>
+    <User>system</User>
+    <TimeStamp>2023-08-08T21:16:50.0006316+02:00</TimeStamp>
+    <Comment>Data has been collected and saved.</Comment>
+  </AuditTrailEntry>
+</AuditTrailDataSet>
