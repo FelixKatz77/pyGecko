@@ -1,6 +1,6 @@
 from rdkit import Chem
 from rdkit.Chem.rdchem import Mol
-from gc_tools.peak.fid_peak import FID_Peak
+from pygecko.gc_tools.peak import FID_Peak
 
 
 class Quantification:

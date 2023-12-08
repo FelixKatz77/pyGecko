@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 from scipy.signal import find_peaks
 from gc_tools.analysis.analysis_settings import Analysis_Settings
-from gc_tools.peak.fid_peak import FID_Peak
-from gc_tools.peak.ms_peak import MS_Peak
+from pygecko.gc_tools.peak import FID_Peak
+from pygecko.gc_tools.peak import MS_Peak
 from gc_tools.utilities import Utilities
 
 

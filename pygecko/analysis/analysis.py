@@ -113,7 +113,8 @@ class Analysis:
         for name, ms_injection in ms_sequence.injections.items():
             fid_injection = fid_sequence[name]
             pos = ms_injection.get_plate_position()
-
+            if pos == 'F3':
+                pass
             if mode == 'yield':
                 analyte = layout.get_product(ms_injection.get_plate_position())
                 pass

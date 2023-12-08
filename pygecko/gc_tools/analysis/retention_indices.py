@@ -6,7 +6,7 @@ from gc_tools.injection.injection import Injection
 from gc_tools.sequence.gc_sequence import GC_Sequence
 from gc_tools.injection.fid_injection import FID_Injection
 from gc_tools.injection.ms_injection import MS_Injection
-from gc_tools.peak import Peak
+from pygecko.gc_tools.peak import Peak
 from gc_tools.analyte import Analyte
 
 class RI_Calibration(GC_Sequence):

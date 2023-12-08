@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, TypeVar
 
 
 if TYPE_CHECKING:
-    from gc_tools.peak.ms_peak import MS_Peak
+    from pygecko.gc_tools.peak import MS_Peak
 T = TypeVar('T', bound='Specral_Match')
 
 

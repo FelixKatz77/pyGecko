@@ -1,20 +1,26 @@
 
-gc_tools/peak/__pycache__/
+pygecko/gc_tools/peak/__pycache__/
 
-gc_tools/sequence/__pycache__/
+pygecko/gc_tools/sequence/__pycache__/
 
-gc_tools/analysis/__pycache__/
+pygecko/gc_tools/analysis/__pycache__/
 
-gc_tools/injection/__pycache__/
+pygecko/gc_tools/injection/__pycache__/
 
-gc_tools/__pycache__/
+pygecko/gc_tools/__pycache__/
 
 .idea/
 
-visualization/__pycache__/
+pygecko/visualization/__pycache__/
 
-parsers/__pycache__/
+pygecko/parsers/__pycache__/
 
-tests/__pycache__/
+pygecko/tests/__pycache__/
 
-tests/integration/__pycache__/
+pygecko/tests/integration/__pycache__/
+
+jobs/
+
+pygecko/outputs/
+
+pygecko/tests/integration/.pytest_cache/

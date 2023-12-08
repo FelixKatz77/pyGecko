@@ -4,9 +4,9 @@ from scipy import integrate
 
 from gc_tools.analysis.analysis_settings import Analysis_Settings
 from gc_tools.injection.injection import Injection
-from gc_tools.peak.peak_detection_fid import Peak_Detection_FID
-from gc_tools.peak.fid_peak import FID_Peak
-from gc_tools.analysis.quantification import Quantification
+from pygecko.gc_tools.peak import Peak_Detection_FID
+from pygecko.gc_tools.peak import FID_Peak
+from pygecko.gc_tools.analysis.quantification import Quantification
 from gc_tools.utilities import Utilities
 
 

@@ -1,5 +1,5 @@
 import _pickle as cPickle
-from gc_tools.peak.peak import Peak
+from pygecko.gc_tools.peak import Peak
 from gc_tools.utilities import Utilities
 from gc_tools.analyte import Analyte
 from visualization import Visualization

@@ -1,6 +1,6 @@
 import numpy as np
 
-from gc_tools.peak import Peak
+from pygecko.gc_tools.peak import Peak
 from visualization import Visualization
 
 

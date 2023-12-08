@@ -4,11 +4,9 @@ from datetime import datetime
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from visualization.visuals import Visualization
+from pygecko.visualization.visuals import Visualization
 from reportlab.graphics.shapes import Drawing, Line
-from reportlab.lib import colors, utils
+from reportlab.lib import utils
 from reportlab.lib.colors import Color
 from reportlab.lib.pagesizes import A4, portrait
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle, Frame, PageTemplate, \

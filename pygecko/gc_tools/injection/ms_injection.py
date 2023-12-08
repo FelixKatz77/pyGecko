@@ -9,8 +9,8 @@ from rdkit.Chem import Descriptors
 from gc_tools.analyte import Analyte
 from gc_tools.analysis.analysis_settings import Analysis_Settings
 from gc_tools.injection import Injection
-from gc_tools.peak.peak_detection_ms import Peak_Detection_MS
-from gc_tools.peak.ms_peak import MS_Peak
+from pygecko.gc_tools.peak import Peak_Detection_MS
+from pygecko.gc_tools.peak import MS_Peak
 
 
 class MS_Injection(Injection):
@@ -167,7 +167,7 @@ class MS_Injection(Injection):
         mol_formula = self.__get_mol_formula_dict(mol)
         isotopic_dist = isotopic_variants(mol_formula, npeaks=3, charge=0)
         theo_ratio = isotopic_dist[diff].intensity/isotopic_dist[0].intensity
-        if (theo_ratio - 0.06) < ratio < (theo_ratio + 0.06):
+        if (theo_ratio - 0.05) < ratio < (theo_ratio + 0.05):
             return True
         else:
             return False

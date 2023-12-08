@@ -6,7 +6,7 @@ from scipy.ndimage import gaussian_filter1d
 from statsmodels.stats.stattools import durbin_watson
 from copy import copy
 from gc_tools.analysis.analysis_settings import Analysis_Settings
-from gc_tools.peak.fid_peak import FID_Peak
+from pygecko.gc_tools.peak import FID_Peak
 
 
 class Peak_Detection_FID:

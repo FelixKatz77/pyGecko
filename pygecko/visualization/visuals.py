@@ -7,13 +7,12 @@ from matplotlib.collections import PatchCollection
 import matplotlib
 from matplotlib.ticker import (MultipleLocator)
 from matplotlib.figure import figaspect
-import copy
-from visualization.utilities import yield_cmap, hit_cmap
+from visualization.utilities import yield_cmap
 
 if TYPE_CHECKING:
     from gc_tools.injection.fid_injection import FID_Injection
     from gc_tools.injection.ms_injection import MS_Injection
-    from gc_tools.peak.ms_peak import MS_Peak
+    from pygecko.gc_tools.peak import MS_Peak
 
 plt.rcParams["font.family"] = 'sans-serif'
 plt.rcParams['font.sans-serif'] = ['Arial']
