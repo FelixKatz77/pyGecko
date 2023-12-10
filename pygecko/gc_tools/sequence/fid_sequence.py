@@ -1,5 +1,6 @@
-from gc_tools.injection.fid_injection import FID_Injection
-from .gc_sequence import GC_Sequence
+from pygecko.gc_tools.injection.fid_injection import FID_Injection
+from pygecko.gc_tools.sequence.gc_sequence import GC_Sequence
+
 
 
 class FID_Sequence(GC_Sequence):

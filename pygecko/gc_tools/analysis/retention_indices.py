@@ -2,12 +2,11 @@ import warnings
 from bisect import bisect_left
 import numpy as np
 from scipy import stats
-from gc_tools.injection.injection import Injection
-from gc_tools.sequence.gc_sequence import GC_Sequence
-from gc_tools.injection.fid_injection import FID_Injection
-from gc_tools.injection.ms_injection import MS_Injection
+from pygecko.gc_tools.injection import Injection, FID_Injection, MS_Injection
+from pygecko.gc_tools.sequence import GC_Sequence
+from pygecko.gc_tools.analyte import Analyte
 from pygecko.gc_tools.peak import Peak
-from gc_tools.analyte import Analyte
+
 
 class RI_Calibration(GC_Sequence):
 

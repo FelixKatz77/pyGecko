@@ -1,9 +1,8 @@
 import numpy as np
 import pandas as pd
-from gc_tools.sequence.ms_sequence import MS_Sequence
-from gc_tools.sequence.fid_sequence import FID_Sequence
-from gc_tools.analyte import Analyte
-from reaction.well_plate import Well_Plate
+from pygecko.gc_tools.sequence import MS_Sequence, FID_Sequence
+from pygecko.gc_tools.analyte import Analyte
+from pygecko.reaction import Well_Plate
 from numpy.lib.recfunctions import unstructured_to_structured
 
 

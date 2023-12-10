@@ -1,7 +1,7 @@
 import numpy as np
 
 from pygecko.gc_tools.peak import Peak
-from visualization import Visualization
+from pygecko.visualization import Visualization
 
 
 class MS_Peak(Peak):

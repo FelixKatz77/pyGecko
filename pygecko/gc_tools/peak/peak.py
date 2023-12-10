@@ -1,4 +1,4 @@
-from gc_tools.analyte import Analyte
+from pygecko.gc_tools.analyte import Analyte
 
 
 class Peak:

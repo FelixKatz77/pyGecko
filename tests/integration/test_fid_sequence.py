@@ -1,5 +1,5 @@
 import numpy as np
-from parsers import Agilent_FID_Parser
+from pygecko.parsers import Agilent_FID_Parser
 from datetime import datetime
 
 def test_agilent_fid_parser():

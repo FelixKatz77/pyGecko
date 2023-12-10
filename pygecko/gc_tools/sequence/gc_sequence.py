@@ -1,7 +1,7 @@
 import _pickle as cPickle
 import pickle as pickle
-from gc_tools.analyte import Analyte
-from gc_tools.injection.injection import Injection
+from pygecko.gc_tools.injection.injection import Injection
+from pygecko.gc_tools.analyte import Analyte
 from pathlib import Path
 
 

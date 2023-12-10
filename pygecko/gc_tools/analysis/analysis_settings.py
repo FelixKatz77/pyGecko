@@ -1,5 +1,5 @@
 import numpy as np
-from gc_tools.utilities import Utilities
+from pygecko.gc_tools.utilities import Utilities
 
 class Analysis_Settings:
 

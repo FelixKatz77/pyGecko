@@ -2,14 +2,10 @@ import tempfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
-import numpy as np
-import pandas as pd
+from pygecko.gc_tools import MS_Injection, MS_Sequence, RI_Calibration
 
-from gc_tools.injection.ms_injection import MS_Injection
-from gc_tools.sequence.ms_sequence import MS_Sequence
-from gc_tools.analysis.retention_indices import RI_Calibration
 
-from parsers.ms_base_parser import MS_Base_Parser
+from pygecko.parsers.ms_base_parser import MS_Base_Parser
 from .utilities import find_directories_with_extension
 
 

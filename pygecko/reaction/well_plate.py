@@ -4,8 +4,9 @@ import xarray as xr
 from rdkit import Chem
 from rdkit.Chem import Descriptors
 
-from reaction.layout import Combinatorial_Layout
-from reaction.transformation import Transformation
+from pygecko.reaction.layout import Combinatorial_Layout
+from pygecko.reaction.transformation import Transformation
+
 
 
 class Well_Plate(Combinatorial_Layout):

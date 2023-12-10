@@ -1,7 +1,7 @@
 import numpy as np
 from pathlib import Path
 
-from gc_tools import FID_Injection, FID_Sequence
+from pygecko.gc_tools import FID_Injection, FID_Sequence
 
 
 class FID_Base_Parser:

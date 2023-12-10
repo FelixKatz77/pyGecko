@@ -2,12 +2,11 @@ import numpy as np
 import pandas as pd
 from scipy import integrate
 
-from gc_tools.analysis.analysis_settings import Analysis_Settings
-from gc_tools.injection.injection import Injection
-from pygecko.gc_tools.peak import Peak_Detection_FID
-from pygecko.gc_tools.peak import FID_Peak
-from pygecko.gc_tools.analysis.quantification import Quantification
-from gc_tools.utilities import Utilities
+from pygecko.gc_tools.injection import Injection
+from pygecko.gc_tools.peak import FID_Peak, Peak_Detection_FID
+from pygecko.gc_tools.analysis import Analysis_Settings, Quantification
+from pygecko.gc_tools.utilities import Utilities
+
 
 
 class FID_Injection(Injection):

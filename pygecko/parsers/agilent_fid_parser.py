@@ -4,9 +4,7 @@ import numpy as np
 from pathlib import Path
 from datetime import datetime
 
-from gc_tools.sequence.fid_sequence import FID_Sequence
-from gc_tools.injection.fid_injection import FID_Injection
-from gc_tools.analysis.retention_indices import RI_Calibration
+from pygecko.gc_tools import FID_Sequence, FID_Injection, RI_Calibration
 
 
 class Agilent_FID_Parser:

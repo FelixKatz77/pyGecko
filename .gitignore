@@ -15,12 +15,20 @@ pygecko/visualization/__pycache__/
 
 pygecko/parsers/__pycache__/
 
-pygecko/tests/__pycache__/
+tests/__pycache__/
 
-pygecko/tests/integration/__pycache__/
+tests/integration/__pycache__/
 
 jobs/
 
 pygecko/outputs/
 
-pygecko/tests/integration/.pytest_cache/
+tests/integration/.pytest_cache/
+
+pygecko/__pycache__/
+
+pygecko/analysis/__pycache__/
+
+pygecko/data_handling/__pycache__/
+
+pygecko/reaction/__pycache__/

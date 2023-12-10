@@ -1,8 +1,8 @@
 import _pickle as cPickle
 from pygecko.gc_tools.peak import Peak
-from gc_tools.utilities import Utilities
-from gc_tools.analyte import Analyte
-from visualization import Visualization
+from pygecko.gc_tools.analyte import Analyte
+from pygecko.gc_tools.utilities import Utilities
+from pygecko.visualization import Visualization
 
 
 

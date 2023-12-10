@@ -1,5 +1,5 @@
 import numpy as np
-from parsers import MS_Base_Parser
+from pygecko.parsers import MS_Base_Parser
 
 def test_fid_base_parser():
 

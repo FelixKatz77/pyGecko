@@ -1,6 +1,6 @@
 import numpy as np
 
-from .peak import Peak
+from pygecko.gc_tools.peak import Peak
 
 
 class FID_Peak(Peak):

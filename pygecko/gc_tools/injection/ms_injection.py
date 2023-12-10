@@ -6,11 +6,11 @@ from brainpy import isotopic_variants
 from rdkit import Chem
 from rdkit.Chem import Descriptors
 
-from gc_tools.analyte import Analyte
-from gc_tools.analysis.analysis_settings import Analysis_Settings
-from gc_tools.injection import Injection
-from pygecko.gc_tools.peak import Peak_Detection_MS
-from pygecko.gc_tools.peak import MS_Peak
+from pygecko.gc_tools.analyte import Analyte
+from pygecko.gc_tools.analysis import Analysis_Settings
+from pygecko.gc_tools.injection import Injection
+from pygecko.gc_tools.peak import Peak_Detection_MS, MS_Peak
+
 
 
 class MS_Injection(Injection):

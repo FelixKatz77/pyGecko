@@ -15,7 +15,7 @@ from reportlab.lib.units import cm
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from indigo import *
 from indigo.renderer import IndigoRenderer
-from reaction.well_plate import Well_Plate
+from pygecko.reaction import Well_Plate
 
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)

@@ -1,6 +1,6 @@
 import pandas as pd
 from datetime import datetime
-from reaction.well_plate import Well_Plate
+from pygecko.reaction.well_plate import Well_Plate
 from ord_schema.proto import reaction_pb2
 from ord_schema.proto import dataset_pb2
 from ord_schema.units import UnitResolver

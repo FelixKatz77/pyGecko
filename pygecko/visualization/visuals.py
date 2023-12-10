@@ -1,18 +1,16 @@
 import numpy as np
 from typing import Union
 from typing import TYPE_CHECKING
-from gc_tools.utilities import Utilities
+from pygecko.gc_tools.utilities import Utilities
 import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
 import matplotlib
 from matplotlib.ticker import (MultipleLocator)
 from matplotlib.figure import figaspect
-from visualization.utilities import yield_cmap
+from pygecko.visualization.utilities import yield_cmap
 
 if TYPE_CHECKING:
-    from gc_tools.injection.fid_injection import FID_Injection
-    from gc_tools.injection.ms_injection import MS_Injection
-    from pygecko.gc_tools.peak import MS_Peak
+    from pygecko.gc_tools import FID_Injection, MS_Injection, MS_Peak
 
 plt.rcParams["font.family"] = 'sans-serif'
 plt.rcParams['font.sans-serif'] = ['Arial']

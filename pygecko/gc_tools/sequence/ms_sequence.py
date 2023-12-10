@@ -1,5 +1,5 @@
-from gc_tools.sequence.gc_sequence import GC_Sequence
-from gc_tools.injection.ms_injection import MS_Injection
+from pygecko.gc_tools.injection.ms_injection import MS_Injection
+from pygecko.gc_tools.sequence.gc_sequence import GC_Sequence
 
 
 class MS_Sequence(GC_Sequence):

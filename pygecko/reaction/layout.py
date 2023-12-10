@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
-from reaction.transformation import Transformation
-from reaction.utilities import read_json
+from pygecko.reaction.transformation import Transformation
+from pygecko.reaction.utilities import read_json
 
 class Combinatorial_Layout:
 

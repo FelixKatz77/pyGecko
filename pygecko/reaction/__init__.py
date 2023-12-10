@@ -1,5 +1,5 @@
-from reaction.layout import Combinatorial_Layout
-from reaction.reaction_parser import Reaction_Parser
-from reaction.transformation import Transformation
-from reaction.well_plate import Well_Plate
-from reaction.utilities import get_num_substrates, read_json
+from pygecko.reaction.layout import Combinatorial_Layout
+from pygecko.reaction.reaction_parser import Reaction_Parser
+from pygecko.reaction.transformation import Transformation
+from pygecko.reaction.well_plate import Well_Plate
+from pygecko.reaction.utilities import get_num_substrates, read_json

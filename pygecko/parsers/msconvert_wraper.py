@@ -1,6 +1,6 @@
 import subprocess
 import os
-from parsers.utilities import list_files_and_directories
+from pygecko.parsers.utilities import list_files_and_directories
 
 
 

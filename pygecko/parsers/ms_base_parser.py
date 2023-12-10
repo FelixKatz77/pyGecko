@@ -4,9 +4,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from gc_tools.injection.ms_injection import MS_Injection
-from parsers.msconvert_wraper import msconvert
-from parsers.file_readers import extract_scans_from_mzml, extract_scans_from_mzxml
+from pygecko.gc_tools import MS_Injection
+from pygecko.parsers.msconvert_wraper import msconvert
+from pygecko.parsers.file_readers import extract_scans_from_mzxml, extract_scans_from_mzml
 
 
 class MS_Base_Parser:
