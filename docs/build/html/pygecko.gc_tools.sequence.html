@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pygecko.gc_tools.sequence package &mdash; pyGecko 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pyGecko
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">pygecko.gc_tools.sequence package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-pygecko.gc_tools.sequence.fid_sequence">pygecko.gc_tools.sequence.fid_sequence module</a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.fid_sequence.FID_Sequence"><code class="docutils literal notranslate"><span class="pre">FID_Sequence</span></code></a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.detector"><code class="docutils literal notranslate"><span class="pre">FID_Sequence.detector</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.injections"><code class="docutils literal notranslate"><span class="pre">FID_Sequence.injections</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.instrument_name"><code class="docutils literal notranslate"><span class="pre">FID_Sequence.instrument_name</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.internal_standard"><code class="docutils literal notranslate"><span class="pre">FID_Sequence.internal_standard</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.sequence_name"><code class="docutils literal notranslate"><span class="pre">FID_Sequence.sequence_name</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.gc_tools.sequence.gc_sequence">pygecko.gc_tools.sequence.gc_sequence module</a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence"><code class="docutils literal notranslate"><span class="pre">GC_Sequence</span></code></a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.sequence_name"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.sequence_name</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.instrument_name"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.instrument_name</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.injections"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.injections</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.internal_standard"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.internal_standard</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.detector"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.detector</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.injections</span></code></a></li>
+<li><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.instrument_name</span></code></a></li>
+<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.internal_standard</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.pick_peaks"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.pick_peaks()</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.save"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.save()</span></code></a></li>
+<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.sequence_name</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.set_internal_standard"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.set_internal_standard()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.gc_sequence.load_sequence"><code class="docutils literal notranslate"><span class="pre">load_sequence()</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.gc_sequence.save_sequence"><code class="docutils literal notranslate"><span class="pre">save_sequence()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.gc_tools.sequence.ms_sequence">pygecko.gc_tools.sequence.ms_sequence module</a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence"><code class="docutils literal notranslate"><span class="pre">MS_Sequence</span></code></a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.detector"><code class="docutils literal notranslate"><span class="pre">MS_Sequence.detector</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.injections"><code class="docutils literal notranslate"><span class="pre">MS_Sequence.injections</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.instrument_name"><code class="docutils literal notranslate"><span class="pre">MS_Sequence.instrument_name</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.internal_standard"><code class="docutils literal notranslate"><span class="pre">MS_Sequence.internal_standard</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.sequence_name"><code class="docutils literal notranslate"><span class="pre">MS_Sequence.sequence_name</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.gc_tools.sequence">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyGecko</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pygecko.gc_tools.sequence package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pygecko.gc_tools.sequence.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pygecko-gc-tools-sequence-package">
+<h1>pygecko.gc_tools.sequence package<a class="headerlink" href="#pygecko-gc-tools-sequence-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-pygecko.gc_tools.sequence.fid_sequence">
+<span id="pygecko-gc-tools-sequence-fid-sequence-module"></span><h2>pygecko.gc_tools.sequence.fid_sequence module<a class="headerlink" href="#module-pygecko.gc_tools.sequence.fid_sequence" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.fid_sequence.FID_Sequence">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.sequence.fid_sequence.</span></span><span class="sig-name descname"><span class="pre">FID_Sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection" title="pygecko.gc_tools.injection.fid_injection.FID_Injection"><span class="pre">FID_Injection</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.gc_tools.sequence.fid_sequence.FID_Sequence" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence" title="pygecko.gc_tools.sequence.gc_sequence.GC_Sequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">GC_Sequence</span></code></a></p>
+<p>Class to represent FID sequences.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.detector">
+<span class="sig-name descname"><span class="pre">detector</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.detector" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.injections">
+<span class="sig-name descname"><span class="pre">injections</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict[slice(&lt;class</span> <span class="pre">'str'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pygecko.gc_tools.injection.fid_injection.FID_Injection'&gt;,</span> <span class="pre">None)]</span></em><a class="headerlink" href="#pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.injections" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.instrument_name">
+<span class="sig-name descname"><span class="pre">instrument_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.instrument_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.internal_standard">
+<span class="sig-name descname"><span class="pre">internal_standard</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pygecko.gc_tools.html#pygecko.gc_tools.analyte.Analyte" title="pygecko.gc_tools.analyte.Analyte"><span class="pre">Analyte</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.internal_standard" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.sequence_name">
+<span class="sig-name descname"><span class="pre">sequence_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.sequence_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygecko.gc_tools.sequence.gc_sequence">
+<span id="pygecko-gc-tools-sequence-gc-sequence-module"></span><h2>pygecko.gc_tools.sequence.gc_sequence module<a class="headerlink" href="#module-pygecko.gc_tools.sequence.gc_sequence" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.gc_sequence.GC_Sequence">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.sequence.gc_sequence.</span></span><span class="sig-name descname"><span class="pre">GC_Sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metadata:</span> <span class="pre">dict,</span> <span class="pre">injections:</span> <span class="pre">dict[slice(&lt;class</span> <span class="pre">'str'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pygecko.gc_tools.injection.injection.Injection'&gt;,</span> <span class="pre">None)]</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for all GC sequences.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.sequence_name">
+<span class="sig-name descname"><span class="pre">sequence_name</span></span><a class="headerlink" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.sequence_name" title="Link to this definition"></a></dt>
+<dd><p>Name of the sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.instrument_name">
+<span class="sig-name descname"><span class="pre">instrument_name</span></span><a class="headerlink" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.instrument_name" title="Link to this definition"></a></dt>
+<dd><p>Name of the instrument the sequence was measured on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.injections">
+<span class="sig-name descname"><span class="pre">injections</span></span><a class="headerlink" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.injections" title="Link to this definition"></a></dt>
+<dd><p>Injections of the sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, <a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection" title="pygecko.gc_tools.injection.injection.Injection">Injection</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.internal_standard">
+<span class="sig-name descname"><span class="pre">internal_standard</span></span><a class="headerlink" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.internal_standard" title="Link to this definition"></a></dt>
+<dd><p>Internal standard of the sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pygecko.gc_tools.html#pygecko.gc_tools.analyte.Analyte" title="pygecko.gc_tools.analyte.Analyte">Analyte</a>|None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.detector">
+<span class="sig-name descname"><span class="pre">detector</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.detector" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">injections</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection" title="pygecko.gc_tools.injection.injection.Injection"><span class="pre">Injection</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">instrument_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">internal_standard</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pygecko.gc_tools.html#pygecko.gc_tools.analyte.Analyte" title="pygecko.gc_tools.analyte.Analyte"><span class="pre">Analyte</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.pick_peaks">
+<span class="sig-name descname"><span class="pre">pick_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.pick_peaks" title="Link to this definition"></a></dt>
+<dd><p>Picks peaks from the injections’ chromatograms.
+:param **kwargs: Keyword arguments for the peak picking.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.save" title="Link to this definition"></a></dt>
+<dd><p>Saves a GC sequence to a .pkl file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – Name of the file to save the sequence to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">sequence_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.set_internal_standard">
+<span class="sig-name descname"><span class="pre">set_internal_standard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.set_internal_standard" title="Link to this definition"></a></dt>
+<dd><p>Assigns the internal standard of the sequence to the corresponding peaks by creating an Analyte object for the
+internal standard and setting it as the peaks’ analyte.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rt</strong> (<em>float</em><em>|</em><em>int</em>) – Retention time of the internal standard.</p></li>
+<li><p><strong>tolerance</strong> (<em>float</em>) – Tolerance for the retention time matching. Default is 0.05.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the internal standard. Default is None.</p></li>
+<li><p><strong>smiles</strong> (<em>str</em>) – SMILES string of the internal standard. Default is None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.gc_sequence.load_sequence">
+<span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.sequence.gc_sequence.</span></span><span class="sig-name descname"><span class="pre">load_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence" title="pygecko.gc_tools.sequence.gc_sequence.GC_Sequence"><span class="pre">GC_Sequence</span></a></span></span><a class="headerlink" href="#pygecko.gc_tools.sequence.gc_sequence.load_sequence" title="Link to this definition"></a></dt>
+<dd><p>Loads a GC sequence from a .pkl file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – Name of the file to load the sequence from.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>GC_Sequence object loaded from the file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence" title="pygecko.gc_tools.sequence.gc_sequence.GC_Sequence">GC_Sequence</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.gc_sequence.save_sequence">
+<span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.sequence.gc_sequence.</span></span><span class="sig-name descname"><span class="pre">save_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence" title="pygecko.gc_tools.sequence.gc_sequence.GC_Sequence"><span class="pre">GC_Sequence</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pygecko.gc_tools.sequence.gc_sequence.save_sequence" title="Link to this definition"></a></dt>
+<dd><p>Saves a GC sequence to a .pkl file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – Name of the file to save the sequence to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pygecko.gc_tools.sequence.ms_sequence">
+<span id="pygecko-gc-tools-sequence-ms-sequence-module"></span><h2>pygecko.gc_tools.sequence.ms_sequence module<a class="headerlink" href="#module-pygecko.gc_tools.sequence.ms_sequence" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.ms_sequence.MS_Sequence">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.sequence.ms_sequence.</span></span><span class="sig-name descname"><span class="pre">MS_Sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metadata:</span> <span class="pre">dict,</span> <span class="pre">injections:</span> <span class="pre">dict[slice(&lt;class</span> <span class="pre">'str'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pygecko.gc_tools.injection.ms_injection.MS_Injection'&gt;,</span> <span class="pre">None)]</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence" title="pygecko.gc_tools.sequence.gc_sequence.GC_Sequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">GC_Sequence</span></code></a></p>
+<p>Class to represent MS sequences.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.detector">
+<span class="sig-name descname"><span class="pre">detector</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.detector" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.injections">
+<span class="sig-name descname"><span class="pre">injections</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict[slice(&lt;class</span> <span class="pre">'str'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pygecko.gc_tools.injection.ms_injection.MS_Injection'&gt;,</span> <span class="pre">None)]</span></em><a class="headerlink" href="#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.injections" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.instrument_name">
+<span class="sig-name descname"><span class="pre">instrument_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.instrument_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.internal_standard">
+<span class="sig-name descname"><span class="pre">internal_standard</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pygecko.gc_tools.html#pygecko.gc_tools.analyte.Analyte" title="pygecko.gc_tools.analyte.Analyte"><span class="pre">Analyte</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.internal_standard" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.sequence_name">
+<span class="sig-name descname"><span class="pre">sequence_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.sequence_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygecko.gc_tools.sequence">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pygecko.gc_tools.sequence" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Felix Katzenburg.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pygecko.gc_tools package &mdash; pyGecko 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pyGecko
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">pygecko.gc_tools package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-pygecko.gc_tools.analyte">pygecko.gc_tools.analyte module</a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.analyte.Analyte"><code class="docutils literal notranslate"><span class="pre">Analyte</span></code></a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.analyte.Analyte.rt"><code class="docutils literal notranslate"><span class="pre">Analyte.rt</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analyte.Analyte.name"><code class="docutils literal notranslate"><span class="pre">Analyte.name</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analyte.Analyte.smiles"><code class="docutils literal notranslate"><span class="pre">Analyte.smiles</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analyte.Analyte.mol"><code class="docutils literal notranslate"><span class="pre">Analyte.mol</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">Analyte.mol</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analyte.Analyte.mz"><code class="docutils literal notranslate"><span class="pre">Analyte.mz</span></code></a></li>
+<li><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">Analyte.name</span></code></a></li>
+<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">Analyte.rt</span></code></a></li>
+<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">Analyte.smiles</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.gc_tools.utilities">pygecko.gc_tools.utilities module</a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.utilities.Utilities"><code class="docutils literal notranslate"><span class="pre">Utilities</span></code></a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.utilities.Utilities.check_interval"><code class="docutils literal notranslate"><span class="pre">Utilities.check_interval()</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.utilities.Utilities.convert_time_to_scan"><code class="docutils literal notranslate"><span class="pre">Utilities.convert_time_to_scan()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.gc_tools">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyGecko</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pygecko.gc_tools package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pygecko.gc_tools.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pygecko-gc-tools-package">
+<h1>pygecko.gc_tools package<a class="headerlink" href="#pygecko-gc-tools-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pygecko.gc_tools.analysis.html">pygecko.gc_tools.analysis package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.analysis.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.analysis.html#module-pygecko.gc_tools.analysis.analysis_settings">pygecko.gc_tools.analysis.analysis_settings module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.sn"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.sn</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.time_range"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.time_range</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.indices_range"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.indices_range</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.width"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.prominence"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.prominence</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.trace_prominence"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.trace_prominence</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.height"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.height</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.savgol_window"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.savgol_window</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.max_half_window"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.max_half_window</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.boarder_threshold"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.boarder_threshold</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.boarder_window"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.boarder_window</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.scan_rate"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.scan_rate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id0"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.boarder_threshold</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id1"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.boarder_window</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id2"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.height</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id3"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.indices_range</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id4"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.max_half_window</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.pop"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.pop()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id5"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.prominence</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id6"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.savgol_window</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id7"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.scan_rate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id8"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.sn</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id9"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.time_range</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id10"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.trace_prominence</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.update"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.update()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id11"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.width</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.analysis.html#module-pygecko.gc_tools.analysis.quantification">pygecko.gc_tools.analysis.quantification module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.quantification.Quantification"><code class="docutils literal notranslate"><span class="pre">Quantification</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.quantification.Quantification.quantify_calibration"><code class="docutils literal notranslate"><span class="pre">Quantification.quantify_calibration()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.quantification.Quantification.quantify_polyarc"><code class="docutils literal notranslate"><span class="pre">Quantification.quantify_polyarc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.quantification.Quantification.quantify_ratio"><code class="docutils literal notranslate"><span class="pre">Quantification.quantify_ratio()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.analysis.html#module-pygecko.gc_tools.analysis.retention_indices">pygecko.gc_tools.analysis.retention_indices module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration"><code class="docutils literal notranslate"><span class="pre">RI_Calibration</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.calibration"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.calibration</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.alkanes"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.alkanes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.gradient"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.gradient</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.intercept"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.intercept</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id12"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.alkanes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.assign_ris"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.assign_ris()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.calculate_ri"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.calculate_ri()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.calculate_ri_fit"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.calculate_ri_fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id13"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.calibration</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.detector"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.detector</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id14"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.gradient</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id15"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.intercept</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.analysis.html#module-pygecko.gc_tools.analysis.spectral_matching">pygecko.gc_tools.analysis.spectral_matching module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.spectral_matching.Spectral_Match"><code class="docutils literal notranslate"><span class="pre">Spectral_Match</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.spectral_matching.Spectral_Match.peaks"><code class="docutils literal notranslate"><span class="pre">Spectral_Match.peaks</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.spectral_matching.Spectral_Match.ms_score"><code class="docutils literal notranslate"><span class="pre">Spectral_Match.ms_score</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.spectral_matching.Spectral_Match.rt_score"><code class="docutils literal notranslate"><span class="pre">Spectral_Match.rt_score</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.spectral_matching.Spectral_Match.match_peaks"><code class="docutils literal notranslate"><span class="pre">Spectral_Match.match_peaks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id16"><code class="docutils literal notranslate"><span class="pre">Spectral_Match.ms_score</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id17"><code class="docutils literal notranslate"><span class="pre">Spectral_Match.peaks</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.analysis.html#id18"><code class="docutils literal notranslate"><span class="pre">Spectral_Match.rt_score</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.analysis.html#module-pygecko.gc_tools.analysis">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pygecko.gc_tools.injection.html">pygecko.gc_tools.injection package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.injection.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.injection.html#module-pygecko.gc_tools.injection.fid_injection">pygecko.gc_tools.injection.fid_injection module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection"><code class="docutils literal notranslate"><span class="pre">FID_Injection</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection.injector_pos"><code class="docutils literal notranslate"><span class="pre">FID_Injection.injector_pos</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection.sample_number"><code class="docutils literal notranslate"><span class="pre">FID_Injection.sample_number</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection.acq_time"><code class="docutils literal notranslate"><span class="pre">FID_Injection.acq_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection.data_method"><code class="docutils literal notranslate"><span class="pre">FID_Injection.data_method</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection.solvent_delay"><code class="docutils literal notranslate"><span class="pre">FID_Injection.solvent_delay</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection.chromatogram"><code class="docutils literal notranslate"><span class="pre">FID_Injection.chromatogram</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection.processed_chromatogram"><code class="docutils literal notranslate"><span class="pre">FID_Injection.processed_chromatogram</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection.peaks"><code class="docutils literal notranslate"><span class="pre">FID_Injection.peaks</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection.detector"><code class="docutils literal notranslate"><span class="pre">FID_Injection.detector</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id0"><code class="docutils literal notranslate"><span class="pre">FID_Injection.acq_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection.analysis_settings"><code class="docutils literal notranslate"><span class="pre">FID_Injection.analysis_settings</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection.baseline_correction"><code class="docutils literal notranslate"><span class="pre">FID_Injection.baseline_correction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id1"><code class="docutils literal notranslate"><span class="pre">FID_Injection.chromatogram</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id2"><code class="docutils literal notranslate"><span class="pre">FID_Injection.detector</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id3"><code class="docutils literal notranslate"><span class="pre">FID_Injection.injector_pos</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection.integrate"><code class="docutils literal notranslate"><span class="pre">FID_Injection.integrate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id4"><code class="docutils literal notranslate"><span class="pre">FID_Injection.peaks</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection.pick_peaks"><code class="docutils literal notranslate"><span class="pre">FID_Injection.pick_peaks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id5"><code class="docutils literal notranslate"><span class="pre">FID_Injection.processed_chromatogram</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection.quantify"><code class="docutils literal notranslate"><span class="pre">FID_Injection.quantify()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection.report"><code class="docutils literal notranslate"><span class="pre">FID_Injection.report()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id6"><code class="docutils literal notranslate"><span class="pre">FID_Injection.sample_number</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id7"><code class="docutils literal notranslate"><span class="pre">FID_Injection.solvent_delay</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.injection.html#module-pygecko.gc_tools.injection.injection">pygecko.gc_tools.injection.injection module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection"><code class="docutils literal notranslate"><span class="pre">Injection</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection.acq_method"><code class="docutils literal notranslate"><span class="pre">Injection.acq_method</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection.instrument_name"><code class="docutils literal notranslate"><span class="pre">Injection.instrument_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection.sample_description"><code class="docutils literal notranslate"><span class="pre">Injection.sample_description</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection.sample_name"><code class="docutils literal notranslate"><span class="pre">Injection.sample_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection.sample_type"><code class="docutils literal notranslate"><span class="pre">Injection.sample_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection.vial_pos"><code class="docutils literal notranslate"><span class="pre">Injection.vial_pos</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection.internal_standard"><code class="docutils literal notranslate"><span class="pre">Injection.internal_standard</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection.peaks"><code class="docutils literal notranslate"><span class="pre">Injection.peaks</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id8"><code class="docutils literal notranslate"><span class="pre">Injection.acq_method</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection.detector"><code class="docutils literal notranslate"><span class="pre">Injection.detector</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection.flag_peak"><code class="docutils literal notranslate"><span class="pre">Injection.flag_peak()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection.get_plate_position"><code class="docutils literal notranslate"><span class="pre">Injection.get_plate_position()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id9"><code class="docutils literal notranslate"><span class="pre">Injection.instrument_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id10"><code class="docutils literal notranslate"><span class="pre">Injection.internal_standard</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection.match_ri"><code class="docutils literal notranslate"><span class="pre">Injection.match_ri()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id11"><code class="docutils literal notranslate"><span class="pre">Injection.peaks</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection.plate_pos"><code class="docutils literal notranslate"><span class="pre">Injection.plate_pos</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id12"><code class="docutils literal notranslate"><span class="pre">Injection.sample_description</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id13"><code class="docutils literal notranslate"><span class="pre">Injection.sample_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id14"><code class="docutils literal notranslate"><span class="pre">Injection.sample_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection.save"><code class="docutils literal notranslate"><span class="pre">Injection.save()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection.set_internal_standard"><code class="docutils literal notranslate"><span class="pre">Injection.set_internal_standard()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection.set_plate_position"><code class="docutils literal notranslate"><span class="pre">Injection.set_plate_position()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id15"><code class="docutils literal notranslate"><span class="pre">Injection.vial_pos</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection.view_chromatogram"><code class="docutils literal notranslate"><span class="pre">Injection.view_chromatogram()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.load_injection"><code class="docutils literal notranslate"><span class="pre">load_injection()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.injection.html#module-pygecko.gc_tools.injection.ms_injection">pygecko.gc_tools.injection.ms_injection module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.ms_injection.MS_Injection"><code class="docutils literal notranslate"><span class="pre">MS_Injection</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.ms_injection.MS_Injection.chromatogram"><code class="docutils literal notranslate"><span class="pre">MS_Injection.chromatogram</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.ms_injection.MS_Injection.peaks"><code class="docutils literal notranslate"><span class="pre">MS_Injection.peaks</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.ms_injection.MS_Injection.scans"><code class="docutils literal notranslate"><span class="pre">MS_Injection.scans</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.ms_injection.MS_Injection.detector"><code class="docutils literal notranslate"><span class="pre">MS_Injection.detector</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.ms_injection.MS_Injection.analysis_settings"><code class="docutils literal notranslate"><span class="pre">MS_Injection.analysis_settings</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.ms_injection.MS_Injection.solvent_delay"><code class="docutils literal notranslate"><span class="pre">MS_Injection.solvent_delay</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id16"><code class="docutils literal notranslate"><span class="pre">MS_Injection.analysis_settings</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id17"><code class="docutils literal notranslate"><span class="pre">MS_Injection.chromatogram</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id18"><code class="docutils literal notranslate"><span class="pre">MS_Injection.detector</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.ms_injection.MS_Injection.match_mol"><code class="docutils literal notranslate"><span class="pre">MS_Injection.match_mol()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.ms_injection.MS_Injection.match_mz"><code class="docutils literal notranslate"><span class="pre">MS_Injection.match_mz()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id19"><code class="docutils literal notranslate"><span class="pre">MS_Injection.peaks</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.ms_injection.MS_Injection.pick_peaks"><code class="docutils literal notranslate"><span class="pre">MS_Injection.pick_peaks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id20"><code class="docutils literal notranslate"><span class="pre">MS_Injection.scans</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.injection.html#id21"><code class="docutils literal notranslate"><span class="pre">MS_Injection.solvent_delay</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.injection.html#module-pygecko.gc_tools.injection">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pygecko.gc_tools.peak.html">pygecko.gc_tools.peak package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.peak.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.peak.html#module-pygecko.gc_tools.peak.fid_peak">pygecko.gc_tools.peak.fid_peak module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak"><code class="docutils literal notranslate"><span class="pre">FID_Peak</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak.rt"><code class="docutils literal notranslate"><span class="pre">FID_Peak.rt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak.ri"><code class="docutils literal notranslate"><span class="pre">FID_Peak.ri</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak.area"><code class="docutils literal notranslate"><span class="pre">FID_Peak.area</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak.flag"><code class="docutils literal notranslate"><span class="pre">FID_Peak.flag</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak.analyte"><code class="docutils literal notranslate"><span class="pre">FID_Peak.analyte</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak.height"><code class="docutils literal notranslate"><span class="pre">FID_Peak.height</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak.width"><code class="docutils literal notranslate"><span class="pre">FID_Peak.width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak.boarders"><code class="docutils literal notranslate"><span class="pre">FID_Peak.boarders</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#id0"><code class="docutils literal notranslate"><span class="pre">FID_Peak.boarders</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#id1"><code class="docutils literal notranslate"><span class="pre">FID_Peak.height</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#id2"><code class="docutils literal notranslate"><span class="pre">FID_Peak.width</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.peak.html#module-pygecko.gc_tools.peak.ms_peak">pygecko.gc_tools.peak.ms_peak module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.ms_peak.MS_Peak"><code class="docutils literal notranslate"><span class="pre">MS_Peak</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.ms_peak.MS_Peak.rt"><code class="docutils literal notranslate"><span class="pre">MS_Peak.rt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.ms_peak.MS_Peak.ri"><code class="docutils literal notranslate"><span class="pre">MS_Peak.ri</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.ms_peak.MS_Peak.area"><code class="docutils literal notranslate"><span class="pre">MS_Peak.area</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.ms_peak.MS_Peak.flag"><code class="docutils literal notranslate"><span class="pre">MS_Peak.flag</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.ms_peak.MS_Peak.analyte"><code class="docutils literal notranslate"><span class="pre">MS_Peak.analyte</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.ms_peak.MS_Peak.mass_spectrum"><code class="docutils literal notranslate"><span class="pre">MS_Peak.mass_spectrum</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#id3"><code class="docutils literal notranslate"><span class="pre">MS_Peak.mass_spectrum</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.ms_peak.MS_Peak.view_mass_spectrum"><code class="docutils literal notranslate"><span class="pre">MS_Peak.view_mass_spectrum()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.peak.html#module-pygecko.gc_tools.peak.peak">pygecko.gc_tools.peak.peak module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.peak.Peak"><code class="docutils literal notranslate"><span class="pre">Peak</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.peak.Peak.rt"><code class="docutils literal notranslate"><span class="pre">Peak.rt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.peak.Peak.ri"><code class="docutils literal notranslate"><span class="pre">Peak.ri</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.peak.Peak.area"><code class="docutils literal notranslate"><span class="pre">Peak.area</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.peak.Peak.flag"><code class="docutils literal notranslate"><span class="pre">Peak.flag</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.peak.Peak.analyte"><code class="docutils literal notranslate"><span class="pre">Peak.analyte</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#id4"><code class="docutils literal notranslate"><span class="pre">Peak.analyte</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#id5"><code class="docutils literal notranslate"><span class="pre">Peak.area</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#id6"><code class="docutils literal notranslate"><span class="pre">Peak.flag</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#id7"><code class="docutils literal notranslate"><span class="pre">Peak.ri</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#id8"><code class="docutils literal notranslate"><span class="pre">Peak.rt</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.peak.html#module-pygecko.gc_tools.peak.peak_detection_fid">pygecko.gc_tools.peak.peak_detection_fid module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.peak_detection_fid.Peak_Detection_FID"><code class="docutils literal notranslate"><span class="pre">Peak_Detection_FID</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.peak_detection_fid.Peak_Detection_FID.baseline_correction"><code class="docutils literal notranslate"><span class="pre">Peak_Detection_FID.baseline_correction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.peak_detection_fid.Peak_Detection_FID.pick_peaks"><code class="docutils literal notranslate"><span class="pre">Peak_Detection_FID.pick_peaks()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.peak.html#module-pygecko.gc_tools.peak.peak_detection_ms">pygecko.gc_tools.peak.peak_detection_ms module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.peak_detection_ms.Peak_Detection_MS"><code class="docutils literal notranslate"><span class="pre">Peak_Detection_MS</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.peak_detection_ms.Peak_Detection_MS.pick_peaks"><code class="docutils literal notranslate"><span class="pre">Peak_Detection_MS.pick_peaks()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.peak.html#module-pygecko.gc_tools.peak">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pygecko.gc_tools.sequence.html">pygecko.gc_tools.sequence package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.sequence.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.sequence.html#module-pygecko.gc_tools.sequence.fid_sequence">pygecko.gc_tools.sequence.fid_sequence module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.fid_sequence.FID_Sequence"><code class="docutils literal notranslate"><span class="pre">FID_Sequence</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.detector"><code class="docutils literal notranslate"><span class="pre">FID_Sequence.detector</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.injections"><code class="docutils literal notranslate"><span class="pre">FID_Sequence.injections</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.instrument_name"><code class="docutils literal notranslate"><span class="pre">FID_Sequence.instrument_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.internal_standard"><code class="docutils literal notranslate"><span class="pre">FID_Sequence.internal_standard</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.fid_sequence.FID_Sequence.sequence_name"><code class="docutils literal notranslate"><span class="pre">FID_Sequence.sequence_name</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.sequence.html#module-pygecko.gc_tools.sequence.gc_sequence">pygecko.gc_tools.sequence.gc_sequence module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence"><code class="docutils literal notranslate"><span class="pre">GC_Sequence</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.sequence_name"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.sequence_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.instrument_name"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.instrument_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.injections"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.injections</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.internal_standard"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.internal_standard</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.detector"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.detector</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#id0"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.injections</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#id1"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.instrument_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#id2"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.internal_standard</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.pick_peaks"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.pick_peaks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.save"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.save()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#id3"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.sequence_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence.set_internal_standard"><code class="docutils literal notranslate"><span class="pre">GC_Sequence.set_internal_standard()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.gc_sequence.load_sequence"><code class="docutils literal notranslate"><span class="pre">load_sequence()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.gc_sequence.save_sequence"><code class="docutils literal notranslate"><span class="pre">save_sequence()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.sequence.html#module-pygecko.gc_tools.sequence.ms_sequence">pygecko.gc_tools.sequence.ms_sequence module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence"><code class="docutils literal notranslate"><span class="pre">MS_Sequence</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.detector"><code class="docutils literal notranslate"><span class="pre">MS_Sequence.detector</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.injections"><code class="docutils literal notranslate"><span class="pre">MS_Sequence.injections</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.instrument_name"><code class="docutils literal notranslate"><span class="pre">MS_Sequence.instrument_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.internal_standard"><code class="docutils literal notranslate"><span class="pre">MS_Sequence.internal_standard</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence.sequence_name"><code class="docutils literal notranslate"><span class="pre">MS_Sequence.sequence_name</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.gc_tools.sequence.html#module-pygecko.gc_tools.sequence">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-pygecko.gc_tools.analyte">
+<span id="pygecko-gc-tools-analyte-module"></span><h2>pygecko.gc_tools.analyte module<a class="headerlink" href="#module-pygecko.gc_tools.analyte" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analyte.Analyte">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.analyte.</span></span><span class="sig-name descname"><span class="pre">Analyte</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.gc_tools.analyte.Analyte" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Analyte class for storing information about analytes.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analyte.Analyte.rt">
+<span class="sig-name descname"><span class="pre">rt</span></span><a class="headerlink" href="#pygecko.gc_tools.analyte.Analyte.rt" title="Link to this definition"></a></dt>
+<dd><p>Retention time of analyte.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analyte.Analyte.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#pygecko.gc_tools.analyte.Analyte.name" title="Link to this definition"></a></dt>
+<dd><p>Name of analyte.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analyte.Analyte.smiles">
+<span class="sig-name descname"><span class="pre">smiles</span></span><a class="headerlink" href="#pygecko.gc_tools.analyte.Analyte.smiles" title="Link to this definition"></a></dt>
+<dd><p>SMILES string of analyte.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analyte.Analyte.mol">
+<span class="sig-name descname"><span class="pre">mol</span></span><a class="headerlink" href="#pygecko.gc_tools.analyte.Analyte.mol" title="Link to this definition"></a></dt>
+<dd><p>RDKit molecule object of analyte.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Mol</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">mol</span></span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analyte.Analyte.mz">
+<span class="sig-name descname"><span class="pre">mz</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#pygecko.gc_tools.analyte.Analyte.mz" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">rt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">smiles</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygecko.gc_tools.utilities">
+<span id="pygecko-gc-tools-utilities-module"></span><h2>pygecko.gc_tools.utilities module<a class="headerlink" href="#module-pygecko.gc_tools.utilities" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.gc_tools.utilities.Utilities">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.utilities.</span></span><span class="sig-name descname"><span class="pre">Utilities</span></span><a class="headerlink" href="#pygecko.gc_tools.utilities.Utilities" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.gc_tools.utilities.Utilities.check_interval">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">midpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pygecko.gc_tools.utilities.Utilities.check_interval" title="Link to this definition"></a></dt>
+<dd><p>Takes in a value, midpoint, and tolerance and returns True if the value is within the interval defined by the
+midpoint and tolerance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.gc_tools.utilities.Utilities.convert_time_to_scan">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_time_to_scan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scan_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pygecko.gc_tools.utilities.Utilities.convert_time_to_scan" title="Link to this definition"></a></dt>
+<dd><p>Takes in single time or sequence of two times in minutes, returns the closest scan index or a sequence of two
+indices.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygecko.gc_tools">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pygecko.gc_tools" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Felix Katzenburg.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

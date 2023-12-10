@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pygecko.gc_tools.peak package &mdash; pyGecko 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pyGecko
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">pygecko.gc_tools.peak package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-pygecko.gc_tools.peak.fid_peak">pygecko.gc_tools.peak.fid_peak module</a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak"><code class="docutils literal notranslate"><span class="pre">FID_Peak</span></code></a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.rt"><code class="docutils literal notranslate"><span class="pre">FID_Peak.rt</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.ri"><code class="docutils literal notranslate"><span class="pre">FID_Peak.ri</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.area"><code class="docutils literal notranslate"><span class="pre">FID_Peak.area</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.flag"><code class="docutils literal notranslate"><span class="pre">FID_Peak.flag</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.analyte"><code class="docutils literal notranslate"><span class="pre">FID_Peak.analyte</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.height"><code class="docutils literal notranslate"><span class="pre">FID_Peak.height</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.width"><code class="docutils literal notranslate"><span class="pre">FID_Peak.width</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.boarders"><code class="docutils literal notranslate"><span class="pre">FID_Peak.boarders</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">FID_Peak.boarders</span></code></a></li>
+<li><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">FID_Peak.height</span></code></a></li>
+<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">FID_Peak.width</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.gc_tools.peak.ms_peak">pygecko.gc_tools.peak.ms_peak module</a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak"><code class="docutils literal notranslate"><span class="pre">MS_Peak</span></code></a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.rt"><code class="docutils literal notranslate"><span class="pre">MS_Peak.rt</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.ri"><code class="docutils literal notranslate"><span class="pre">MS_Peak.ri</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.area"><code class="docutils literal notranslate"><span class="pre">MS_Peak.area</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.flag"><code class="docutils literal notranslate"><span class="pre">MS_Peak.flag</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.analyte"><code class="docutils literal notranslate"><span class="pre">MS_Peak.analyte</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.mass_spectrum"><code class="docutils literal notranslate"><span class="pre">MS_Peak.mass_spectrum</span></code></a></li>
+<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">MS_Peak.mass_spectrum</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.view_mass_spectrum"><code class="docutils literal notranslate"><span class="pre">MS_Peak.view_mass_spectrum()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.gc_tools.peak.peak">pygecko.gc_tools.peak.peak module</a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak"><code class="docutils literal notranslate"><span class="pre">Peak</span></code></a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak.rt"><code class="docutils literal notranslate"><span class="pre">Peak.rt</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak.ri"><code class="docutils literal notranslate"><span class="pre">Peak.ri</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak.area"><code class="docutils literal notranslate"><span class="pre">Peak.area</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak.flag"><code class="docutils literal notranslate"><span class="pre">Peak.flag</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak.analyte"><code class="docutils literal notranslate"><span class="pre">Peak.analyte</span></code></a></li>
+<li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">Peak.analyte</span></code></a></li>
+<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">Peak.area</span></code></a></li>
+<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">Peak.flag</span></code></a></li>
+<li><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">Peak.ri</span></code></a></li>
+<li><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">Peak.rt</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.gc_tools.peak.peak_detection_fid">pygecko.gc_tools.peak.peak_detection_fid module</a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak_detection_fid.Peak_Detection_FID"><code class="docutils literal notranslate"><span class="pre">Peak_Detection_FID</span></code></a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak_detection_fid.Peak_Detection_FID.baseline_correction"><code class="docutils literal notranslate"><span class="pre">Peak_Detection_FID.baseline_correction()</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak_detection_fid.Peak_Detection_FID.pick_peaks"><code class="docutils literal notranslate"><span class="pre">Peak_Detection_FID.pick_peaks()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.gc_tools.peak.peak_detection_ms">pygecko.gc_tools.peak.peak_detection_ms module</a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak_detection_ms.Peak_Detection_MS"><code class="docutils literal notranslate"><span class="pre">Peak_Detection_MS</span></code></a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak_detection_ms.Peak_Detection_MS.pick_peaks"><code class="docutils literal notranslate"><span class="pre">Peak_Detection_MS.pick_peaks()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.gc_tools.peak">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyGecko</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pygecko.gc_tools.peak package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pygecko.gc_tools.peak.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pygecko-gc-tools-peak-package">
+<h1>pygecko.gc_tools.peak package<a class="headerlink" href="#pygecko-gc-tools-peak-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-pygecko.gc_tools.peak.fid_peak">
+<span id="pygecko-gc-tools-peak-fid-peak-module"></span><h2>pygecko.gc_tools.peak.fid_peak module<a class="headerlink" href="#module-pygecko.gc_tools.peak.fid_peak" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.fid_peak.FID_Peak">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.peak.fid_peak.</span></span><span class="sig-name descname"><span class="pre">FID_Peak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boarders</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak" title="pygecko.gc_tools.peak.peak.Peak"><code class="xref py py-class docutils literal notranslate"><span class="pre">Peak</span></code></a></p>
+<p>FID_Peak class for storing information about peaks in FID chromatograms.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.fid_peak.FID_Peak.rt">
+<span class="sig-name descname"><span class="pre">rt</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.rt" title="Link to this definition"></a></dt>
+<dd><p>Retention time of the peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.fid_peak.FID_Peak.ri">
+<span class="sig-name descname"><span class="pre">ri</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.ri" title="Link to this definition"></a></dt>
+<dd><p>Retention index of the peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None|float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.fid_peak.FID_Peak.area">
+<span class="sig-name descname"><span class="pre">area</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.area" title="Link to this definition"></a></dt>
+<dd><p>Area of the peak. Defaults to None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None|float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.fid_peak.FID_Peak.flag">
+<span class="sig-name descname"><span class="pre">flag</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.flag" title="Link to this definition"></a></dt>
+<dd><p>Flag of the peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None|str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.fid_peak.FID_Peak.analyte">
+<span class="sig-name descname"><span class="pre">analyte</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.analyte" title="Link to this definition"></a></dt>
+<dd><p>Analyte of the peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None|<a class="reference internal" href="pygecko.gc_tools.html#pygecko.gc_tools.analyte.Analyte" title="pygecko.gc_tools.analyte.Analyte">Analyte</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.fid_peak.FID_Peak.height">
+<span class="sig-name descname"><span class="pre">height</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.height" title="Link to this definition"></a></dt>
+<dd><p>Height of the peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.fid_peak.FID_Peak.width">
+<span class="sig-name descname"><span class="pre">width</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.width" title="Link to this definition"></a></dt>
+<dd><p>Width of the peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.fid_peak.FID_Peak.boarders">
+<span class="sig-name descname"><span class="pre">boarders</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.boarders" title="Link to this definition"></a></dt>
+<dd><p>Boarders of the peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">boarders</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygecko.gc_tools.peak.ms_peak">
+<span id="pygecko-gc-tools-peak-ms-peak-module"></span><h2>pygecko.gc_tools.peak.ms_peak module<a class="headerlink" href="#module-pygecko.gc_tools.peak.ms_peak" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.ms_peak.MS_Peak">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.peak.ms_peak.</span></span><span class="sig-name descname"><span class="pre">MS_Peak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_spectrum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak" title="pygecko.gc_tools.peak.peak.Peak"><code class="xref py py-class docutils literal notranslate"><span class="pre">Peak</span></code></a></p>
+<p>MS_Peak class for storing information about peaks in MS chromatograms.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.ms_peak.MS_Peak.rt">
+<span class="sig-name descname"><span class="pre">rt</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.rt" title="Link to this definition"></a></dt>
+<dd><p>Retention time of the peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.ms_peak.MS_Peak.ri">
+<span class="sig-name descname"><span class="pre">ri</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.ri" title="Link to this definition"></a></dt>
+<dd><p>Retention index of the peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[None, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.ms_peak.MS_Peak.area">
+<span class="sig-name descname"><span class="pre">area</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.area" title="Link to this definition"></a></dt>
+<dd><p>Area of the peak. Defaults to None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[None, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.ms_peak.MS_Peak.flag">
+<span class="sig-name descname"><span class="pre">flag</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.flag" title="Link to this definition"></a></dt>
+<dd><p>Flag of the peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[None, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.ms_peak.MS_Peak.analyte">
+<span class="sig-name descname"><span class="pre">analyte</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.analyte" title="Link to this definition"></a></dt>
+<dd><p>Analyte of the peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[None, <a class="reference internal" href="pygecko.gc_tools.html#pygecko.gc_tools.analyte.Analyte" title="pygecko.gc_tools.analyte.Analyte">Analyte</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.ms_peak.MS_Peak.mass_spectrum">
+<span class="sig-name descname"><span class="pre">mass_spectrum</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.mass_spectrum" title="Link to this definition"></a></dt>
+<dd><p>Mass spectrum of the peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">mass_spectrum</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.ms_peak.MS_Peak.view_mass_spectrum">
+<span class="sig-name descname"><span class="pre">view_mass_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.view_mass_spectrum" title="Link to this definition"></a></dt>
+<dd><p>Plots the mass spectrum of the peak.
+:param **kwargs: Keyword arguments for the visualization.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygecko.gc_tools.peak.peak">
+<span id="pygecko-gc-tools-peak-peak-module"></span><h2>pygecko.gc_tools.peak.peak module<a class="headerlink" href="#module-pygecko.gc_tools.peak.peak" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.peak.Peak">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.peak.peak.</span></span><span class="sig-name descname"><span class="pre">Peak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.gc_tools.peak.peak.Peak" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for all Peaks.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.peak.Peak.rt">
+<span class="sig-name descname"><span class="pre">rt</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.peak.Peak.rt" title="Link to this definition"></a></dt>
+<dd><p>Retention time of the peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.peak.Peak.ri">
+<span class="sig-name descname"><span class="pre">ri</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.peak.Peak.ri" title="Link to this definition"></a></dt>
+<dd><p>Retention index of the peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None|float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.peak.Peak.area">
+<span class="sig-name descname"><span class="pre">area</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.peak.Peak.area" title="Link to this definition"></a></dt>
+<dd><p>Area of the peak. Defaults to None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None|float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.peak.Peak.flag">
+<span class="sig-name descname"><span class="pre">flag</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.peak.Peak.flag" title="Link to this definition"></a></dt>
+<dd><p>Flag of the peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None|str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.peak.Peak.analyte">
+<span class="sig-name descname"><span class="pre">analyte</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.peak.Peak.analyte" title="Link to this definition"></a></dt>
+<dd><p>Analyte of the peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None|<a class="reference internal" href="pygecko.gc_tools.html#pygecko.gc_tools.analyte.Analyte" title="pygecko.gc_tools.analyte.Analyte">Analyte</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">analyte</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pygecko.gc_tools.html#pygecko.gc_tools.analyte.Analyte" title="pygecko.gc_tools.analyte.Analyte"><span class="pre">Analyte</span></a></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">area</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">flag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">ri</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">rt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygecko.gc_tools.peak.peak_detection_fid">
+<span id="pygecko-gc-tools-peak-peak-detection-fid-module"></span><h2>pygecko.gc_tools.peak.peak_detection_fid module<a class="headerlink" href="#module-pygecko.gc_tools.peak.peak_detection_fid" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.peak_detection_fid.Peak_Detection_FID">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.peak.peak_detection_fid.</span></span><span class="sig-name descname"><span class="pre">Peak_Detection_FID</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.peak_detection_fid.Peak_Detection_FID" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class wrapping functions to detect peaks in FID chromatograms.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.peak_detection_fid.Peak_Detection_FID.baseline_correction">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">baseline_correction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chromatogram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings" title="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings"><span class="pre">Analysis_Settings</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#pygecko.gc_tools.peak.peak_detection_fid.Peak_Detection_FID.baseline_correction" title="Link to this definition"></a></dt>
+<dd><p>Returns a baseline corrected chromatogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>chromatogram</strong> (<em>np.ndarray</em>) – Chromatogram to correct.</p></li>
+<li><p><strong>analysis_settings</strong> (<a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings" title="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings"><em>Analysis_Settings</em></a>) – Data_Method object containing settings for the baseline correction.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Baseline corrected chromatogram.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.peak_detection_fid.Peak_Detection_FID.pick_peaks">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pick_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chromatogram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings" title="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings"><span class="pre">Analysis_Settings</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict[slice(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pygecko.gc_tools.peak.fid_peak.FID_Peak'&gt;,</span> <span class="pre">None)]</span></span></span><a class="headerlink" href="#pygecko.gc_tools.peak.peak_detection_fid.Peak_Detection_FID.pick_peaks" title="Link to this definition"></a></dt>
+<dd><p>Returns a dictionary of FID peaks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>chromatogram</strong> (<em>np.ndarray</em>) – Chromatogram to detect peaks in.</p></li>
+<li><p><strong>analysis_settings</strong> (<a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings" title="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings"><em>Analysis_Settings</em></a>) – Data_Method object containing settings for the peak detection.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>FID_Peak]: Dictionary of FID peaks.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygecko.gc_tools.peak.peak_detection_ms">
+<span id="pygecko-gc-tools-peak-peak-detection-ms-module"></span><h2>pygecko.gc_tools.peak.peak_detection_ms module<a class="headerlink" href="#module-pygecko.gc_tools.peak.peak_detection_ms" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.peak_detection_ms.Peak_Detection_MS">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.peak.peak_detection_ms.</span></span><span class="sig-name descname"><span class="pre">Peak_Detection_MS</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.peak_detection_ms.Peak_Detection_MS" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class wrapping functions to detect peaks in MS chromatograms.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.peak_detection_ms.Peak_Detection_MS.pick_peaks">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pick_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chromatogram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scans</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings" title="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings"><span class="pre">Analysis_Settings</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict[slice(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pygecko.gc_tools.peak.ms_peak.MS_Peak'&gt;,</span> <span class="pre">None)]</span></span></span><a class="headerlink" href="#pygecko.gc_tools.peak.peak_detection_ms.Peak_Detection_MS.pick_peaks" title="Link to this definition"></a></dt>
+<dd><p>Returns a dictionary of MS peaks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>chromatogram</strong> (<em>np.ndarray</em>) – Chromatogram to detect peaks in.</p></li>
+<li><p><strong>scans</strong> (<em>pd.DataFrame</em>) – Mass traces of the chromatogram.</p></li>
+<li><p><strong>data_method</strong> (<a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings" title="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings"><em>Analysis_Settings</em></a>) – Data_Method object containing settings for the peak detection.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>MS_Peak]: Dictionary of MS peaks.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygecko.gc_tools.peak">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pygecko.gc_tools.peak" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Felix Katzenburg.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

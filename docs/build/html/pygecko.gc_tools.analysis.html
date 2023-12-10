@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pygecko.gc_tools.analysis package &mdash; pyGecko 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pyGecko
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">pygecko.gc_tools.analysis package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-pygecko.gc_tools.analysis.analysis_settings">pygecko.gc_tools.analysis.analysis_settings module</a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings</span></code></a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.sn"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.sn</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.time_range"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.time_range</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.indices_range"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.indices_range</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.width"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.width</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.prominence"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.prominence</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.trace_prominence"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.trace_prominence</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.height"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.height</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.savgol_window"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.savgol_window</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.max_half_window"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.max_half_window</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.boarder_threshold"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.boarder_threshold</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.boarder_window"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.boarder_window</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.scan_rate"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.scan_rate</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.boarder_threshold</span></code></a></li>
+<li><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.boarder_window</span></code></a></li>
+<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.height</span></code></a></li>
+<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.indices_range</span></code></a></li>
+<li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.max_half_window</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.pop"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.pop()</span></code></a></li>
+<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.prominence</span></code></a></li>
+<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.savgol_window</span></code></a></li>
+<li><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.scan_rate</span></code></a></li>
+<li><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.sn</span></code></a></li>
+<li><a class="reference internal" href="#id9"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.time_range</span></code></a></li>
+<li><a class="reference internal" href="#id10"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.trace_prominence</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.update"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.update()</span></code></a></li>
+<li><a class="reference internal" href="#id11"><code class="docutils literal notranslate"><span class="pre">Analysis_Settings.width</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.gc_tools.analysis.quantification">pygecko.gc_tools.analysis.quantification module</a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.quantification.Quantification"><code class="docutils literal notranslate"><span class="pre">Quantification</span></code></a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.quantification.Quantification.quantify_calibration"><code class="docutils literal notranslate"><span class="pre">Quantification.quantify_calibration()</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.quantification.Quantification.quantify_polyarc"><code class="docutils literal notranslate"><span class="pre">Quantification.quantify_polyarc()</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.quantification.Quantification.quantify_ratio"><code class="docutils literal notranslate"><span class="pre">Quantification.quantify_ratio()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.gc_tools.analysis.retention_indices">pygecko.gc_tools.analysis.retention_indices module</a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.retention_indices.RI_Calibration"><code class="docutils literal notranslate"><span class="pre">RI_Calibration</span></code></a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.calibration"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.calibration</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.alkanes"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.alkanes</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.gradient"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.gradient</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.intercept"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.intercept</span></code></a></li>
+<li><a class="reference internal" href="#id12"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.alkanes</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.assign_ris"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.assign_ris()</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.calculate_ri"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.calculate_ri()</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.calculate_ri_fit"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.calculate_ri_fit()</span></code></a></li>
+<li><a class="reference internal" href="#id13"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.calibration</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.detector"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.detector</span></code></a></li>
+<li><a class="reference internal" href="#id14"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.gradient</span></code></a></li>
+<li><a class="reference internal" href="#id15"><code class="docutils literal notranslate"><span class="pre">RI_Calibration.intercept</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.gc_tools.analysis.spectral_matching">pygecko.gc_tools.analysis.spectral_matching module</a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.spectral_matching.Spectral_Match"><code class="docutils literal notranslate"><span class="pre">Spectral_Match</span></code></a><ul>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.spectral_matching.Spectral_Match.peaks"><code class="docutils literal notranslate"><span class="pre">Spectral_Match.peaks</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.spectral_matching.Spectral_Match.ms_score"><code class="docutils literal notranslate"><span class="pre">Spectral_Match.ms_score</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.spectral_matching.Spectral_Match.rt_score"><code class="docutils literal notranslate"><span class="pre">Spectral_Match.rt_score</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.analysis.spectral_matching.Spectral_Match.match_peaks"><code class="docutils literal notranslate"><span class="pre">Spectral_Match.match_peaks()</span></code></a></li>
+<li><a class="reference internal" href="#id16"><code class="docutils literal notranslate"><span class="pre">Spectral_Match.ms_score</span></code></a></li>
+<li><a class="reference internal" href="#id17"><code class="docutils literal notranslate"><span class="pre">Spectral_Match.peaks</span></code></a></li>
+<li><a class="reference internal" href="#id18"><code class="docutils literal notranslate"><span class="pre">Spectral_Match.rt_score</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.gc_tools.analysis">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyGecko</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pygecko.gc_tools.analysis package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pygecko.gc_tools.analysis.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pygecko-gc-tools-analysis-package">
+<h1>pygecko.gc_tools.analysis package<a class="headerlink" href="#pygecko-gc-tools-analysis-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-pygecko.gc_tools.analysis.analysis_settings">
+<span id="pygecko-gc-tools-analysis-analysis-settings-module"></span><h2>pygecko.gc_tools.analysis.analysis_settings module<a class="headerlink" href="#module-pygecko.gc_tools.analysis.analysis_settings" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.analysis.analysis_settings.</span></span><span class="sig-name descname"><span class="pre">Analysis_Settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chromatogram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Analysis_Settings class for storing information about parameters for raw data processing.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.sn">
+<span class="sig-name descname"><span class="pre">sn</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.sn" title="Link to this definition"></a></dt>
+<dd><p>Signal to noise ratio for peak detection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.time_range">
+<span class="sig-name descname"><span class="pre">time_range</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.time_range" title="Link to this definition"></a></dt>
+<dd><p>Time range for peak detection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.indices_range">
+<span class="sig-name descname"><span class="pre">indices_range</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.indices_range" title="Link to this definition"></a></dt>
+<dd><p>Indices range for peak detection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.width">
+<span class="sig-name descname"><span class="pre">width</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.width" title="Link to this definition"></a></dt>
+<dd><p>Width for peak detection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.prominence">
+<span class="sig-name descname"><span class="pre">prominence</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.prominence" title="Link to this definition"></a></dt>
+<dd><p>Prominence for peak detection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.trace_prominence">
+<span class="sig-name descname"><span class="pre">trace_prominence</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.trace_prominence" title="Link to this definition"></a></dt>
+<dd><p>Prominence for peak detection on individual mass traces.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.height">
+<span class="sig-name descname"><span class="pre">height</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.height" title="Link to this definition"></a></dt>
+<dd><p>Height for peak detection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.savgol_window">
+<span class="sig-name descname"><span class="pre">savgol_window</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.savgol_window" title="Link to this definition"></a></dt>
+<dd><p>Window size for Savitzky-Golay filter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.max_half_window">
+<span class="sig-name descname"><span class="pre">max_half_window</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.max_half_window" title="Link to this definition"></a></dt>
+<dd><p>Maximum half window size for Snip algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.boarder_threshold">
+<span class="sig-name descname"><span class="pre">boarder_threshold</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.boarder_threshold" title="Link to this definition"></a></dt>
+<dd><p>Threshold for boarder detection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.boarder_window">
+<span class="sig-name descname"><span class="pre">boarder_window</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.boarder_window" title="Link to this definition"></a></dt>
+<dd><p>Window size for boarder detection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.scan_rate">
+<span class="sig-name descname"><span class="pre">scan_rate</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.scan_rate" title="Link to this definition"></a></dt>
+<dd><p>Scan rate of chromatogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">boarder_threshold</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">boarder_window</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">indices_range</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">max_half_window</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.pop">
+<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.pop" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">prominence</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">savgol_window</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">scan_rate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">sn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">time_range</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">trace_prominence</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings.update" title="Link to this definition"></a></dt>
+<dd><p>Updates settings by setting the keyword arguments after checking.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Keyword arguments for settings.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygecko.gc_tools.analysis.quantification">
+<span id="pygecko-gc-tools-analysis-quantification-module"></span><h2>pygecko.gc_tools.analysis.quantification module<a class="headerlink" href="#module-pygecko.gc_tools.analysis.quantification" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.quantification.Quantification">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.analysis.quantification.</span></span><span class="sig-name descname"><span class="pre">Quantification</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.quantification.Quantification" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class wrapping functions for calculating yields based on peak areas.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.quantification.Quantification.quantify_calibration">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quantify_calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak" title="pygecko.gc_tools.peak.fid_peak.FID_Peak"><span class="pre">FID_Peak</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">standard</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak" title="pygecko.gc_tools.peak.fid_peak.FID_Peak"><span class="pre">FID_Peak</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intercept</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.quantification.Quantification.quantify_calibration" title="Link to this definition"></a></dt>
+<dd><p>Returns the relative quantity of an analyte based on a calibration curve.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>peak</strong> (<a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak" title="pygecko.gc_tools.peak.fid_peak.FID_Peak"><em>FID_Peak</em></a>) – Peak to calculate the relative quantity for.</p></li>
+<li><p><strong>standard</strong> (<a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak" title="pygecko.gc_tools.peak.fid_peak.FID_Peak"><em>FID_Peak</em></a>) – Standard peak to use for quantification.</p></li>
+<li><p><strong>slope</strong> (<em>float</em>) – Slope of the calibration curve.</p></li>
+<li><p><strong>intercept</strong> (<em>float</em>) – Intercept of the calibration curve.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Relative quantity of analyte.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a href="#id19"><span class="problematic" id="id20">yield_</span></a> (int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.quantification.Quantification.quantify_polyarc">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quantify_polyarc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak" title="pygecko.gc_tools.peak.fid_peak.FID_Peak"><span class="pre">FID_Peak</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">std_peak</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak" title="pygecko.gc_tools.peak.fid_peak.FID_Peak"><span class="pre">FID_Peak</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.quantification.Quantification.quantify_polyarc" title="Link to this definition"></a></dt>
+<dd><p>Returns the relative quantity of an analyte based on the ratio of the analytes carbon-normalized peak area to
+the carbon-normalized peak area of a standard.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>peak</strong> – Peak to calculate the relative quantity for.</p></li>
+<li><p><strong>std_peak</strong> – Standard peak to use for quantification.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Relative quantity of analyte.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a href="#id21"><span class="problematic" id="id22">yield_</span></a> (int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.quantification.Quantification.quantify_ratio">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quantify_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak" title="pygecko.gc_tools.peak.fid_peak.FID_Peak"><span class="pre">FID_Peak</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">standard</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak" title="pygecko.gc_tools.peak.fid_peak.FID_Peak"><span class="pre">FID_Peak</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.quantification.Quantification.quantify_ratio" title="Link to this definition"></a></dt>
+<dd><p>Returns the relative quantity of an analyte based on the ratio of the analytes peak area to the peak area of a
+standard.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>peak</strong> (<a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak" title="pygecko.gc_tools.peak.fid_peak.FID_Peak"><em>FID_Peak</em></a>) – Peak to calculate the relative quantity for.</p></li>
+<li><p><strong>standard</strong> (<a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.fid_peak.FID_Peak" title="pygecko.gc_tools.peak.fid_peak.FID_Peak"><em>FID_Peak</em></a>) – Standard peak to use for quantification.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Relative quantity of analyte.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a href="#id23"><span class="problematic" id="id24">yield_</span></a> (int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygecko.gc_tools.analysis.retention_indices">
+<span id="pygecko-gc-tools-analysis-retention-indices-module"></span><h2>pygecko.gc_tools.analysis.retention_indices module<a class="headerlink" href="#module-pygecko.gc_tools.analysis.retention_indices" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.retention_indices.RI_Calibration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.analysis.retention_indices.</span></span><span class="sig-name descname"><span class="pre">RI_Calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection" title="pygecko.gc_tools.injection.fid_injection.FID_Injection"><span class="pre">FID_Injection</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.ms_injection.MS_Injection" title="pygecko.gc_tools.injection.ms_injection.MS_Injection"><span class="pre">MS_Injection</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.gc_tools.analysis.retention_indices.RI_Calibration" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence" title="pygecko.gc_tools.sequence.gc_sequence.GC_Sequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">GC_Sequence</span></code></a></p>
+<p>A class for storing information about a retention index calibration and calculating retention indices.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.retention_indices.RI_Calibration.calibration">
+<span class="sig-name descname"><span class="pre">calibration</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.calibration" title="Link to this definition"></a></dt>
+<dd><p>Calibration injection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection" title="pygecko.gc_tools.injection.injection.Injection">Injection</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.retention_indices.RI_Calibration.alkanes">
+<span class="sig-name descname"><span class="pre">alkanes</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.alkanes" title="Link to this definition"></a></dt>
+<dd><p>Array of alkanes with columns for smiles, carbon count and retention time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.retention_indices.RI_Calibration.gradient">
+<span class="sig-name descname"><span class="pre">gradient</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.gradient" title="Link to this definition"></a></dt>
+<dd><p>Gradient of the linear fit of the calibration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.retention_indices.RI_Calibration.intercept">
+<span class="sig-name descname"><span class="pre">intercept</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.intercept" title="Link to this definition"></a></dt>
+<dd><p>Intercept of the linear fit of the calibration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">alkanes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.retention_indices.RI_Calibration.assign_ris">
+<span class="sig-name descname"><span class="pre">assign_ris</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gc_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection" title="pygecko.gc_tools.injection.injection.Injection"><span class="pre">Injection</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence" title="pygecko.gc_tools.sequence.gc_sequence.GC_Sequence"><span class="pre">GC_Sequence</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">alignment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.assign_ris" title="Link to this definition"></a></dt>
+<dd><p>Assigns retention indices to peaks in a GC_Sequence or Injection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gc_data</strong> (<a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.injection.Injection" title="pygecko.gc_tools.injection.injection.Injection"><em>Injection</em></a><em>|</em><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.gc_sequence.GC_Sequence" title="pygecko.gc_tools.sequence.gc_sequence.GC_Sequence"><em>GC_Sequence</em></a>) – GC_Sequence or Injection to assign retention indices to.</p></li>
+<li><p><strong>alignment</strong> (<em>bool</em>) – If True, retention times are aligned to the internal standard. Default is False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.retention_indices.RI_Calibration.calculate_ri">
+<span class="sig-name descname"><span class="pre">calculate_ri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.peak.Peak" title="pygecko.gc_tools.peak.peak.Peak"><span class="pre">Peak</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">align_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.calculate_ri" title="Link to this definition"></a></dt>
+<dd><p>Returns the retention index for a given peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>peak</strong> (<a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.peak.Peak" title="pygecko.gc_tools.peak.peak.Peak"><em>Peak</em></a>) – Peak to calculate the retention index for.</p></li>
+<li><p><strong>align_factor</strong> (<em>float</em>) – Alignment factor for the retention time. Default is 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Retention index.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ri (float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.retention_indices.RI_Calibration.calculate_ri_fit">
+<span class="sig-name descname"><span class="pre">calculate_ri_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.calculate_ri_fit" title="Link to this definition"></a></dt>
+<dd><p>Returns the retention index for a given retention time calculated using the linear fit of the calibration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rt</strong> (<em>float</em>) – Retention time.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Retention index.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ri (float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id13">
+<span class="sig-name descname"><span class="pre">calibration</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection" title="pygecko.gc_tools.injection.fid_injection.FID_Injection"><span class="pre">FID_Injection</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.ms_injection.MS_Injection" title="pygecko.gc_tools.injection.ms_injection.MS_Injection"><span class="pre">MS_Injection</span></a></em><a class="headerlink" href="#id13" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.retention_indices.RI_Calibration.detector">
+<span class="sig-name descname"><span class="pre">detector</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pygecko.gc_tools.analysis.retention_indices.RI_Calibration.detector" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id14">
+<span class="sig-name descname"><span class="pre">gradient</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id14" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id15">
+<span class="sig-name descname"><span class="pre">intercept</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id15" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygecko.gc_tools.analysis.spectral_matching">
+<span id="pygecko-gc-tools-analysis-spectral-matching-module"></span><h2>pygecko.gc_tools.analysis.spectral_matching module<a class="headerlink" href="#module-pygecko.gc_tools.analysis.spectral_matching" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.spectral_matching.Spectral_Match">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.analysis.spectral_matching.</span></span><span class="sig-name descname"><span class="pre">Spectral_Match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peaks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.ms_peak.MS_Peak" title="pygecko.gc_tools.peak.ms_peak.MS_Peak"><span class="pre">MS_Peak</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.ms_peak.MS_Peak" title="pygecko.gc_tools.peak.ms_peak.MS_Peak"><span class="pre">MS_Peak</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ms_score</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rt_score</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.gc_tools.analysis.spectral_matching.Spectral_Match" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class to represent a match between two mass spectra.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.spectral_matching.Spectral_Match.peaks">
+<span class="sig-name descname"><span class="pre">peaks</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.spectral_matching.Spectral_Match.peaks" title="Link to this definition"></a></dt>
+<dd><p>Tuple containing the matched peaks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[<a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.ms_peak.MS_Peak" title="pygecko.gc_tools.peak.ms_peak.MS_Peak">MS_Peak</a>, <a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.ms_peak.MS_Peak" title="pygecko.gc_tools.peak.ms_peak.MS_Peak">MS_Peak</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.spectral_matching.Spectral_Match.ms_score">
+<span class="sig-name descname"><span class="pre">ms_score</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.spectral_matching.Spectral_Match.ms_score" title="Link to this definition"></a></dt>
+<dd><p>Score of the match based on the cosine similarity of the mass spectra.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.spectral_matching.Spectral_Match.rt_score">
+<span class="sig-name descname"><span class="pre">rt_score</span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.spectral_matching.Spectral_Match.rt_score" title="Link to this definition"></a></dt>
+<dd><p>Score of the match based on the difference in retention time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.gc_tools.analysis.spectral_matching.Spectral_Match.match_peaks">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">match_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.ms_peak.MS_Peak" title="pygecko.gc_tools.peak.ms_peak.MS_Peak"><span class="pre">MS_Peak</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">peak2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.ms_peak.MS_Peak" title="pygecko.gc_tools.peak.ms_peak.MS_Peak"><span class="pre">MS_Peak</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rt_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ms_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#pygecko.gc_tools.analysis.spectral_matching.Spectral_Match.match_peaks" title="Link to this definition"></a></dt>
+<dd><p>Returns a Spectral_Match object if the peaks match and None otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>peak1</strong> (<a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.ms_peak.MS_Peak" title="pygecko.gc_tools.peak.ms_peak.MS_Peak"><em>MS_Peak</em></a>) – First peak to compare.</p></li>
+<li><p><strong>peak2</strong> (<a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.ms_peak.MS_Peak" title="pygecko.gc_tools.peak.ms_peak.MS_Peak"><em>MS_Peak</em></a>) – Second peak to compare.</p></li>
+<li><p><strong>rt_threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – Retention time threshold for the match. Defaults to 0.1.</p></li>
+<li><p><strong>ms_threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – Mass spectrum similarity threshold for the match. Defaults to 0.9.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Spectral_Match object if the peaks match and None otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pygecko.gc_tools.analysis.spectral_matching.Spectral_Match" title="pygecko.gc_tools.analysis.spectral_matching.Spectral_Match">Spectral_Match</a>|None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id16">
+<span class="sig-name descname"><span class="pre">ms_score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id16" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id17">
+<span class="sig-name descname"><span class="pre">peaks</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.ms_peak.MS_Peak" title="pygecko.gc_tools.peak.ms_peak.MS_Peak"><span class="pre">MS_Peak</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pygecko.gc_tools.peak.html#pygecko.gc_tools.peak.ms_peak.MS_Peak" title="pygecko.gc_tools.peak.ms_peak.MS_Peak"><span class="pre">MS_Peak</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#id17" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id18">
+<span class="sig-name descname"><span class="pre">rt_score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id18" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygecko.gc_tools.analysis">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pygecko.gc_tools.analysis" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Felix Katzenburg.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pygecko.reaction package &mdash; pyGecko 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pyGecko
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">pygecko.reaction package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-pygecko.reaction.layout">pygecko.reaction.layout module</a><ul>
+<li><a class="reference internal" href="#pygecko.reaction.layout.Combinatorial_Layout"><code class="docutils literal notranslate"><span class="pre">Combinatorial_Layout</span></code></a><ul>
+<li><a class="reference internal" href="#pygecko.reaction.layout.Combinatorial_Layout.layout"><code class="docutils literal notranslate"><span class="pre">Combinatorial_Layout.layout</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.reaction.layout.Combinatorial_Layout.transformation"><code class="docutils literal notranslate"><span class="pre">Combinatorial_Layout.transformation</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.reaction.layout.Combinatorial_Layout.meta_data"><code class="docutils literal notranslate"><span class="pre">Combinatorial_Layout.meta_data</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.reaction.layout.Combinatorial_Layout.dimensions"><code class="docutils literal notranslate"><span class="pre">Combinatorial_Layout.dimensions</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.reaction.layout.Combinatorial_Layout.array"><code class="docutils literal notranslate"><span class="pre">Combinatorial_Layout.array</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">Combinatorial_Layout.array</span></code></a></li>
+<li><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">Combinatorial_Layout.dimensions</span></code></a></li>
+<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">Combinatorial_Layout.layout</span></code></a></li>
+<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">Combinatorial_Layout.meta_data</span></code></a></li>
+<li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">Combinatorial_Layout.transformation</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.reaction.reaction_parser">pygecko.reaction.reaction_parser module</a><ul>
+<li><a class="reference internal" href="#pygecko.reaction.reaction_parser.Reaction_Parser"><code class="docutils literal notranslate"><span class="pre">Reaction_Parser</span></code></a><ul>
+<li><a class="reference internal" href="#pygecko.reaction.reaction_parser.Reaction_Parser.build_dataset"><code class="docutils literal notranslate"><span class="pre">Reaction_Parser.build_dataset()</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.reaction.reaction_parser.Reaction_Parser.create_dataset_from_layout"><code class="docutils literal notranslate"><span class="pre">Reaction_Parser.create_dataset_from_layout()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.reaction.transformation">pygecko.reaction.transformation module</a><ul>
+<li><a class="reference internal" href="#pygecko.reaction.transformation.Transformation"><code class="docutils literal notranslate"><span class="pre">Transformation</span></code></a><ul>
+<li><a class="reference internal" href="#pygecko.reaction.transformation.Transformation.rxn_smarts"><code class="docutils literal notranslate"><span class="pre">Transformation.rxn_smarts</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.reaction.transformation.Transformation.transform"><code class="docutils literal notranslate"><span class="pre">Transformation.transform</span></code></a></li>
+<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">Transformation.rxn_smarts</span></code></a></li>
+<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">Transformation.transform</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.reaction.utilities">pygecko.reaction.utilities module</a><ul>
+<li><a class="reference internal" href="#pygecko.reaction.utilities.get_num_substrates"><code class="docutils literal notranslate"><span class="pre">get_num_substrates()</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.reaction.utilities.read_json"><code class="docutils literal notranslate"><span class="pre">read_json()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.reaction.well_plate">pygecko.reaction.well_plate module</a><ul>
+<li><a class="reference internal" href="#pygecko.reaction.well_plate.Well_Plate"><code class="docutils literal notranslate"><span class="pre">Well_Plate</span></code></a><ul>
+<li><a class="reference internal" href="#pygecko.reaction.well_plate.Well_Plate.design"><code class="docutils literal notranslate"><span class="pre">Well_Plate.design</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.reaction.well_plate.Well_Plate.rows"><code class="docutils literal notranslate"><span class="pre">Well_Plate.rows</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.reaction.well_plate.Well_Plate.columns"><code class="docutils literal notranslate"><span class="pre">Well_Plate.columns</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.reaction.well_plate.Well_Plate.array"><code class="docutils literal notranslate"><span class="pre">Well_Plate.array</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.reaction.well_plate.Well_Plate.dimensions"><code class="docutils literal notranslate"><span class="pre">Well_Plate.dimensions</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.reaction.well_plate.Well_Plate.get_product"><code class="docutils literal notranslate"><span class="pre">Well_Plate.get_product()</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.reaction.well_plate.Well_Plate.get_product_mw"><code class="docutils literal notranslate"><span class="pre">Well_Plate.get_product_mw()</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.reaction.well_plate.Well_Plate.get_product_mz"><code class="docutils literal notranslate"><span class="pre">Well_Plate.get_product_mz()</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.reaction.well_plate.Well_Plate.get_substrate"><code class="docutils literal notranslate"><span class="pre">Well_Plate.get_substrate()</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.reaction.well_plate.Well_Plate.layout"><code class="docutils literal notranslate"><span class="pre">Well_Plate.layout</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.reaction.well_plate.Well_Plate.meta_data"><code class="docutils literal notranslate"><span class="pre">Well_Plate.meta_data</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.reaction.well_plate.Well_Plate.transformation"><code class="docutils literal notranslate"><span class="pre">Well_Plate.transformation</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pygecko.reaction">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyGecko</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pygecko.reaction package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pygecko.reaction.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pygecko-reaction-package">
+<h1>pygecko.reaction package<a class="headerlink" href="#pygecko-reaction-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-pygecko.reaction.layout">
+<span id="pygecko-reaction-layout-module"></span><h2>pygecko.reaction.layout module<a class="headerlink" href="#module-pygecko.reaction.layout" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.reaction.layout.Combinatorial_Layout">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.reaction.layout.</span></span><span class="sig-name descname"><span class="pre">Combinatorial_Layout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layout_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta_data_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transformation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygecko.reaction.transformation.Transformation" title="pygecko.reaction.transformation.Transformation"><span class="pre">Transformation</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.reaction.layout.Combinatorial_Layout" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class for storing information about a combinatorial reaction layout.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.reaction.layout.Combinatorial_Layout.layout">
+<span class="sig-name descname"><span class="pre">layout</span></span><a class="headerlink" href="#pygecko.reaction.layout.Combinatorial_Layout.layout" title="Link to this definition"></a></dt>
+<dd><p>DataFrame containing the combinatorial dimensions of the layout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.reaction.layout.Combinatorial_Layout.transformation">
+<span class="sig-name descname"><span class="pre">transformation</span></span><a class="headerlink" href="#pygecko.reaction.layout.Combinatorial_Layout.transformation" title="Link to this definition"></a></dt>
+<dd><p>Transformation object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pygecko.reaction.transformation.Transformation" title="pygecko.reaction.transformation.Transformation">Transformation</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.reaction.layout.Combinatorial_Layout.meta_data">
+<span class="sig-name descname"><span class="pre">meta_data</span></span><a class="headerlink" href="#pygecko.reaction.layout.Combinatorial_Layout.meta_data" title="Link to this definition"></a></dt>
+<dd><p>Dictionary containing the metadata of the layout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.reaction.layout.Combinatorial_Layout.dimensions">
+<span class="sig-name descname"><span class="pre">dimensions</span></span><a class="headerlink" href="#pygecko.reaction.layout.Combinatorial_Layout.dimensions" title="Link to this definition"></a></dt>
+<dd><p>Number of dimensions of the layout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.reaction.layout.Combinatorial_Layout.array">
+<span class="sig-name descname"><span class="pre">array</span></span><a class="headerlink" href="#pygecko.reaction.layout.Combinatorial_Layout.array" title="Link to this definition"></a></dt>
+<dd><p>A numpy array containing the layout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">array</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">dimensions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">layout</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">meta_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">transformation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#pygecko.reaction.transformation.Transformation" title="pygecko.reaction.transformation.Transformation"><span class="pre">Transformation</span></a></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygecko.reaction.reaction_parser">
+<span id="pygecko-reaction-reaction-parser-module"></span><h2>pygecko.reaction.reaction_parser module<a class="headerlink" href="#module-pygecko.reaction.reaction_parser" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.reaction.reaction_parser.Reaction_Parser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.reaction.reaction_parser.</span></span><span class="sig-name descname"><span class="pre">Reaction_Parser</span></span><a class="headerlink" href="#pygecko.reaction.reaction_parser.Reaction_Parser" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class wrapping the functionality of the ord-schema library of the open reaction database to create a dataset from
+a combinatorial reaction layout.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.reaction.reaction_parser.Reaction_Parser.build_dataset">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygecko.reaction.well_plate.Well_Plate" title="pygecko.reaction.well_plate.Well_Plate"><span class="pre">Well_Plate</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#pygecko.reaction.reaction_parser.Reaction_Parser.build_dataset" title="Link to this definition"></a></dt>
+<dd><p>Returns a ORD dataset created from a combinatorial reaction layout and writes it to a file if a path is given.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layout</strong> (<a class="reference internal" href="#pygecko.reaction.well_plate.Well_Plate" title="pygecko.reaction.well_plate.Well_Plate"><em>Well_Plate</em></a>) – Well_Plate object containing the combinatorial reaction layout.</p></li>
+<li><p><strong>results_df</strong> (<em>pd.DataFrame</em>) – DataFrame containing the results of the reactions.</p></li>
+<li><p><strong>path</strong> (<em>str</em><em>|</em><em>None</em><em>, </em><em>optional</em>) – Path to write the dataset to. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ORD dataset created from the combinatorial reaction layout.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dataset_pb2.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.reaction.reaction_parser.Reaction_Parser.create_dataset_from_layout">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_dataset_from_layout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygecko.reaction.well_plate.Well_Plate" title="pygecko.reaction.well_plate.Well_Plate"><span class="pre">Well_Plate</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#pygecko.reaction.reaction_parser.Reaction_Parser.create_dataset_from_layout" title="Link to this definition"></a></dt>
+<dd><p>Returns a ORD dataset created from a combinatorial reaction layout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layout</strong> (<a class="reference internal" href="#pygecko.reaction.well_plate.Well_Plate" title="pygecko.reaction.well_plate.Well_Plate"><em>Well_Plate</em></a>) – Well_Plate object containing the combinatorial reaction layout.</p></li>
+<li><p><strong>results_df</strong> – DataFrame containing the results of the reactions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ORD dataset created from the combinatorial reaction layout.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dataset_pb2.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygecko.reaction.transformation">
+<span id="pygecko-reaction-transformation-module"></span><h2>pygecko.reaction.transformation module<a class="headerlink" href="#module-pygecko.reaction.transformation" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.reaction.transformation.Transformation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.reaction.transformation.</span></span><span class="sig-name descname"><span class="pre">Transformation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rxn_smarts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.reaction.transformation.Transformation" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class for storing information about a chemical transformation.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.reaction.transformation.Transformation.rxn_smarts">
+<span class="sig-name descname"><span class="pre">rxn_smarts</span></span><a class="headerlink" href="#pygecko.reaction.transformation.Transformation.rxn_smarts" title="Link to this definition"></a></dt>
+<dd><p>Reaction SMARTS string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.reaction.transformation.Transformation.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><a class="headerlink" href="#pygecko.reaction.transformation.Transformation.transform" title="Link to this definition"></a></dt>
+<dd><p>RDKit ChemicalReaction object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rdkit ChemicalReaction object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">rxn_smarts</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">transform</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ChemicalReaction</span></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygecko.reaction.utilities">
+<span id="pygecko-reaction-utilities-module"></span><h2>pygecko.reaction.utilities module<a class="headerlink" href="#module-pygecko.reaction.utilities" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pygecko.reaction.utilities.get_num_substrates">
+<span class="sig-prename descclassname"><span class="pre">pygecko.reaction.utilities.</span></span><span class="sig-name descname"><span class="pre">get_num_substrates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rxn_smarts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#pygecko.reaction.utilities.get_num_substrates" title="Link to this definition"></a></dt>
+<dd><p>Returns the number of substrates in a reaction SMARTS string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rxn_smarts</strong> (<em>str</em>) – Reaction SMARTS string.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Number of substrates in the reaction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pygecko.reaction.utilities.read_json">
+<span class="sig-prename descclassname"><span class="pre">pygecko.reaction.utilities.</span></span><span class="sig-name descname"><span class="pre">read_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pygecko.reaction.utilities.read_json" title="Link to this definition"></a></dt>
+<dd><p>Takes a filename of a JSON file and returns the contents of the file as a dictionary.</p>
+</dd></dl>
+
+</section>
+<section id="module-pygecko.reaction.well_plate">
+<span id="pygecko-reaction-well-plate-module"></span><h2>pygecko.reaction.well_plate module<a class="headerlink" href="#module-pygecko.reaction.well_plate" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.reaction.well_plate.Well_Plate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.reaction.well_plate.</span></span><span class="sig-name descname"><span class="pre">Well_Plate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layout_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transformation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygecko.reaction.transformation.Transformation" title="pygecko.reaction.transformation.Transformation"><span class="pre">Transformation</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta_data_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.reaction.well_plate.Well_Plate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pygecko.reaction.layout.Combinatorial_Layout" title="pygecko.reaction.layout.Combinatorial_Layout"><code class="xref py py-class docutils literal notranslate"><span class="pre">Combinatorial_Layout</span></code></a></p>
+<p>A class for storing information about a combinatorial reaction layout in a well plate.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.reaction.well_plate.Well_Plate.design">
+<span class="sig-name descname"><span class="pre">design</span></span><a class="headerlink" href="#pygecko.reaction.well_plate.Well_Plate.design" title="Link to this definition"></a></dt>
+<dd><p>xarray DataArray containing the combinatorial design of the well plate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>xr.DataArray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.reaction.well_plate.Well_Plate.rows">
+<span class="sig-name descname"><span class="pre">rows</span></span><a class="headerlink" href="#pygecko.reaction.well_plate.Well_Plate.rows" title="Link to this definition"></a></dt>
+<dd><p>Dictionary containing the mapping of the well plate rows to the combinatorial dimensions of the</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">well</span> <span class="pre">plate.</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.reaction.well_plate.Well_Plate.columns">
+<span class="sig-name descname"><span class="pre">columns</span></span><a class="headerlink" href="#pygecko.reaction.well_plate.Well_Plate.columns" title="Link to this definition"></a></dt>
+<dd><p>Dictionary containing the mapping of the well plate columns to the combinatorial dimensions of</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">the</span> <span class="pre">well</span> <span class="pre">plate.</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.reaction.well_plate.Well_Plate.array">
+<span class="sig-name descname"><span class="pre">array</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">np.ndarray</span></em><a class="headerlink" href="#pygecko.reaction.well_plate.Well_Plate.array" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.reaction.well_plate.Well_Plate.dimensions">
+<span class="sig-name descname"><span class="pre">dimensions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#pygecko.reaction.well_plate.Well_Plate.dimensions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.reaction.well_plate.Well_Plate.get_product">
+<span class="sig-name descname"><span class="pre">get_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.reaction.well_plate.Well_Plate.get_product" title="Link to this definition"></a></dt>
+<dd><p>Returns the product of the reaction in the given position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pos</strong> (<em>str</em>) – Well position.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>SMILES string of the product.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.reaction.well_plate.Well_Plate.get_product_mw">
+<span class="sig-name descname"><span class="pre">get_product_mw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.reaction.well_plate.Well_Plate.get_product_mw" title="Link to this definition"></a></dt>
+<dd><p>Returns the molecular weight of the product in the given position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pos</strong> (<em>str</em>) – Well position.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Molecular weight of the product.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.reaction.well_plate.Well_Plate.get_product_mz">
+<span class="sig-name descname"><span class="pre">get_product_mz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.reaction.well_plate.Well_Plate.get_product_mz" title="Link to this definition"></a></dt>
+<dd><p>Returns the mass to charge ratio of the single charged product in the given position.
+:param pos: Well position.
+:type pos: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Mass to charge ratio of the single charged product.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.reaction.well_plate.Well_Plate.get_substrate">
+<span class="sig-name descname"><span class="pre">get_substrate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.reaction.well_plate.Well_Plate.get_substrate" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.reaction.well_plate.Well_Plate.layout">
+<span class="sig-name descname"><span class="pre">layout</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">pd.DataFrame</span></em><a class="headerlink" href="#pygecko.reaction.well_plate.Well_Plate.layout" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.reaction.well_plate.Well_Plate.meta_data">
+<span class="sig-name descname"><span class="pre">meta_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#pygecko.reaction.well_plate.Well_Plate.meta_data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.reaction.well_plate.Well_Plate.transformation">
+<span class="sig-name descname"><span class="pre">transformation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#pygecko.reaction.transformation.Transformation" title="pygecko.reaction.transformation.Transformation"><span class="pre">Transformation</span></a></em><a class="headerlink" href="#pygecko.reaction.well_plate.Well_Plate.transformation" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygecko.reaction">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pygecko.reaction" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Felix Katzenburg.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
