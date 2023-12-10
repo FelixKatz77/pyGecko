@@ -4,6 +4,7 @@ import numpy as np
 from pathlib import Path
 from datetime import datetime
 
+from pygecko.parsers.fid_base_parser import FID_Base_Parser
 from pygecko.gc_tools import FID_Sequence, FID_Injection, RI_Calibration
 
 
@@ -88,7 +89,7 @@ class Agilent_FID_Parser:
         metadata_array = list(root.iter(f'ArrayOfInjectionMetaData'))[0]
         metadata_element = list(metadata_array.iter('InjectionMetaData'))[0]
         injection_metadata = Agilent_FID_Parser.__get_injection_metadata(metadata_element)
-        xy_array = Agilent_FID_Parser.__read_xy_array(Path(xy_file))
+        xy_array = FID_Base_Parser.read_xy_array(Path(xy_file))
         injection = FID_Injection(injection_metadata, xy_array, solvent_delay)
         return injection
 
@@ -261,18 +262,11 @@ class Agilent_FID_Parser:
         xy_arrays = {}
         path = Path(xy_directory)
         for sample_name in sample_names:
-            xy_array = Agilent_FID_Parser.__read_xy_array(path.joinpath(f'{sample_name}.xy'))
+            file_path = list(path.glob(f'{sample_name}.*'))[0]
+            xy_array = FID_Base_Parser.read_xy_array(file_path)
             xy_arrays[sample_name] = xy_array
         return xy_arrays
 
-    @staticmethod
-    def __read_xy_array(path:Path) -> np.ndarray:
-
-        '''Takes in the path to a xy-file, returns the xy_array.'''
-
-        array = np.loadtxt(path)
-        array = np.transpose(array)
-        return array
 
     @staticmethod
     def __initialize_injections(injections_metadata: dict, xy_arrays: dict, solvent_delay:float, pos:bool=False) -> dict[str:FID_Injection]:

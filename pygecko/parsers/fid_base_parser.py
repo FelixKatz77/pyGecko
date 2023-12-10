@@ -43,14 +43,14 @@ class FID_Base_Parser:
         '''
 
         xy_file = Path(xy_file)
-        xy_array = FID_Base_Parser.__read_xy_array(xy_file)
+        xy_array = FID_Base_Parser.read_xy_array(xy_file)
         sample_name = xy_file.stem.split('.')[0]
         injection = FID_Injection({'SampleName':sample_name}, xy_array, solvent_delay, pos=pos)
         return injection
 
 
     @staticmethod
-    def __read_xy_array(path:Path) -> np.ndarray:
+    def read_xy_array(path:Path) -> np.ndarray:
 
         '''Takes in the path to a xy-file, returns the xy_array.'''
 
