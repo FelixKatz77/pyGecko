@@ -261,10 +261,15 @@ class Agilent_FID_Parser:
 
         xy_arrays = {}
         path = Path(xy_directory)
+        supported_formats = ['.xy', '.CSV']
         for sample_name in sample_names:
-            file_path = list(path.glob(f'{sample_name}.*'))[0]
-            xy_array = FID_Base_Parser.read_xy_array(file_path)
-            xy_arrays[sample_name] = xy_array
+            file_paths = list(path.glob(f'{sample_name}*.*'))
+            file_paths = list(filter(lambda x: x.suffix in supported_formats, file_paths))
+            xy_array = FID_Base_Parser.read_xy_array(file_paths[0])
+            if xy_array is not None:
+                xy_arrays[sample_name] = xy_array
+            else:
+                pass
         return xy_arrays
 
 

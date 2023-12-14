@@ -21,7 +21,10 @@ class FID_Base_Parser:
         '''
 
         xy_directory = Path(xy_directory)
-        xy_files = xy_directory.glob('*.xy') + xy_directory.glob('*.CSV')
+        supported_formats = ['.xy', '.CSV']
+        xy_files = []
+        for file_format in supported_formats:
+            xy_files.extend(xy_directory.glob(f'*{file_format}'))
         injections = {}
         for xy_file in xy_files:
             injection = FID_Base_Parser.load_injection(xy_file, solvent_delay, pos=pos)
@@ -50,14 +53,18 @@ class FID_Base_Parser:
 
 
     @staticmethod
-    def read_xy_array(path:Path) -> np.ndarray:
+    def read_xy_array(path:Path) -> np.ndarray|None:
 
         '''Takes in the path to a xy-file, returns the xy_array.'''
 
         if path.suffix == '.xy':
-            array = np.loadtxt(path, delimiter='\t')
+            array = np.transpose(np.loadtxt(path, delimiter='\t'))
+            return array
         elif path.suffix == '.CSV':
-            array = np.loadtxt(path, delimiter=',', converters={0: float})
-        array = np.transpose(array)
-        return array
+            array = np.transpose(np.loadtxt(path, delimiter=',', converters={0: float}))
+            return array
+        else:
+            print(f'Cannot read {path.name}: File format not supported.')
+            return None
+
 
