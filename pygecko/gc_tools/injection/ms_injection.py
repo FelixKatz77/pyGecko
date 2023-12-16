@@ -63,13 +63,15 @@ class MS_Injection(Injection):
         for rt, peak in self.peaks.items():
             if mz in peak.mass_spectrum['mz']:
                 index = np.where(peak.mass_spectrum['mz'] == mz)[0]
-                if peak.mass_spectrum['rel_intensity'][index][0] > 2:
-                    if self.__isotope_check(smiles, peak, mz):
-                        candidates[peak.mass_spectrum['rel_intensity'][index][0]] = peak
+                a = peak.mass_spectrum.size*(2/3)
+                if peak.mass_spectrum['rel_intensity'][index][0] > 2 and mz > peak.mass_spectrum['mz'].max()*(2/3): #TODO: Check if this is a good decision.
+                    isotope_error = self.__isotope_check(smiles, peak, mz)
+                    if isotope_error:
+                        candidates[isotope_error] = peak
         if candidates:
             if len(candidates) > 1:
                 print(f'Multiple peaks with m/z: {mz} were found for {self.sample_name}.')
-            peak = candidates[max(candidates)]
+            peak = candidates[min(candidates)]
             peak.analyte = Analyte(peak.rt, smiles=smiles)
             return peak
         return None
@@ -116,7 +118,7 @@ class MS_Injection(Injection):
         else:
             return peaks
 
-    def __isotope_check(self, smiles:str, peak:MS_Peak, mz:float) -> bool:
+    def __isotope_check(self, smiles:str, peak:MS_Peak, mz:float) -> float|None:
 
         '''
         Returns True if the isotope peak of a given m/z is present in the peak's mass spectrum and False otherwise.
@@ -127,20 +129,18 @@ class MS_Injection(Injection):
             mz (float): m/z to check.
 
         Returns:
-            bool: True if the isotope peak of a given m/z is present in the peak's mass spectrum and False otherwise.
+            float|None: The difference between the theoretical and the measured ratio of the isotope peak of a given m/z
+            if the difference is smaller than 5% and None otherwise.
         '''
 
         if 'Cl' in smiles or 'Br' in smiles:
             diff = 2
         else:
             diff = 1
-        if self.__isotopic_ratio_check(smiles, peak, mz, diff):
-            return True
-        else:
-            return False
+        return self.__isotopic_ratio_check(smiles, peak, mz, diff)
 
 
-    def __isotopic_ratio_check(self,smiles:str, peak:MS_Peak, mz:float, diff:int) -> bool:
+    def __isotopic_ratio_check(self,smiles:str, peak:MS_Peak, mz:float, diff:int) -> float|None:
 
         '''
         Returns True if the ratio of the isotope peak of a given m/z is within 6% of the theoretical ratio and False if
@@ -153,8 +153,8 @@ class MS_Injection(Injection):
             diff (int): Difference between the m/z of the isotope peak and the m/z of the peak to check.
 
         Returns:
-            bool: True if the ratio of the isotope peak of a given m/z is within 6% of the theoretical ratio and False
-            if otherwise.
+            float|None: The difference between the theoretical and the measured ratio of the isotope peak of a given m/z
+            if the difference is smaller than 5% and None otherwise.
         '''
 
         mol = Chem.MolFromSmiles(smiles)
@@ -168,9 +168,9 @@ class MS_Injection(Injection):
         isotopic_dist = isotopic_variants(mol_formula, npeaks=3, charge=0)
         theo_ratio = isotopic_dist[diff].intensity/isotopic_dist[0].intensity
         if (theo_ratio - 0.05) < ratio < (theo_ratio + 0.05):
-            return True
+            return abs(theo_ratio - ratio)
         else:
-            return False
+            return None
 
     def __get_mol_formula_dict(self, mol) -> dict:
 

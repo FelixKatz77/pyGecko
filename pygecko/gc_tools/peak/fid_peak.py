@@ -26,7 +26,7 @@ class FID_Peak(Peak):
 
 
     def __init__(self, rt: float, height: float, width: float, boarders: np.ndarray, area: float):
-        super().__init__(rt, area=area)
+        super().__init__(rt, height, area=area)
         self.height = height
         self.width = width
         self.boarders = boarders

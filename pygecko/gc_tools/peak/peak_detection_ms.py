@@ -13,7 +13,7 @@ class Peak_Detection_MS:
     '''
 
     @staticmethod
-    def pick_peaks(chromatogram: np.ndarray, scans: pd.DataFrame, data_method: Analysis_Settings) -> dict[float:MS_Peak]:
+    def pick_peaks(chromatogram: np.ndarray, scans: pd.DataFrame, analysis_settings: Analysis_Settings) -> dict[float:MS_Peak]:
 
         '''
         Returns a dictionary of MS peaks.
@@ -21,19 +21,19 @@ class Peak_Detection_MS:
         Args:
             chromatogram (np.ndarray): Chromatogram to detect peaks in.
             scans (pd.DataFrame): Mass traces of the chromatogram.
-            data_method (Analysis_Settings): Data_Method object containing settings for the peak detection.
+            analysis_settings (Analysis_Settings): Data_Method object containing settings for the peak detection.
 
         Returns:
             dict[float:MS_Peak]: Dictionary of MS peaks.
         '''
 
-        peak_indices, peak_rts, peak_heights = Peak_Detection_MS.__detect_peaks_scipy(chromatogram, data_method)
-        spectrums = Peak_Detection_MS.__extract_mass_spectrum(scans, peak_rts, peak_indices, data_method)
-        peaks = Peak_Detection_MS.__initialize_peaks(peak_rts, spectrums)
+        peak_indices, peak_rts, peak_heights = Peak_Detection_MS.__detect_peaks_scipy(chromatogram, analysis_settings)
+        spectra = Peak_Detection_MS.__extract_mass_spectrum(scans, peak_rts, peak_indices, analysis_settings)
+        peaks = Peak_Detection_MS.__initialize_peaks(peak_rts, peak_heights, spectra)
         return peaks
 
     @staticmethod
-    def __detect_peaks_scipy(chromatogram: np.ndarray, data_method: Analysis_Settings) -> tuple[
+    def __detect_peaks_scipy(chromatogram: np.ndarray, analysis_settings: Analysis_Settings) -> tuple[
         np.ndarray, np.ndarray, np.ndarray]:
 
         '''
@@ -41,7 +41,7 @@ class Peak_Detection_MS:
 
         Args:
             chromatogram (np.ndarray): Chromatogram to detect peaks in.
-            data_method (Analysis_Settings): Data_Method object containing settings for the peak detection.
+            analysis_settings (Analysis_Settings): Data_Method object containing settings for the peak detection.
 
         Returns:
             tuple[np.ndarray, np.ndarray, np.ndarray]: Peak indices, retention times and heights.
@@ -50,9 +50,10 @@ class Peak_Detection_MS:
         index = chromatogram[0]
         chromatogram = chromatogram[1]
 
-        min_height = data_method.pop('height', np.min(chromatogram) * 50)
-        prominence = data_method.pop('prominence', np.median(chromatogram))
-        width = data_method.pop('width', 0)
+        min_height = analysis_settings.pop('height', np.min(chromatogram) * 50)
+        prominence = analysis_settings.pop('prominence_ms', 1)
+        prominence = np.median(chromatogram) * prominence
+        width = analysis_settings.pop('width', 0)
 
         peak_indices, peak_properties = find_peaks(chromatogram,
                                                    prominence=prominence, width=width, height=min_height)
@@ -61,7 +62,7 @@ class Peak_Detection_MS:
         return peak_indices, peak_rts, peak_heights
 
     @staticmethod
-    def __extract_mass_spectrum(scans, peak_rts, peak_indices, data_method: Analysis_Settings):
+    def __extract_mass_spectrum(scans, peak_rts, peak_indices, analysis_settings: Analysis_Settings):
 
         '''
         Returns the mass spectra for the peaks of a chromatogram.
@@ -70,13 +71,13 @@ class Peak_Detection_MS:
             scans (pd.DataFrame): Mass traces of the chromatogram.
             peak_rts (np.ndarray): Retention times of the peaks.
             peak_indices (np.ndarray): Indices of the chromatogram at which peaks are located.
-            data_method (Analysis_Settings): Data_Method object containing settings for the peak detection.
+            analysis_settings (Analysis_Settings): Data_Method object containing settings for the peak detection.
 
         Returns:
             dict[float:dict[float:float]]: Mass spectra of the peaks.
         '''
 
-        prominence = data_method.pop('trace_prominence', 500)
+        prominence = analysis_settings.pop('trace_prominence', 500)
 
         mass_spectrums = {}
         for i in peak_rts:
@@ -92,14 +93,15 @@ class Peak_Detection_MS:
         return mass_spectrums
 
     @staticmethod
-    def __initialize_peaks(peak_rts: np.ndarray, mass_spectrums) -> dict[float:FID_Peak]:
+    def __initialize_peaks(peak_rts: np.ndarray, peak_heights:np.ndarray, mass_spectra:dict[float:dict[float:float]]) -> dict[float:FID_Peak]:
 
         '''
         Returns a dictionary of MS peaks.
 
         Args:
             peak_rts (np.ndarray): Retention times of the peaks.
-            mass_spectrums (dict[float:dict[float:float]]): Mass spectra of the peaks.
+            peak_heights (np.ndarray): Heights of the peaks.
+            mass_spectra (dict[float:dict[float:float]]): Mass spectra of the peaks.
 
         Returns:
             dict[float:FID_Peak]: Dictionary of MS peaks.
@@ -108,11 +110,11 @@ class Peak_Detection_MS:
         peaks = {}
         for i, rt in enumerate(peak_rts):
             rt_min = round(rt, 3)
-            intensities = list(mass_spectrums[rt].values())
+            intensities = list(mass_spectra[rt].values())
             rel_intensities = np.divide(intensities, np.max(intensities)) * 100
-            l = [(i, j, k) for i, j, k in zip(mass_spectrums[rt].keys(), intensities, rel_intensities)]
+            l = [(i, j, k) for i, j, k in zip(mass_spectra[rt].keys(), intensities, rel_intensities)]
             mass_spectrum = np.array(l,
                                      dtype=dict(names=['mz', 'intensity', 'rel_intensity'], formats=['f8', 'f8', 'f8']))
-            peak = MS_Peak(rt_min, mass_spectrum)
+            peak = MS_Peak(rt_min, peak_heights[i], mass_spectrum)
             peaks[peak.rt] = peak
         return peaks

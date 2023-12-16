@@ -70,7 +70,7 @@ class Peak_Detection_FID:
         '''
 
         indices_range = analysis_settings.pop('indices_range', [None, None])
-        prominence = analysis_settings.pop('prominence', np.mean(chrom_corr[1]))
+        prominence = analysis_settings.pop('prominence_fid', np.mean(chrom_corr[1]))
         width = analysis_settings.pop('width', 0)
         #TODO: Implement S/N.
         height = analysis_settings.pop('height', 0)

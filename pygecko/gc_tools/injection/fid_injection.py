@@ -83,7 +83,7 @@ class FID_Injection(Injection):
         '''
 
         self.analysis_settings.update(**kwargs)
-        if not self.processed_chromatogram:
+        if not isinstance(self.processed_chromatogram, np.ndarray):
             self.processed_chromatogram = Peak_Detection_FID.baseline_correction(self.chromatogram,
                                                                                  self.analysis_settings)
         peaks = Peak_Detection_FID.pick_peaks(self.processed_chromatogram, self.analysis_settings)
