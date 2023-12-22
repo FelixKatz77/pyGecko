@@ -64,13 +64,13 @@ class MS_Injection(Injection):
             if mz in peak.mass_spectrum['mz']:
                 index = np.where(peak.mass_spectrum['mz'] == mz)[0]
                 a = peak.mass_spectrum.size*(2/3)
-                if peak.mass_spectrum['rel_intensity'][index][0] > 2 and mz > peak.mass_spectrum['mz'].max()*(2/3): #TODO: Check if this is a good decision.
+                if peak.mass_spectrum['rel_intensity'][index][0] > 4 and mz > peak.mass_spectrum['mz'].max()*(2/3): #TODO: Check if this is a good decision.
                     isotope_error = self.__isotope_check(smiles, peak, mz)
                     if isotope_error:
                         candidates[isotope_error] = peak
         if candidates:
             if len(candidates) > 1:
-                print(f'Multiple peaks with m/z: {mz} were found for {self.sample_name}.')
+                print(f'Multiple peaks with m/z {mz} fitting the calculated isotope pattern were found for {self.sample_name}.')
             peak = candidates[min(candidates)]
             peak.analyte = Analyte(peak.rt, smiles=smiles)
             return peak
@@ -167,7 +167,7 @@ class MS_Injection(Injection):
         mol_formula = self.__get_mol_formula_dict(mol)
         isotopic_dist = isotopic_variants(mol_formula, npeaks=3, charge=0)
         theo_ratio = isotopic_dist[diff].intensity/isotopic_dist[0].intensity
-        if (theo_ratio - 0.05) < ratio < (theo_ratio + 0.05):
+        if (theo_ratio - 0.055) < ratio < (theo_ratio + 0.055):
             return abs(theo_ratio - ratio)
         else:
             return None

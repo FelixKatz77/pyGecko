@@ -77,7 +77,8 @@ class Peak_Detection_FID:
 
         peak_indices, peak_properties = find_peaks(chrom_corr[1], prominence=prominence, width=width,
                                                    height=height)
-        peak_boarders = Peak_Detection_FID.__detect_boarders(chrom_corr, peak_indices, peak_properties['widths'],
+        peak_widths, peak_heights = peak_properties['widths'], peak_properties['peak_heights']
+        peak_boarders = Peak_Detection_FID.__detect_boarders(chrom_corr, peak_indices, peak_widths,
                                                              analysis_settings)
         peak_boarders = Peak_Detection_FID.__resolve_boarder_overlap(peak_boarders, peak_indices, chrom_corr)
         peak_areas = Peak_Detection_FID.__calculate_areas(chrom_corr, peak_boarders)
@@ -85,7 +86,7 @@ class Peak_Detection_FID:
         peak_indices = peak_indices + indices_range[0]
         peak_boarders = [((boarder + indices_range[0])*analysis_settings.scan_rate) + chrom_corr[0][0] for boarder in peak_boarders]
         peak_rts = chrom_corr[0][peak_indices]
-        return peak_rts, peak_widths, peak_properties['peak_heights'], peak_boarders, peak_areas
+        return peak_rts, peak_widths, peak_heights, peak_boarders, peak_areas
 
     @staticmethod
     def __baseline_filter(chromatogram: np.ndarray, analysis_settings: Analysis_Settings) -> tuple[np.ndarray, np.ndarray]:

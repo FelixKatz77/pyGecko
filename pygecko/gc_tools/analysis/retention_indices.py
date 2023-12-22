@@ -146,7 +146,7 @@ class RI_Calibration(GC_Sequence):
         for i in range(index, len(self.calibration.peaks)):
             self.calibration.peaks[rts[i]].analyte = Analyte(rts[i], smiles='C'*(c_count + i - index))
             self.calibration.peaks[rts[i]].flag = 'Alkane_RI'
-        for i in range(index-2, index):
+        for i in range(0, index):
             self.calibration.peaks[rts[i]].analyte = Analyte(rts[i], smiles='C'*(c_count + i - index))
             self.calibration.peaks[rts[i]].flag = 'Alkane_RI'
 
@@ -165,7 +165,7 @@ class RI_Calibration(GC_Sequence):
                 _alkanes_list.append((peak.analyte.smiles, len(peak.analyte.smiles), rt))
             else:
                 pass
-        alkanes = np.array(_alkanes_list, dtype=[('smiles', 'U20'), ('c_count', int), ('rt', float)])
+        alkanes = np.array(_alkanes_list, dtype=[('smiles', 'U50'), ('c_count', int), ('rt', float)])
         return alkanes
 
     def __fit_ri_calibration(self, align_factor:float=0):
@@ -182,9 +182,9 @@ class RI_Calibration(GC_Sequence):
 
         rts = []
         ris = []
-        for i, smiles in enumerate(self.alkanes['smiles']):
+        for i, c_count in enumerate(self.alkanes['c_count']):
             rt = self.alkanes['rt'][i]
-            ris.append(100 * len(smiles))
+            ris.append(100 * c_count)
             rts.append(rt+align_factor)
         gradient, intercept, r_value, p_value, slope_std_error = stats.linregress(rts, ris)
         return gradient, intercept

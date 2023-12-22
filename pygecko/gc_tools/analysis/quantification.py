@@ -67,8 +67,7 @@ class Quantification:
             if std:
                 C_analyte = Quantification.__get_c_count(analyte)
                 C_std = Quantification.__get_c_count(std)
-                yield_ = (peak.area/C_analyte) / (
-                            std_peak.area/C_std) * 100
+                yield_ = ((peak.area/C_analyte) / (std_peak.area/C_std)) * 100
                 return int(round(yield_, 0))
             else:
                 raise TypeError('No molecule assigned for Standard.')

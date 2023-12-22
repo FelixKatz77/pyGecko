@@ -34,16 +34,17 @@ class Visualization:
 
         masked_data = np.ma.array (data, mask=np.isnan(data))
         cmap, norm = yield_cmap
-        #cmap = copy.copy(plt.cm.get_cmap('GnBu'))
         cmap.set_bad('darkgrey', 0.5)
         norm = matplotlib.colors.Normalize(vmin=0, vmax=100)
         N = data.shape[0]
         M = data.shape[1]
         r = 0.43
-        row_labels = ["1", "2", "3", "4", "5", "6", "7", "8"]
-        col_labels = ["9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"]
-        #row_labels = ["A", "B", "C", "D", "E", "F", "G", "H"]
-        #col_labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+        # row_labels = ["21", "22", "23", "24", "25", "26", "27", "28"]
+        # col_labels = ["29$^a$", "30$^a$", "31$^a$", "32$^a$", "33$^a$", "34$^a$", "29$^b$", "30$^b$", "31$^b$", "32$^b$", "33$^b$", "34$^b$"]
+        row_labels = ["A", "B", "C", "D", "E", "F", "G", "H"]
+        col_labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+        # row_labels = ["1", "2", "3", "4", "5", "6", "7", "8"]
+        # col_labels = ["9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"]
 
         x, y = np.meshgrid(np.arange(M), np.arange(N))
 
