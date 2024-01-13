@@ -39,12 +39,13 @@ class Visualization:
         N = data.shape[0]
         M = data.shape[1]
         r = 0.43
-        # row_labels = ["21", "22", "23", "24", "25", "26", "27", "28"]
+        #row_labels = ["21", "22", "23", "24", "25", "26", "27", "28"]
         # col_labels = ["29$^a$", "30$^a$", "31$^a$", "32$^a$", "33$^a$", "34$^a$", "29$^b$", "30$^b$", "31$^b$", "32$^b$", "33$^b$", "34$^b$"]
+        #col_labels = ["29$^c$", "30$^c$", "31$^c$", "32$^c$", "33$^c$", "34$^c$", "29$^d$", "30$^d$", "31$^d$", "32$^d$", "33$^d$", "34$^d$"]
         row_labels = ["A", "B", "C", "D", "E", "F", "G", "H"]
         col_labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
-        # row_labels = ["1", "2", "3", "4", "5", "6", "7", "8"]
-        # col_labels = ["9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"]
+        # row_labels = ["1", "2", "3", "4", "5", "6$^a$", "7$^a$", "8"]
+        # col_labels = ["9", "10", "11", "12", "13", "14", "15", "16", "17", "18$^b$", "19", "20"]
 
         x, y = np.meshgrid(np.arange(M), np.arange(N))
 
@@ -54,8 +55,8 @@ class Visualization:
         col = PatchCollection(circles, array=masked_data.flatten(), cmap=cmap, norm=norm)
         ax.add_collection(col)
 
-        ax.set_xticks(np.arange(data.shape[1]), labels=col_labels)
-        ax.set_yticks(np.arange(data.shape[0]), labels=row_labels)
+        ax.set_xticks(np.arange(data.shape[1]), labels=col_labels, weight='bold')
+        ax.set_yticks(np.arange(data.shape[0]), labels=row_labels, weight='bold')
         ax.set_xticks(np.arange(data.shape[1] + 1) - .5, minor=True)
         ax.set_yticks(np.arange(data.shape[0] + 1) - .5, minor=True)
         ax.tick_params(top=True, bottom=False,
@@ -175,7 +176,6 @@ class Visualization:
             ax.annotate(f'{peak.mass_spectrum["mz"][index]:.0f}',
                         (peak.mass_spectrum['mz'][index], peak.mass_spectrum['rel_intensity'][index]),
                         textcoords="offset points", xytext=(0, 5), ha='center', color='darkgrey', fontsize=10)
-            print(peak.mass_spectrum['rel_intensity'][index])
 
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
@@ -247,7 +247,7 @@ class Visualization:
             ax.xaxis.set_minor_locator(MultipleLocator(0.5))
             plt.grid(color='lightgrey', linestyle='--', which='both', axis='x')
             if i == len(injections) - 1:
-                ax.set_xlabel('m/z')
+                ax.set_xlabel('Time [min]')
             if i != len(injections) - 1:
                 ax.set_xticklabels([])
             ax.set_ylabel(f'{injection.sample_name}')
@@ -295,13 +295,11 @@ class Visualization:
             ax.annotate(f'{peak1.mass_spectrum["mz"][index]:.0f}',
                         (peak1.mass_spectrum['mz'][index], peak1.mass_spectrum['rel_intensity'][index]),
                         textcoords="offset points", xytext=(0, 5), ha='center', color='darkgrey', fontsize=10)
-            print(peak1.mass_spectrum['rel_intensity'][index])
 
         for index in lable_indices2:
             ax.annotate(f'{peak2.mass_spectrum["mz"][index]:.0f}',
                         (peak2.mass_spectrum['mz'][index], peak2.mass_spectrum['rel_intensity'][index]*(-1)),
                         textcoords="offset points", xytext=(0, -10), ha='center', color='darkgrey', fontsize=10)
-            print(peak2.mass_spectrum['rel_intensity'][index])
 
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)

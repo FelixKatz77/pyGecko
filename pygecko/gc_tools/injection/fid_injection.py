@@ -105,7 +105,7 @@ class FID_Injection(Injection):
         else:
             print('Peaks list is empty.')
 
-    def quantify(self, rt:float, method:str='polyarc'):
+    def quantify(self, rt:float, method:str='polyarc') -> int:
 
         '''
         Returns the yield of the analyte with the given retention time calculated using the internal standard of the

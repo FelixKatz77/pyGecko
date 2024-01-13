@@ -130,7 +130,7 @@ class Peak_Detection_FID:
     def __optimize_savgol_window(chromatogram: np.ndarray) -> int:
 
         '''
-        Returns the optimal Savitzky-Golay window size for a chromatogram identified using the Durbin-Watson statistic.
+        Returns al.
 
         Args:
             chromatogram: Chromatogram to optimize the Savitzky-Golay window size for.
