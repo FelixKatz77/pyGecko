@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, TypeVar
 
 if TYPE_CHECKING:
     from pygecko.gc_tools.peak import MS_Peak
+    from pygecko.gc_tools.injection import MS_Injection
 T = TypeVar('T', bound='Specral_Match')
 
 
@@ -29,6 +30,14 @@ class Spectral_Match:
         self.peaks = peaks
         self.ms_score = ms_score
         self.rt_score = rt_score
+
+    def __iter__(self) -> iter:
+
+        '''
+        Returns an iterator over the matched peaks.
+        '''
+
+        return iter(self.peaks)
 
     @classmethod
     def match_peaks(cls, peak1: 'MS_Peak', peak2: 'MS_Peak', rt_threshold=0.1, ms_threshold=0.9) -> T|None:
@@ -55,6 +64,28 @@ class Spectral_Match:
                 return None
         else:
             return None
+
+    @classmethod
+    def find_peak(cls, peak: 'MS_Peak', injection: 'MS_Injection', rt_threshold=0.1, ms_threshold=0.9) -> T|None:
+
+        '''
+        Returns a Spectral_Match object if the peak is found in the injection and None otherwise.
+
+        Args:
+            peak (MS_Peak): Peak to find.
+            injection (MS_Injection): Injection to search for the peak.
+            rt_threshold (float, optional): Retention time threshold for the match. Defaults to 0.1.
+            ms_threshold (float, optional): Mass spectrum similarity threshold for the match. Defaults to 0.9.
+
+        Returns:
+            Spectral_Match|None: Spectral_Match object if the peak is found and None otherwise.
+        '''
+
+        for injection_peak in injection.peaks.values():
+            match = cls.match_peaks(peak, injection_peak, rt_threshold=rt_threshold, ms_threshold=ms_threshold)
+            if match:
+                return match
+        return None
 
     @staticmethod
     def __get_rt_score(peak_rts: tuple[float, float], rt_threshold: float) -> float:
