@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from datetime import datetime
 from pygecko.reaction.well_plate import Well_Plate
@@ -16,7 +17,7 @@ class Reaction_Parser:
     '''
 
     @classmethod
-    def build_dataset(cls, layout: Well_Plate, results_df: pd.DataFrame,
+    def build_dataset(cls, layout: Well_Plate, yield_array: np.ndarray,
                       path: str|None = None) -> dataset_pb2.Dataset:
 
         '''
@@ -24,33 +25,35 @@ class Reaction_Parser:
 
         Args:
             layout (Well_Plate): Well_Plate object containing the combinatorial reaction layout.
-            results_df (pd.DataFrame): DataFrame containing the results of the reactions.
+            yield_array (np.ndarray): Numpy array containing the yields of the reactions.
             path (str|None, optional): Path to write the dataset to. Defaults to None.
 
         Returns:
             dataset_pb2.Dataset: ORD dataset created from the combinatorial reaction layout.
         '''
 
-        dataset = cls.create_dataset_from_layout(layout, results_df)
+        dataset = cls.create_dataset_from_layout(layout, yield_array)
         if path:
             message_helpers.write_message(dataset, path)
         return dataset
 
     @classmethod
-    def create_dataset_from_layout(cls, layout:Well_Plate, results_df: pd.DataFrame) -> dataset_pb2.Dataset:
+    def create_dataset_from_layout(cls, layout:Well_Plate, yield_array:np.ndarray) -> dataset_pb2.Dataset:
 
         '''
         Returns a ORD dataset created from a combinatorial reaction layout.
 
         Args:
             layout (Well_Plate): Well_Plate object containing the combinatorial reaction layout.
-            results_df: DataFrame containing the results of the reactions.
+            yield_array (np.ndarray): Numpy array containing the yields of the reactions.
 
         Returns:
             dataset_pb2.Dataset: ORD dataset created from the combinatorial reaction layout.
         '''
 
         reactions = []
+        results_df = pd.DataFrame(data=yield_array, columns=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+                                  index=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
         for x in layout.design.x.values:
             for y in layout.design.y.values:
                 _yield = results_df.loc[x, str(y)]

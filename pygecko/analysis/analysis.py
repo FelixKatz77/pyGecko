@@ -83,13 +83,14 @@ class Analysis:
         if path:
             if mode == 'yield':
                 quantity = 'Yield [%]'
-                report_df = pd.DataFrame.from_dict(results_dict, orient='index', columns=[quantity, 'RT-MS [min]', 'RT-FID [min]', 'Analyte'])
+                report_df = pd.DataFrame.from_dict(results_dict, orient='index',
+                                                   columns=[quantity, 'RT-MS [min]', 'RT-FID [min]', 'Analyte'])
             else:
                 quantity = 'Conversion [%]'
-                report_df = pd.DataFrame.from_dict(results_dict, orient='index', columns=[quantity, 'RT-MS [min]', 'RT-FID [min]', 'Analyte'])
+                report_df = pd.DataFrame.from_dict(results_dict, orient='index',
+                                                   columns=[quantity, 'RT-MS [min]', 'RT-FID [min]', 'Analyte'])
             report_df.sort_index(inplace=True)
-            s = report_df.style.background_gradient(axis=0, subset=quantity, cmap='GnBu')
-            s.applymap(lambda x: 'color: transparent; background-color: transparent' if pd.isnull(x) else '').to_excel(path, engine='openpyxl')
+            report_df.to_csv(path)
         return results_array
 
     @staticmethod

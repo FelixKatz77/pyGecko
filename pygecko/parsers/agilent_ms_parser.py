@@ -93,7 +93,6 @@ class Agilent_MS_Parser:
 
         Args:
             sequence_directory (str): Path to the directory containing the raw data.
-            chrom_path (str): Path to the directory containing the chromatograms.
 
         Returns:
             tuple[dict, dict[str:MS_Injection]]: A tuple containing a dict containing the sequence metadata and a

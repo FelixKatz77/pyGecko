@@ -21,7 +21,7 @@ plt.rcParams['font.weight'] = 'regular'
 class Visualization:
 
     @staticmethod
-    def visualize_plate(data: np.ndarray, path:str|None=None, well_labels=True) -> None:
+    def visualize_plate(data: np.ndarray, path:str|None=None, well_labels=True, **kwargs) -> None:
 
         '''
         Visualizes a well plate as a heatmap of yields and saves the figure if a path is given.
@@ -32,6 +32,9 @@ class Visualization:
             path (str|None, optional): Path to save the figure to. Defaults to None.
         '''
 
+        row_labels = kwargs.pop('row_labels', ["A", "B", "C", "D", "E", "F", "G", "H"])
+        col_labels = kwargs.pop('col_labels', ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"])
+
         masked_data = np.ma.array (data, mask=np.isnan(data))
         cmap, norm = yield_cmap
         cmap.set_bad('darkgrey', 0.5)
@@ -39,13 +42,6 @@ class Visualization:
         N = data.shape[0]
         M = data.shape[1]
         r = 0.43
-        #row_labels = ["21", "22", "23", "24", "25", "26", "27", "28"]
-        # col_labels = ["29$^a$", "30$^a$", "31$^a$", "32$^a$", "33$^a$", "34$^a$", "29$^b$", "30$^b$", "31$^b$", "32$^b$", "33$^b$", "34$^b$"]
-        #col_labels = ["29$^c$", "30$^c$", "31$^c$", "32$^c$", "33$^c$", "34$^c$", "29$^d$", "30$^d$", "31$^d$", "32$^d$", "33$^d$", "34$^d$"]
-        row_labels = ["A", "B", "C", "D", "E", "F", "G", "H"]
-        col_labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
-        # row_labels = ["1", "2", "3", "4", "5", "6$^a$", "7$^a$", "8"]
-        # col_labels = ["9", "10", "11", "12", "13", "14", "15", "16", "17", "18$^b$", "19", "20"]
 
         x, y = np.meshgrid(np.arange(M), np.arange(N))
 
