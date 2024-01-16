@@ -68,6 +68,7 @@
 <li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.rt"><code class="docutils literal notranslate"><span class="pre">MS_Peak.rt</span></code></a></li>
 <li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.ri"><code class="docutils literal notranslate"><span class="pre">MS_Peak.ri</span></code></a></li>
 <li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.area"><code class="docutils literal notranslate"><span class="pre">MS_Peak.area</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.height"><code class="docutils literal notranslate"><span class="pre">MS_Peak.height</span></code></a></li>
 <li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.flag"><code class="docutils literal notranslate"><span class="pre">MS_Peak.flag</span></code></a></li>
 <li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.analyte"><code class="docutils literal notranslate"><span class="pre">MS_Peak.analyte</span></code></a></li>
 <li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.mass_spectrum"><code class="docutils literal notranslate"><span class="pre">MS_Peak.mass_spectrum</span></code></a></li>
@@ -82,13 +83,15 @@
 <li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak.rt"><code class="docutils literal notranslate"><span class="pre">Peak.rt</span></code></a></li>
 <li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak.ri"><code class="docutils literal notranslate"><span class="pre">Peak.ri</span></code></a></li>
 <li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak.area"><code class="docutils literal notranslate"><span class="pre">Peak.area</span></code></a></li>
+<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak.height"><code class="docutils literal notranslate"><span class="pre">Peak.height</span></code></a></li>
 <li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak.flag"><code class="docutils literal notranslate"><span class="pre">Peak.flag</span></code></a></li>
 <li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak.analyte"><code class="docutils literal notranslate"><span class="pre">Peak.analyte</span></code></a></li>
 <li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">Peak.analyte</span></code></a></li>
 <li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">Peak.area</span></code></a></li>
 <li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">Peak.flag</span></code></a></li>
-<li><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">Peak.ri</span></code></a></li>
-<li><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">Peak.rt</span></code></a></li>
+<li><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">Peak.height</span></code></a></li>
+<li><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">Peak.ri</span></code></a></li>
+<li><a class="reference internal" href="#id9"><code class="docutils literal notranslate"><span class="pre">Peak.rt</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -259,7 +262,7 @@
 <span id="pygecko-gc-tools-peak-ms-peak-module"></span><h2>pygecko.gc_tools.peak.ms_peak module<a class="headerlink" href="#module-pygecko.gc_tools.peak.ms_peak" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pygecko.gc_tools.peak.ms_peak.MS_Peak">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.peak.ms_peak.</span></span><span class="sig-name descname"><span class="pre">MS_Peak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_spectrum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.peak.ms_peak.</span></span><span class="sig-name descname"><span class="pre">MS_Peak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_spectrum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak" title="pygecko.gc_tools.peak.peak.Peak"><code class="xref py py-class docutils literal notranslate"><span class="pre">Peak</span></code></a></p>
 <p>MS_Peak class for storing information about peaks in MS chromatograms.</p>
 <dl class="py attribute">
@@ -291,6 +294,17 @@
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[None, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.ms_peak.MS_Peak.height">
+<span class="sig-name descname"><span class="pre">height</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.height" title="Link to this definition"></a></dt>
+<dd><p>Height of the peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
@@ -347,7 +361,7 @@
 <span id="pygecko-gc-tools-peak-peak-module"></span><h2>pygecko.gc_tools.peak.peak module<a class="headerlink" href="#module-pygecko.gc_tools.peak.peak" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pygecko.gc_tools.peak.peak.Peak">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.peak.peak.</span></span><span class="sig-name descname"><span class="pre">Peak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.gc_tools.peak.peak.Peak" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.gc_tools.peak.peak.</span></span><span class="sig-name descname"><span class="pre">Peak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.gc_tools.peak.peak.Peak" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base class for all Peaks.</p>
 <dl class="py attribute">
@@ -379,6 +393,17 @@
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None|float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygecko.gc_tools.peak.peak.Peak.height">
+<span class="sig-name descname"><span class="pre">height</span></span><a class="headerlink" href="#pygecko.gc_tools.peak.peak.Peak.height" title="Link to this definition"></a></dt>
+<dd><p>Height of the peak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
@@ -422,12 +447,17 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id7">
-<span class="sig-name descname"><span class="pre">ri</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">height</span></span><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id8">
-<span class="sig-name descname"><span class="pre">rt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">ri</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">rt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -492,14 +522,14 @@
 <p>A class wrapping functions to detect peaks in MS chromatograms.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pygecko.gc_tools.peak.peak_detection_ms.Peak_Detection_MS.pick_peaks">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pick_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chromatogram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scans</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings" title="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings"><span class="pre">Analysis_Settings</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict[slice(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pygecko.gc_tools.peak.ms_peak.MS_Peak'&gt;,</span> <span class="pre">None)]</span></span></span><a class="headerlink" href="#pygecko.gc_tools.peak.peak_detection_ms.Peak_Detection_MS.pick_peaks" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pick_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chromatogram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scans</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings" title="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings"><span class="pre">Analysis_Settings</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict[slice(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pygecko.gc_tools.peak.ms_peak.MS_Peak'&gt;,</span> <span class="pre">None)]</span></span></span><a class="headerlink" href="#pygecko.gc_tools.peak.peak_detection_ms.Peak_Detection_MS.pick_peaks" title="Link to this definition"></a></dt>
 <dd><p>Returns a dictionary of MS peaks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>chromatogram</strong> (<em>np.ndarray</em>) – Chromatogram to detect peaks in.</p></li>
 <li><p><strong>scans</strong> (<em>pd.DataFrame</em>) – Mass traces of the chromatogram.</p></li>
-<li><p><strong>data_method</strong> (<a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings" title="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings"><em>Analysis_Settings</em></a>) – Data_Method object containing settings for the peak detection.</p></li>
+<li><p><strong>analysis_settings</strong> (<a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings" title="pygecko.gc_tools.analysis.analysis_settings.Analysis_Settings"><em>Analysis_Settings</em></a>) – Data_Method object containing settings for the peak detection.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

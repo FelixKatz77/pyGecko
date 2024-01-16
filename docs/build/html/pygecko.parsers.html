@@ -140,12 +140,12 @@
 <p>A class wrapping functions to parse raw data from an Agilent GC/FID into FID_Sequence objects.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pygecko.parsers.agilent_fid_parser.Agilent_FID_Parser.load_injection">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_injection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent_delay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection" title="pygecko.gc_tools.injection.fid_injection.FID_Injection"><span class="pre">FID_Injection</span></a></span></span><a class="headerlink" href="#pygecko.parsers.agilent_fid_parser.Agilent_FID_Parser.load_injection" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_injection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent_delay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection" title="pygecko.gc_tools.injection.fid_injection.FID_Injection"><span class="pre">FID_Injection</span></a></span></span><a class="headerlink" href="#pygecko.parsers.agilent_fid_parser.Agilent_FID_Parser.load_injection" title="Link to this definition"></a></dt>
 <dd><p>Returns an FID_Injection object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>raw_path</strong> (<em>str</em>) – Path to the directory containing the corresponding xy-file and the acaml-file.</p></li>
+<li><p><strong>raw_directory</strong> (<em>str</em>) – Path to the directory containing the corresponding xy-file and the acaml-file.</p></li>
 <li><p><strong>solvent_delay</strong> (<em>float</em>) – Retention time of the solvent peak in minutes.</p></li>
 </ul>
 </dd>
@@ -165,7 +165,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>raw_directory</strong> (<em>str</em>) – Path to the directory containing the corresponding xy-files and the acaml-file.</p></li>
+<li><p><strong>raw_directory</strong> (<em>str</em>) – Path to the directory containing the corresponding xy-file and the acaml-file.</p></li>
 <li><p><strong>solvent_delay</strong> (<em>float</em>) – Retention time of the solvent peak in minutes.</p></li>
 <li><p><strong>c_count</strong> (<em>int</em>) – Carbon count of the alkane the retention time is provided for.</p></li>
 <li><p><strong>rt</strong> (<em>float</em>) – Retention time of the alkane the c_count is provided for.</p></li>
@@ -230,13 +230,12 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pygecko.parsers.agilent_ms_parser.Agilent_MS_Parser.load_ri_calibration">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_ri_calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration" title="pygecko.gc_tools.analysis.retention_indices.RI_Calibration"><span class="pre">RI_Calibration</span></a></span></span><a class="headerlink" href="#pygecko.parsers.agilent_ms_parser.Agilent_MS_Parser.load_ri_calibration" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_ri_calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration" title="pygecko.gc_tools.analysis.retention_indices.RI_Calibration"><span class="pre">RI_Calibration</span></a></span></span><a class="headerlink" href="#pygecko.parsers.agilent_ms_parser.Agilent_MS_Parser.load_ri_calibration" title="Link to this definition"></a></dt>
 <dd><p>Returns an RI_Calibration object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sequence_directory</strong> (<em>str</em>) – Path to the directory containing the raw data.</p></li>
-<li><p><strong>chrom_path</strong> (<em>str</em>) – Path to the directory containing the chromatogram.</p></li>
+<li><p><strong>raw_directory</strong> (<em>str</em>) – Path to the directory containing the raw data.</p></li>
 <li><p><strong>c_count</strong> (<em>int</em>) – Number of carbon atoms for as specific alkane present in the standard.</p></li>
 <li><p><strong>rt</strong> (<em>float</em>) – Retention time of the alkane the c_count is provided for.</p></li>
 </ul>
@@ -322,7 +321,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pygecko.parsers.fid_base_parser.FID_Base_Parser.read_xy_array">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_xy_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#pygecko.parsers.fid_base_parser.FID_Base_Parser.read_xy_array" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_xy_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#pygecko.parsers.fid_base_parser.FID_Base_Parser.read_xy_array" title="Link to this definition"></a></dt>
 <dd><p>Takes in the path to a xy-file, returns the xy_array.</p>
 </dd></dl>
 
