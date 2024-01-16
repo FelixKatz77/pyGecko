@@ -85,7 +85,7 @@ class Reaction_Parser:
 
         if 'stock_solutions' in metadata:
             for stock in metadata['stock_solutions']:
-                if x in stock['wells'] or str(y) in stock['wells'] or stock['wells'] == 'all':
+                if x in stock['wells'] or str(y) in stock['wells'] or 'all' in stock['wells']:
                     solute = reaction.inputs[stock["name"]].components.add()
                     solvent = reaction.inputs[stock["name"]].components.add()
                     inputs = cls.__create_inputs_from_stock(stock)
