@@ -1,6 +1,13 @@
 import subprocess
 import os
+import configparser
+from pathlib import Path
 from pygecko.parsers.utilities import list_files_and_directories
+
+config = configparser.ConfigParser()
+config_path = Path(__file__).parent.parent.joinpath('config.ini')
+config.read(config_path)
+msconvert_path = config.get('msConvertSettings','exe_path')
 
 
 
@@ -19,7 +26,6 @@ def msconvert(input_files: list|str, output_dir, format='mzML'):
     '''
 
     # Define the path to the msconvert executable
-    msconvert_path = r'C:\Users\felix\AppData\Local\Apps\ProteoWizard 3.0.23289.fd07aa9 64-bit\msconvert.exe'
     output_format = format
 
     # Check if the msconvert executable exists at the specified path
