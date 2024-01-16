@@ -83,13 +83,25 @@ class Reaction_Parser:
             y (str): y-coordinate of the reaction in the combinatorial reaction layout.
         '''
 
-        for stock in metadata['stock_solutions']:
-            if x in stock['wells'] or str(y) in stock['wells'] or stock['wells'] == 'all':
-                solute = reaction.inputs[stock["name"]].components.add()
-                solvent = reaction.inputs[stock["name"]].components.add()
-                inputs = cls.__create_inputs_from_stock(stock)
-                solute.CopyFrom(inputs[0])
-                solvent.CopyFrom(inputs[1])
+        if 'stock_solutions' in metadata:
+            for stock in metadata['stock_solutions']:
+                if x in stock['wells'] or str(y) in stock['wells'] or stock['wells'] == 'all':
+                    solute = reaction.inputs[stock["name"]].components.add()
+                    solvent = reaction.inputs[stock["name"]].components.add()
+                    inputs = cls.__create_inputs_from_stock(stock)
+                    solute.CopyFrom(inputs[0])
+                    solvent.CopyFrom(inputs[1])
+        if 'solids' in metadata:
+            for solid in metadata['solids']:
+                if x in solid['wells'] or str(y) in solid['wells'] or solid['wells'] == 'all':
+                    s = reaction.inputs[solid["name"]].components.add()
+                    compound = message_helpers.build_compound(
+                        smiles=solid['compound'],
+                        role=solid['role']
+                    )
+                    compound.amount.mass.CopyFrom(unit_resolver.resolve(solid['mass']))
+                    s.CopyFrom(compound)
+
 
 
     @staticmethod
