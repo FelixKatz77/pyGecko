@@ -39,7 +39,7 @@ class Agilent_FID_Parser:
         Returns an RI_Calibration object.
 
         Args:
-            raw_directory (str): Path to the directory containing the corresponding xy-files and the acaml-file.
+            raw_directory (str): Path to the directory containing the corresponding xy-file and the acaml-file.
             solvent_delay (float): Retention time of the solvent peak in minutes.
             c_count (int): Carbon count of the alkane the retention time is provided for.
             rt (float): Retention time of the alkane the c_count is provided for.
@@ -49,36 +49,36 @@ class Agilent_FID_Parser:
         '''
 
         acaml_file = list(Path(raw_directory).glob('*.acaml'))[0]
-        sequence_metadata, injections = cls.__load_sequence_data(acaml_file, raw_directory, solvent_delay)
-        return RI_Calibration(sequence_metadata, injections, c_count, rt)
+        injection = cls.__load_injection_data(acaml_file, raw_directory, solvent_delay)
+        return RI_Calibration(injection, c_count, rt)
 
     @classmethod
-    def load_injection(cls, raw_path:str, solvent_delay:float|int) -> FID_Injection:
+    def load_injection(cls, raw_directory:str, solvent_delay:float|int) -> FID_Injection:
 
         '''
         Returns an FID_Injection object.
 
         Args:
-            raw_path (str): Path to the directory containing the corresponding xy-file and the acaml-file.
+            raw_directory (str): Path to the directory containing the corresponding xy-file and the acaml-file.
             solvent_delay (float): Retention time of the solvent peak in minutes.
 
         Returns:
             FID_Injection: An FID_Injection object.
         '''
 
-        acaml_file = list(Path(raw_path).glob('*.acaml'))[0]
-        injection = cls.__load_injection_data(acaml_file, raw_path, solvent_delay)
+        acaml_file = list(Path(raw_directory).glob('*.acaml'))[0]
+        injection = cls.__load_injection_data(acaml_file, raw_directory, solvent_delay)
         return injection
 
     @staticmethod
-    def __load_injection_data(acaml_file:Path, xy_file:str, solvent_delay:float|int) -> FID_Injection:
+    def __load_injection_data(acaml_file:Path, raw_directory:str, solvent_delay:float|int) -> FID_Injection:
 
         '''
         Returns an FID_Injection object.
 
         Args:
             acaml_file (Path): Path to an acaml-file from an Agilent GC.
-            xy_file (str): Path to the corresponding xy-file.
+            raw_directory (str): Path to the directory containing the corresponding xy-file and the acaml-file.
             solvent_delay (float): Retention time  of the solvent peak in minutes.
 
         Returns:
@@ -89,7 +89,14 @@ class Agilent_FID_Parser:
         metadata_array = list(root.iter(f'ArrayOfInjectionMetaData'))[0]
         metadata_element = list(metadata_array.iter('InjectionMetaData'))[0]
         injection_metadata = Agilent_FID_Parser.__get_injection_metadata(metadata_element)
-        xy_array = FID_Base_Parser.read_xy_array(Path(xy_file))
+        xy_files = []
+        for file_format in ['.xy', '.CSV']:
+            xy_files.extend(Path(raw_directory).glob(f'*{file_format}'))
+        if len(xy_files) > 1:
+            raise ValueError(f'Found more than one supported file types in {raw_directory}.')
+        if len(xy_files) == 0:
+            raise ValueError(f'Found no supported file types in {raw_directory}.')
+        xy_array = FID_Base_Parser.read_xy_array(Path(xy_files[0]))
         injection = FID_Injection(injection_metadata, xy_array, solvent_delay)
         return injection
 

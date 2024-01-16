@@ -8,13 +8,13 @@ from pygecko.gc_tools.analyte import Analyte
 from pygecko.gc_tools.peak import Peak
 
 
-class RI_Calibration(GC_Sequence):
+class RI_Calibration:
 
     '''
     A class for storing information about a retention index calibration and calculating retention indices.
 
     Attributes:
-        calibration (Injection): Calibration injection.
+        calibration (FID_Injection|MS_Injection): Calibration injection.
         alkanes (np.ndarray): Array of alkanes with columns for smiles, carbon count and retention time.
         gradient (float): Gradient of the linear fit of the calibration.
         intercept (float): Intercept of the linear fit of the calibration.
@@ -27,9 +27,8 @@ class RI_Calibration(GC_Sequence):
 
     __slots__ = 'calibration', 'alkanes', 'gradient', 'intercept', 'detector'
 
-    def __init__(self, metadata:dict, injections:dict[str,FID_Injection|MS_Injection],c_count:int, rt:float):
-        super().__init__(metadata, injections)
-        self.calibration = self.injections[list(self.injections)[0]]
+    def __init__(self, injection:FID_Injection|MS_Injection, c_count:int, rt:float):
+        self.calibration = injection
         self.calibration.pick_peaks()
         self.__identify_alkanes(c_count, rt)
         self.alkanes = self.__construct_alkanes_array()

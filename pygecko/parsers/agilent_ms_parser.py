@@ -34,14 +34,13 @@ class Agilent_MS_Parser:
         return MS_Sequence(sequence_metadata, injections)
 
     @classmethod
-    def load_ri_calibration(cls, sequence_directory: str, c_count:int, rt:float) -> RI_Calibration:
+    def load_ri_calibration(cls, raw_directory: str, c_count:int, rt:float) -> RI_Calibration:
 
         '''
         Returns an RI_Calibration object.
 
         Args:
-            sequence_directory (str): Path to the directory containing the raw data.
-            chrom_path (str): Path to the directory containing the chromatogram.
+            raw_directory (str): Path to the directory containing the raw data.
             c_count (int): Number of carbon atoms for as specific alkane present in the standard.
             rt (float): Retention time of the alkane the c_count is provided for.
 
@@ -49,8 +48,8 @@ class Agilent_MS_Parser:
             RI_Calibration: An RI_Calibration object
         '''
 
-        sequence_metadata, injections = cls.__load_sequence_data(sequence_directory)
-        return RI_Calibration(sequence_metadata, injections, c_count, rt)
+        injection = cls.__load_injection_data(raw_directory)
+        return RI_Calibration(injection, c_count, rt)
 
     @classmethod
     def load_injection(cls, raw_directory: str) -> MS_Injection:
