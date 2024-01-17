@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from pygecko.gc_tools import MS_Injection
+from pygecko.gc_tools import MS_Injection, RI_Calibration
 from pygecko.parsers.msconvert_wraper import msconvert
 from pygecko.parsers.file_readers import extract_scans_from_mzxml, extract_scans_from_mzml
 
@@ -13,8 +13,37 @@ class MS_Base_Parser:
 
     @classmethod
     def load_injection(cls, raw_data_path: str, temp_dir: tempfile.TemporaryDirectory = None) -> MS_Injection:
+
+        '''
+        Returns an MS_Injection object.
+
+        Args:
+            raw_data_path (str): Path to the raw data.
+            temp_dir (tempfile.TemporaryDirectory): Temporary directory to store the converted mzML file. Defaults to None.
+
+        Returns:
+            MS_Injection: An MS_Injection object
+        '''
         injection = MS_Base_Parser.initialize_injection(Path(raw_data_path), temp_dir=temp_dir)
         return injection
+
+    @classmethod
+    def load_ri_calibration(cls, raw_data_path: str, c_count: int, rt: float) -> RI_Calibration:
+
+        '''
+        Returns an RI_Calibration object.
+
+        Args:
+            raw_directory (str): Path to the directory containing the raw data.
+            c_count (int): Number of carbon atoms for as specific alkane present in the standard.
+            rt (float): Retention time of the alkane the c_count is provided for.
+
+        Returns:
+            RI_Calibration: An RI_Calibration object
+        '''
+
+        injection = MS_Base_Parser.initialize_injection(Path(raw_data_path))
+        return RI_Calibration(injection, c_count, rt)
 
     @staticmethod
     def initialize_injection(path: Path,

@@ -1,7 +1,7 @@
 import numpy as np
 from pathlib import Path
 
-from pygecko.gc_tools import FID_Injection, FID_Sequence
+from pygecko.gc_tools import FID_Injection, FID_Sequence, RI_Calibration
 
 
 class FID_Base_Parser:
@@ -31,6 +31,27 @@ class FID_Base_Parser:
             injections[injection.sample_name] = injection
         return FID_Sequence({}, injections)
 
+    @classmethod
+    def load_ri_calibration(cls, xy_file: Path|str, solvent_delay, c_count: int, rt: float) -> RI_Calibration:
+
+        '''
+        Returns an RI_Calibration object.
+
+        Args:
+            xy_file (Path|str): Path to a xy_file.
+            solvent_delay (float): Solvent delay of the injection.
+            c_count (int): Carbon count of the alkane the retention time is provided for.
+            rt (float): Retention time of the alkane the c_count is provided for.
+
+        Returns:
+            RI_Calibration: An RI_Calibration object.
+        '''
+
+        xy_file = Path(xy_file)
+        xy_array = FID_Base_Parser.read_xy_array(xy_file)
+        sample_name = xy_file.stem.split('.')[0]
+        injection = FID_Injection({'SampleName': sample_name}, xy_array, solvent_delay)
+        return RI_Calibration(injection, c_count, rt)
 
     @staticmethod
     def load_injection(xy_file: Path|str, solvent_delay:float, pos:bool=False) -> FID_Injection:
@@ -38,7 +59,7 @@ class FID_Base_Parser:
         Returns an FID_Injection object.
 
         Args:
-            xy_file (Path): Path to a xy_file.
+            xy_file (Path|str): Path to a xy_file.
             solvent_delay (float): Solvent delay of the injection.
 
         Returns:
