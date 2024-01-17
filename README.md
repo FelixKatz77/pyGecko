@@ -1,7 +1,7 @@
 # pyGecko
 <img src="docs/pyGecko_icon.png" alt="pyGecko_Logo" width="300" height="300"/>
 
-*pyGecko an open-access python library for the parsing, processing and analysis of GC/MS and GC/FID raw data.*
+> pyGecko an open-access python library for the parsing, processing and analysis of GC/MS and GC/FID raw data.
 
 With increasing amounts of analytical and metadata generated in HTE, data processing and analysis quickly become a 
 workflow's limiting step if conducted manually. The automated processing of analytical data opens up time for chemists 
@@ -22,9 +22,9 @@ pyGecko can be installed via pip:
 ```bash 
 pip install pygecko
 ```
-[!IMPORTANT]
-To read vendor files you need to install the msConvert tool from ProteoWizard. You can download it from [here](http://proteowizard.sourceforge.net/download.html).
-You will be asked to specify the path to the msConvert.exe during the first run of pyGecko.
+> [!IMPORTANT]
+> To read vendor files you need to install the msConvert tool from ProteoWizard. You can download it from [here](http://proteowizard.sourceforge.net/download.html).
+> You will be asked to specify the path to the msConvert.exe during the first run of pyGecko.
 
 ## Usage
 For non-automated workflows pyGecko is best used with jupyter notebooks. The notebooks folder of the repository contains
