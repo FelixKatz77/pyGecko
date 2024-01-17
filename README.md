@@ -1,5 +1,6 @@
 # pyGecko
-![Alt text](docs/pyGecko_icon.png)
+<img src="docs/pyGecko_icon.png" alt="pyGecko_Logo" width="300" height="300"/>
+
 *pyGecko an open-access python library for the parsing, processing and analysis of GC/MS and GC/FID raw data.*
 
 With increasing amounts of analytical and metadata generated in HTE, data processing and analysis quickly become a 
