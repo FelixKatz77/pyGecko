@@ -137,9 +137,7 @@ class RI_Calibration:
         '''
 
         seed_peak = self.calibration.flag_peak(rt, flag=f'C{c_count}')
-        for rt, peak in self.calibration.peaks.items():
-            if peak.flag == f'C{c_count}':
-                seed_rt = rt
+        seed_rt = seed_peak.rt
         rts = list(self.calibration.peaks.keys())
         index = rts.index(seed_rt)
         for i in range(index, len(self.calibration.peaks)):

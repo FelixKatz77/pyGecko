@@ -45,26 +45,78 @@ class MS_Injection(Injection):
         self.analysis_settings = Analysis_Settings(chromatogram)
         self.solvent_delay = chromatogram[0][0]
 
-    def match_mz(self, mz:float, smiles=None) -> MS_Peak|None:
+    def match_mz(self, mz:float) -> MS_Peak|list[MS_Peak]|None:
 
         '''
-        Returns the peak with the highest relative intensity for a given m/z.
+        Returns the peak or a list of peaks whose mass spectra contain the given m/z. Returns None if no peak was found
+        matching the criteria.
 
         Args:
             mz (float): m/z to match.
-            smiles (str): SMILES string of the analyte. Default is None.
 
         Returns:
-            MS_Peak|None: The peak with the highest relative intensity for the given m/z.
+            MS_Peak|list[MS_Peak]|None: The peak or a list of peaks whose mass spectra contain the given m/z or None if
+            no peak was found matching the criteria.
 
+        '''
+
+        candidates = []
+        for rt, peak in self.peaks.items():
+            if mz in peak.mass_spectrum['mz']:
+                index = np.where(peak.mass_spectrum['mz'] == mz)[0]
+                if peak.mass_spectrum['rel_intensity'][index][0] > 4 and mz > peak.mass_spectrum['mz'].max()*(2/3):
+                    candidates.append(peak)
+        if candidates:
+            if len(candidates) > 1:
+                print(f'Multiple peaks with m/z {mz} fitting the calculated isotope pattern were found for {self.sample_name}.')
+                return candidates
+            else:
+                return candidates[0]
+        return None
+
+    def match_mol(self, smiles:str) -> MS_Peak|None:
+
+        '''
+        Returns the peak with the lowest isotope error for the m/z corresponding to the given molecule's parent
+        peak. Returns None if no peak was found matching the criteria.
+
+        Args:
+            smiles (str): SMILES string of the analyte.
+
+        Returns:
+            MS_Peak|None: The peak with the lowest isotope error for the given molecule or None if no peak was
+            found matching the criteria.
+        '''
+
+        mol = Chem.MolFromSmiles(smiles)
+        mz = round(Descriptors.ExactMolWt(mol), 0)
+        peak = self.__match_mz_mol(mz, smiles=smiles)
+        if peak:
+            analyte = Analyte(peak.rt, smiles=smiles)
+            peak.analyte = analyte
+        return peak
+
+    def __match_mz_mol(self, mz:float, smiles:str) -> MS_Peak|None:
+
+        '''
+        Returns the peak with the lowest isotope error for a given m/z and molecule. Returns None if no peak was found
+        matching the criteria.
+
+        Args:
+            smiles (str): SMILES string of the analyte.
+            mz (float): m/z to match.
+
+        Returns:
+            MS_Peak|None: The peak with the lowest isotope error for the given m/z and molecule or None if no peak was
+            found matching the criteria.
         '''
 
         candidates = {}
         for rt, peak in self.peaks.items():
             if mz in peak.mass_spectrum['mz']:
                 index = np.where(peak.mass_spectrum['mz'] == mz)[0]
-                a = peak.mass_spectrum.size*(2/3)
-                if peak.mass_spectrum['rel_intensity'][index][0] > 4 and mz > peak.mass_spectrum['mz'].max()*(2/3): #TODO: Check if this is a good decision.
+                if peak.mass_spectrum['rel_intensity'][index][0] > 4 and mz > peak.mass_spectrum['mz'].max() * (
+                        2 / 3):  # TODO: Check if this is a good decision.
                     isotope_error = self.__isotope_check(smiles, peak, mz)
                     if isotope_error:
                         candidates[isotope_error] = peak
@@ -75,28 +127,6 @@ class MS_Injection(Injection):
             peak.analyte = Analyte(peak.rt, smiles=smiles)
             return peak
         return None
-
-    def match_mol(self, smiles:str) -> MS_Peak|None:
-
-        '''
-        Returns the peak with the highest relative intensity for the m/z corresponding to the given molecule's parent
-        peak.
-
-        Args:
-            smiles (str): SMILES string of the analyte.
-
-        Returns:
-            MS_Peak|None: The peak with the highest relative intensity for the given molecule's parent peak.
-        '''
-
-        mol = Chem.MolFromSmiles(smiles)
-        mz = round(Descriptors.ExactMolWt(mol), 0)
-        peak = self.match_mz(mz, smiles=smiles)
-        if peak:
-            analyte = Analyte(peak.rt, smiles=smiles)
-            peak.analyte = analyte
-        return peak
-
     def pick_peaks(self, inplace: bool = True, **kwargs: dict) -> None|dict[float, MS_Peak]:
 
         '''
