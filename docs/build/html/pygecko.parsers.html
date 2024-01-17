@@ -20,7 +20,9 @@
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pygecko.reaction package" href="pygecko.reaction.html" />
+    <link rel="prev" title="pygecko.gc_tools.sequence package" href="pygecko.gc_tools.sequence.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,66 +44,38 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">pygecko.parsers package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-pygecko.parsers.agilent_fid_parser">pygecko.parsers.agilent_fid_parser module</a><ul>
-<li><a class="reference internal" href="#pygecko.parsers.agilent_fid_parser.Agilent_FID_Parser"><code class="docutils literal notranslate"><span class="pre">Agilent_FID_Parser</span></code></a><ul>
-<li><a class="reference internal" href="#pygecko.parsers.agilent_fid_parser.Agilent_FID_Parser.load_injection"><code class="docutils literal notranslate"><span class="pre">Agilent_FID_Parser.load_injection()</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.parsers.agilent_fid_parser.Agilent_FID_Parser.load_ri_calibration"><code class="docutils literal notranslate"><span class="pre">Agilent_FID_Parser.load_ri_calibration()</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.parsers.agilent_fid_parser.Agilent_FID_Parser.load_sequence"><code class="docutils literal notranslate"><span class="pre">Agilent_FID_Parser.load_sequence()</span></code></a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#usage">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="pygecko.html">pygecko package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="pygecko.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pygecko.analysis.html">pygecko.analysis package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.data_handling.html">pygecko.data_handling package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.gc_tools.html">pygecko.gc_tools package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">pygecko.parsers package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-pygecko.parsers.agilent_fid_parser">pygecko.parsers.agilent_fid_parser module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-pygecko.parsers.agilent_ms_parser">pygecko.parsers.agilent_ms_parser module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-pygecko.parsers.fid_base_parser">pygecko.parsers.fid_base_parser module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-pygecko.parsers.file_readers">pygecko.parsers.file_readers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-pygecko.parsers.ms_base_parser">pygecko.parsers.ms_base_parser module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-pygecko.parsers.msconvert_wraper">pygecko.parsers.msconvert_wraper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-pygecko.parsers.utilities">pygecko.parsers.utilities module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-pygecko.parsers">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.reaction.html">pygecko.reaction package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.visualization.html">pygecko.visualization package</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-pygecko.parsers.agilent_ms_parser">pygecko.parsers.agilent_ms_parser module</a><ul>
-<li><a class="reference internal" href="#pygecko.parsers.agilent_ms_parser.Agilent_MS_Parser"><code class="docutils literal notranslate"><span class="pre">Agilent_MS_Parser</span></code></a><ul>
-<li><a class="reference internal" href="#pygecko.parsers.agilent_ms_parser.Agilent_MS_Parser.load_injection"><code class="docutils literal notranslate"><span class="pre">Agilent_MS_Parser.load_injection()</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.parsers.agilent_ms_parser.Agilent_MS_Parser.load_ri_calibration"><code class="docutils literal notranslate"><span class="pre">Agilent_MS_Parser.load_ri_calibration()</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.parsers.agilent_ms_parser.Agilent_MS_Parser.load_sequence"><code class="docutils literal notranslate"><span class="pre">Agilent_MS_Parser.load_sequence()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.html#module-pygecko">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 </ul>
-</li>
-<li><a class="reference internal" href="#module-pygecko.parsers.fid_base_parser">pygecko.parsers.fid_base_parser module</a><ul>
-<li><a class="reference internal" href="#pygecko.parsers.fid_base_parser.FID_Base_Parser"><code class="docutils literal notranslate"><span class="pre">FID_Base_Parser</span></code></a><ul>
-<li><a class="reference internal" href="#pygecko.parsers.fid_base_parser.FID_Base_Parser.load_injection"><code class="docutils literal notranslate"><span class="pre">FID_Base_Parser.load_injection()</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.parsers.fid_base_parser.FID_Base_Parser.load_sequence"><code class="docutils literal notranslate"><span class="pre">FID_Base_Parser.load_sequence()</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.parsers.fid_base_parser.FID_Base_Parser.read_xy_array"><code class="docutils literal notranslate"><span class="pre">FID_Base_Parser.read_xy_array()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-pygecko.parsers.file_readers">pygecko.parsers.file_readers module</a><ul>
-<li><a class="reference internal" href="#pygecko.parsers.file_readers.extract_scans_from_mzml"><code class="docutils literal notranslate"><span class="pre">extract_scans_from_mzml()</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.parsers.file_readers.extract_scans_from_mzxml"><code class="docutils literal notranslate"><span class="pre">extract_scans_from_mzxml()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-pygecko.parsers.ms_base_parser">pygecko.parsers.ms_base_parser module</a><ul>
-<li><a class="reference internal" href="#pygecko.parsers.ms_base_parser.MS_Base_Parser"><code class="docutils literal notranslate"><span class="pre">MS_Base_Parser</span></code></a><ul>
-<li><a class="reference internal" href="#pygecko.parsers.ms_base_parser.MS_Base_Parser.construct_chromatogram_from_scans"><code class="docutils literal notranslate"><span class="pre">MS_Base_Parser.construct_chromatogram_from_scans()</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.parsers.ms_base_parser.MS_Base_Parser.extract_scans_from_raw_data"><code class="docutils literal notranslate"><span class="pre">MS_Base_Parser.extract_scans_from_raw_data()</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.parsers.ms_base_parser.MS_Base_Parser.initialize_injection"><code class="docutils literal notranslate"><span class="pre">MS_Base_Parser.initialize_injection()</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.parsers.ms_base_parser.MS_Base_Parser.load_injection"><code class="docutils literal notranslate"><span class="pre">MS_Base_Parser.load_injection()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-pygecko.parsers.msconvert_wraper">pygecko.parsers.msconvert_wraper module</a><ul>
-<li><a class="reference internal" href="#pygecko.parsers.msconvert_wraper.msconvert"><code class="docutils literal notranslate"><span class="pre">msconvert()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-pygecko.parsers.utilities">pygecko.parsers.utilities module</a><ul>
-<li><a class="reference internal" href="#pygecko.parsers.utilities.find_directories_with_extension"><code class="docutils literal notranslate"><span class="pre">find_directories_with_extension()</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.parsers.utilities.list_files_and_directories"><code class="docutils literal notranslate"><span class="pre">list_files_and_directories()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-pygecko.parsers">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
+
         </div>
       </div>
     </nav>
@@ -116,6 +90,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="pygecko.html">pygecko package</a></li>
       <li class="breadcrumb-item active">pygecko.parsers package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/pygecko.parsers.rst.txt" rel="nofollow"> View page source</a>
@@ -286,7 +261,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>xy_file</strong> (<em>Path</em>) – Path to a xy_file.</p></li>
+<li><p><strong>xy_file</strong> (<em>Path</em><em>|</em><em>str</em>) – Path to a xy_file.</p></li>
 <li><p><strong>solvent_delay</strong> (<em>float</em>) – Solvent delay of the injection.</p></li>
 </ul>
 </dd>
@@ -295,6 +270,28 @@
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.fid_injection.FID_Injection" title="pygecko.gc_tools.injection.fid_injection.FID_Injection">FID_Injection</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.parsers.fid_base_parser.FID_Base_Parser.load_ri_calibration">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_ri_calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent_delay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration" title="pygecko.gc_tools.analysis.retention_indices.RI_Calibration"><span class="pre">RI_Calibration</span></a></span></span><a class="headerlink" href="#pygecko.parsers.fid_base_parser.FID_Base_Parser.load_ri_calibration" title="Link to this definition"></a></dt>
+<dd><p>Returns an RI_Calibration object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy_file</strong> (<em>Path</em><em>|</em><em>str</em>) – Path to a xy_file.</p></li>
+<li><p><strong>solvent_delay</strong> (<em>float</em>) – Solvent delay of the injection.</p></li>
+<li><p><strong>c_count</strong> (<em>int</em>) – Carbon count of the alkane the retention time is provided for.</p></li>
+<li><p><strong>rt</strong> (<em>float</em>) – Retention time of the alkane the c_count is provided for.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An RI_Calibration object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration" title="pygecko.gc_tools.analysis.retention_indices.RI_Calibration">RI_Calibration</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -414,7 +411,43 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pygecko.parsers.ms_base_parser.MS_Base_Parser.load_injection">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_injection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TemporaryDirectory</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.ms_injection.MS_Injection" title="pygecko.gc_tools.injection.ms_injection.MS_Injection"><span class="pre">MS_Injection</span></a></span></span><a class="headerlink" href="#pygecko.parsers.ms_base_parser.MS_Base_Parser.load_injection" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns an MS_Injection object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>raw_data_path</strong> (<em>str</em>) – Path to the raw data.</p></li>
+<li><p><strong>temp_dir</strong> (<em>tempfile.TemporaryDirectory</em>) – Temporary directory to store the converted mzML file. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An MS_Injection object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.ms_injection.MS_Injection" title="pygecko.gc_tools.injection.ms_injection.MS_Injection">MS_Injection</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.parsers.ms_base_parser.MS_Base_Parser.load_ri_calibration">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_ri_calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration" title="pygecko.gc_tools.analysis.retention_indices.RI_Calibration"><span class="pre">RI_Calibration</span></a></span></span><a class="headerlink" href="#pygecko.parsers.ms_base_parser.MS_Base_Parser.load_ri_calibration" title="Link to this definition"></a></dt>
+<dd><p>Returns an RI_Calibration object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>raw_directory</strong> (<em>str</em>) – Path to the directory containing the raw data.</p></li>
+<li><p><strong>c_count</strong> (<em>int</em>) – Number of carbon atoms for as specific alkane present in the standard.</p></li>
+<li><p><strong>rt</strong> (<em>float</em>) – Retention time of the alkane the c_count is provided for.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An RI_Calibration object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration" title="pygecko.gc_tools.analysis.retention_indices.RI_Calibration">RI_Calibration</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -459,7 +492,10 @@ saves them in the output directory.</p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pygecko.gc_tools.sequence.html" class="btn btn-neutral float-left" title="pygecko.gc_tools.sequence package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pygecko.reaction.html" class="btn btn-neutral float-right" title="pygecko.reaction package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

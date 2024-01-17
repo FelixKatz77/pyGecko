@@ -20,7 +20,9 @@
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pygecko.gc_tools.sequence package" href="pygecko.gc_tools.sequence.html" />
+    <link rel="prev" title="pygecko.gc_tools.injection package" href="pygecko.gc_tools.injection.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,80 +44,34 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">pygecko.gc_tools.peak package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-pygecko.gc_tools.peak.fid_peak">pygecko.gc_tools.peak.fid_peak module</a><ul>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak"><code class="docutils literal notranslate"><span class="pre">FID_Peak</span></code></a><ul>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.rt"><code class="docutils literal notranslate"><span class="pre">FID_Peak.rt</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.ri"><code class="docutils literal notranslate"><span class="pre">FID_Peak.ri</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.area"><code class="docutils literal notranslate"><span class="pre">FID_Peak.area</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.flag"><code class="docutils literal notranslate"><span class="pre">FID_Peak.flag</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.analyte"><code class="docutils literal notranslate"><span class="pre">FID_Peak.analyte</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.height"><code class="docutils literal notranslate"><span class="pre">FID_Peak.height</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.width"><code class="docutils literal notranslate"><span class="pre">FID_Peak.width</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.fid_peak.FID_Peak.boarders"><code class="docutils literal notranslate"><span class="pre">FID_Peak.boarders</span></code></a></li>
-<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">FID_Peak.boarders</span></code></a></li>
-<li><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">FID_Peak.height</span></code></a></li>
-<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">FID_Peak.width</span></code></a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#usage">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="pygecko.html">pygecko package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="pygecko.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pygecko.analysis.html">pygecko.analysis package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.data_handling.html">pygecko.data_handling package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="pygecko.gc_tools.html">pygecko.gc_tools package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="pygecko.gc_tools.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.html#module-pygecko.gc_tools.analyte">pygecko.gc_tools.analyte module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.html#module-pygecko.gc_tools.utilities">pygecko.gc_tools.utilities module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.gc_tools.html#module-pygecko.gc_tools">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.parsers.html">pygecko.parsers package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.reaction.html">pygecko.reaction package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.visualization.html">pygecko.visualization package</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-pygecko.gc_tools.peak.ms_peak">pygecko.gc_tools.peak.ms_peak module</a><ul>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak"><code class="docutils literal notranslate"><span class="pre">MS_Peak</span></code></a><ul>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.rt"><code class="docutils literal notranslate"><span class="pre">MS_Peak.rt</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.ri"><code class="docutils literal notranslate"><span class="pre">MS_Peak.ri</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.area"><code class="docutils literal notranslate"><span class="pre">MS_Peak.area</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.height"><code class="docutils literal notranslate"><span class="pre">MS_Peak.height</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.flag"><code class="docutils literal notranslate"><span class="pre">MS_Peak.flag</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.analyte"><code class="docutils literal notranslate"><span class="pre">MS_Peak.analyte</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.mass_spectrum"><code class="docutils literal notranslate"><span class="pre">MS_Peak.mass_spectrum</span></code></a></li>
-<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">MS_Peak.mass_spectrum</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.ms_peak.MS_Peak.view_mass_spectrum"><code class="docutils literal notranslate"><span class="pre">MS_Peak.view_mass_spectrum()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.html#module-pygecko">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 </ul>
-</li>
-<li><a class="reference internal" href="#module-pygecko.gc_tools.peak.peak">pygecko.gc_tools.peak.peak module</a><ul>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak"><code class="docutils literal notranslate"><span class="pre">Peak</span></code></a><ul>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak.rt"><code class="docutils literal notranslate"><span class="pre">Peak.rt</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak.ri"><code class="docutils literal notranslate"><span class="pre">Peak.ri</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak.area"><code class="docutils literal notranslate"><span class="pre">Peak.area</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak.height"><code class="docutils literal notranslate"><span class="pre">Peak.height</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak.flag"><code class="docutils literal notranslate"><span class="pre">Peak.flag</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak.Peak.analyte"><code class="docutils literal notranslate"><span class="pre">Peak.analyte</span></code></a></li>
-<li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">Peak.analyte</span></code></a></li>
-<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">Peak.area</span></code></a></li>
-<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">Peak.flag</span></code></a></li>
-<li><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">Peak.height</span></code></a></li>
-<li><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">Peak.ri</span></code></a></li>
-<li><a class="reference internal" href="#id9"><code class="docutils literal notranslate"><span class="pre">Peak.rt</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-pygecko.gc_tools.peak.peak_detection_fid">pygecko.gc_tools.peak.peak_detection_fid module</a><ul>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak_detection_fid.Peak_Detection_FID"><code class="docutils literal notranslate"><span class="pre">Peak_Detection_FID</span></code></a><ul>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak_detection_fid.Peak_Detection_FID.baseline_correction"><code class="docutils literal notranslate"><span class="pre">Peak_Detection_FID.baseline_correction()</span></code></a></li>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak_detection_fid.Peak_Detection_FID.pick_peaks"><code class="docutils literal notranslate"><span class="pre">Peak_Detection_FID.pick_peaks()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-pygecko.gc_tools.peak.peak_detection_ms">pygecko.gc_tools.peak.peak_detection_ms module</a><ul>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak_detection_ms.Peak_Detection_MS"><code class="docutils literal notranslate"><span class="pre">Peak_Detection_MS</span></code></a><ul>
-<li><a class="reference internal" href="#pygecko.gc_tools.peak.peak_detection_ms.Peak_Detection_MS.pick_peaks"><code class="docutils literal notranslate"><span class="pre">Peak_Detection_MS.pick_peaks()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-pygecko.gc_tools.peak">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
+
         </div>
       </div>
     </nav>
@@ -130,6 +86,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="pygecko.html">pygecko package</a></li>
+          <li class="breadcrumb-item"><a href="pygecko.gc_tools.html">pygecko.gc_tools package</a></li>
       <li class="breadcrumb-item active">pygecko.gc_tools.peak package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/pygecko.gc_tools.peak.rst.txt" rel="nofollow"> View page source</a>
@@ -552,7 +510,10 @@
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pygecko.gc_tools.injection.html" class="btn btn-neutral float-left" title="pygecko.gc_tools.injection package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pygecko.gc_tools.sequence.html" class="btn btn-neutral float-right" title="pygecko.gc_tools.sequence package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
