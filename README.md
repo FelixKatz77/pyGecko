@@ -1,26 +1,27 @@
 # pyGecko
 <img src="docs/pyGecko_icon.png" alt="pyGecko_Logo" width="300" height="300"/>
 
-> pyGecko an open-access python library for the parsing, processing and analysis of GC/MS and GC/FID raw data.
+> pyGecko an open-access python library for the parsing, processing and analysis of GC-MS and GC-FID raw data.
 
 With increasing amounts of analytical and metadata generated in HTE, data processing and analysis quickly become a 
 workflow's limiting step if conducted manually. The automated processing of analytical data opens up time for chemists 
 to focus on relevant outcomes, enables the standardized storage of reaction data, and facilitates the integration of 
 analytical methods into closed-loop systems. Herein we present pyGecko, an open-access python library for the parsing,
-processing and analysis of GC/MS and GC/FID raw data. pyGecko offers a variety of analysis tools for the automated or 
-semi-automated GC handling of measurements and sequences. This includes the interpretation of measurements in the context 
-of the experiment by reading in substrates and target compounds, as well as the automatic identification of internal 
-standards based on their retention time or mass spectrum. Compound identifications can be performed based on retention 
+processing and analysis of GC-MS and GC-FID raw data. pyGecko offers a variety of analysis tools for the automated or 
+semi-automated handling of GC measurements and sequences. This includes the interpretation of measurements in the context 
+of the experiment, the automatic identification of internal standards and compound identifications based on retention 
 times, the mass of a molecular ion or fragment and spectral comparison. Quantification relative to an internal standard 
-can be performed for GC-FID measurements. Results of an analysis as well as chromatograms and spectra can be compared, 
-visualized and reported in standardized formats like the Open Reaction Database (ORD) schema. pyGecko is designed to be 
-easily integrated into automated workflows and can be used as a stand-alone tool or as a python library.
+can be performed for GC-FID measurements. Results of an analysis as well as chromatograms and spectra can be visualized 
+and reported in standardized formats like the Open Reaction Database (ORD) schema. pyGecko is designed to be easily 
+integrated into automated workflows and can be used as a stand-alone tool or as a python library.
 
 ## Installation
 pyGecko can be installed via pip:
 
 ```bash 
-pip install pygecko
+git clone https://github.com/FelixKatz77/pyGecko.git
+cd pyGecko
+pip install ./
 ```
 > [!IMPORTANT]
 > To read vendor files you need to install the msConvert tool from ProteoWizard. You can download it from [here](http://proteowizard.sourceforge.net/download.html).
