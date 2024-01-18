@@ -1,4 +1,5 @@
 from setuptools import setup
+import setuptools
 
 setup(
     name='pyGecko',
@@ -8,12 +9,12 @@ setup(
     author='Felix Katzenburg',
     author_email='felix.katzenburg@uni-muenster.de',
     license='MIT License',
-    packages=['pygecko'],
     install_requires=[
         'brain_isotopic_distribution==1.5.14',
         'epam.indigo==1.13.0',
+        'lxml==5.1.0',
         'matplotlib==3.6.2',
-        'numpy>=1.23.5',
+        'numpy==1.23.5',
         'ord_schema==0.3.37',
         'pandas==2.0.3',
         'pybaselines==1.0.0',
@@ -34,4 +35,7 @@ setup(
         'Operating System :: Microsoft :: Windows :: Windows 11',
         'Programming Language :: Python :: 3.10'
     ],
+    include_package_data=True,
+    packages=setuptools.find_packages(),
+    python_requires='>=3.10',
 )
