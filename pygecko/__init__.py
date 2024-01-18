@@ -1,13 +1,15 @@
-from pygecko.parsers import *
-from pygecko.gc_tools import *
-from pygecko.analysis import *
-from pygecko.data_handling import *
-from pygecko.visualization import *
-from pygecko.reaction import *
+"""
+pyGecko
 
+An open-access python library for the parsing, processing and analysis of GC/MS and GC/FID raw data.
+"""
 import configparser
 import pathlib
 from pathlib import Path
+
+__version__ = '0.1.0'
+__author__ = 'Felix Katzenburg'
+__credits__ = 'Muenster University'
 
 config = configparser.ConfigParser()
 config_path = Path(__file__).parent.joinpath('config.ini')
