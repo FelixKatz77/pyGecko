@@ -191,6 +191,22 @@ class Injection:
 
         Visualization.view_chromatogram(self, path=path, **kwargs)
 
+    def _check_for_peak(self, chromatogram_slice) -> list[bool]:
+
+        '''
+        Takes in a chromatogram slice, returns a list of booleans indicating where a peak is present in the slice.
+        '''
+
+        bool_list = []
+
+        for scan in chromatogram_slice:
+            peak_assignment = False
+            for peak in self.peaks.values():
+                if peak.boarders[0] <= scan <= peak.boarders[1]:
+                    peak_assignment = True
+            bool_list.append(peak_assignment)
+        return bool_list
+
     def save(self, filename: str) -> None:
         '''
         Saves an Injection to a .pkl file.

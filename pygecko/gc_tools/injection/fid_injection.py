@@ -148,20 +148,3 @@ class FID_Injection(Injection):
         injection_info.to_csv(path, header=False)
         peaks_info.to_csv(path, mode='a')
 
-    def _check_for_peak(self, chromatogram_slice) -> list[bool]:
-
-        '''
-        Takes in a chromatogram slice, returns a list of booleans indicating where a peak is present in the slice.
-        '''
-
-        #scans = Utilities.convert_time_to_scan(chromatogram_slice - self.solvent_delay, self.analysis_settings.scan_rate)
-        scans = chromatogram_slice
-        bool_list = []
-
-        for scan in scans:
-            peak_assignment = False
-            for peak in self.peaks.values():
-                if peak.boarders[0] <= scan <= peak.boarders[1]:
-                    peak_assignment = True
-            bool_list.append(peak_assignment)
-        return bool_list

@@ -8,8 +8,6 @@ from copy import copy
 from pygecko.gc_tools.analysis.analysis_settings import Analysis_Settings
 from pygecko.gc_tools.peak.fid_peak import FID_Peak
 
-
-
 class Peak_Detection_FID:
     '''
     A class wrapping functions to detect peaks in FID chromatograms.
@@ -78,13 +76,13 @@ class Peak_Detection_FID:
         peak_indices, peak_properties = find_peaks(chrom_corr[1], prominence=prominence, width=width,
                                                    height=height)
         peak_widths, peak_heights = peak_properties['widths'], peak_properties['peak_heights']
-        peak_boarders = Peak_Detection_FID.__detect_boarders(chrom_corr, peak_indices, peak_widths,
+        peak_boarders = Peak_Detection_FID.__detect_borders(chrom_corr, peak_indices, peak_widths,
                                                              analysis_settings)
         peak_boarders = Peak_Detection_FID.__resolve_boarder_overlap(peak_boarders, peak_indices, chrom_corr)
         peak_areas = Peak_Detection_FID.__calculate_areas(chrom_corr, peak_boarders)
         peak_widths = [((boarder[1] - boarder[0])*analysis_settings.scan_rate) for boarder in peak_boarders]
         peak_indices = peak_indices + indices_range[0]
-        peak_boarders = [((boarder + indices_range[0])*analysis_settings.scan_rate) + chrom_corr[0][0] for boarder in peak_boarders]
+        peak_boarders = ((peak_boarders+indices_range[0])*analysis_settings.scan_rate) + chrom_corr[0][0]
         peak_rts = chrom_corr[0][peak_indices]
         return peak_rts, peak_widths, peak_heights, peak_boarders, peak_areas
 
@@ -151,7 +149,7 @@ class Peak_Detection_FID:
         return best_window
 
     @staticmethod
-    def __detect_boarders(chromatogram: np.ndarray, peak_indices: np.ndarray, peak_widths,
+    def __detect_borders(chromatogram: np.ndarray, peak_indices: np.ndarray, peak_widths: np.ndarray,
                           analysis_settings: Analysis_Settings) -> np.ndarray:
 
         '''
@@ -168,30 +166,79 @@ class Peak_Detection_FID:
         '''
 
         first_diff = np.diff(chromatogram[1]) / analysis_settings.scan_rate
-        threshold = analysis_settings.pop('boarder_threshold', abs(np.mean(first_diff))*0.5)
-        window = analysis_settings.pop('boarder_window', 100)
-        boarders = np.empty((peak_indices.shape[0], 2), int)
+        boarder_threshold = analysis_settings.pop('boarder_threshold', abs(np.mean(first_diff))*0.5)
+        boarder_window = analysis_settings.pop('boarder_window', 100)
+        boarders = np.empty((len(peak_indices), 2), int)
+
         for i, index in enumerate(peak_indices):
-            _l = int(round(index - peak_widths[i] / 2, 0))
-            interval = first_diff[_l - window:_l]
-            while np.mean(interval) > threshold:
-                _l -= 1
-                interval = first_diff[_l - window:_l]
-            left = _l - window / 4
-            if left < 0:
-                left = 0
-            _r = int(round(index + peak_widths[i] / 2, 0))
-            interval = first_diff[_r:_r + window]
-            while abs(np.mean(interval)) > threshold:
-                _r += 1
-                interval = first_diff[_r:_r + window]
-            right = _r + window / 4
-            if right > chromatogram.shape[1]:
-                right = chromatogram.shape[1]
-            boarder = [left, right]
-            boarders[i] = boarder
+            left = Peak_Detection_FID.__find_left_boarder(index, peak_widths[i], first_diff, boarder_threshold,
+                                                          boarder_window)
+            right = Peak_Detection_FID.__find_right_boarder(chromatogram[1], index, peak_widths[i], first_diff,
+                                                            boarder_threshold, boarder_window)
+            boarders[i] = [left, right]
         return boarders
 
+    @staticmethod
+    def __find_left_boarder(index:int, peak_width:int, first_diff:np.ndarray, threshold:float, window:int) -> int:
+
+        '''
+        Returns the left boarder of a peak in a chromatogram.
+
+        Args:
+            index (int): The index of the peak to find the left boarder for.
+            peak_width (int): The width of the peak.
+            first_diff (np.ndarray): The first derivative of the chromatogram.
+            threshold (float): The threshold for the first derivative.
+            window (int): The window size for the boarder detection.
+
+        Returns:
+            int: The left boarder of the peak.
+        '''
+
+        _l = int(round(index - peak_width / 2, 0))
+        if _l <= 0:
+            return 0
+        left = max(0, _l - window)
+
+        while np.mean(first_diff[int(left):_l]) > threshold:
+            _l -= 1
+            if _l <= 0:
+                break
+            left = max(0, _l - window)
+        left = max(0, _l - window / 4)
+        return left
+
+    @staticmethod
+    def __find_right_boarder(chromatogram: np.ndarray, index: int, peak_width: int, first_diff: np.ndarray,
+                             threshold: float, window: int) -> int:
+
+        '''
+        Returns the right boarder of a peak in a chromatogram.
+
+        Args:
+            chromatogram (np.ndarray): The intensity values of the chromatogram.
+            index (int): The index of the peak to find the right boarder for.
+            peak_width (int): The width of the peak.
+            first_diff (np.ndarray): The first derivative of the chromatogram.
+            threshold (float): The threshold for the first derivative.
+            window (int): The window size for the boarder detection.
+
+        Returns:
+            int: The right boarder of the peak.
+        '''
+
+        _r = int(round(index + peak_width / 2, 0))
+        if _r >= first_diff.shape[0]:
+            return chromatogram.shape[1]
+        right = min(first_diff.shape[0], _r + window)
+
+        while abs(np.mean(first_diff[_r:int(right)])) > threshold:
+            _r += 1
+            if _r >= first_diff.shape[0]:
+                break
+            right = min(first_diff.shape[0], _r + window)
+        right = min(chromatogram.shape[0], _r + window / 4)
+        return right
     @staticmethod
     def __resolve_boarder_overlap(boarders: np.ndarray, peak_indices: np.ndarray, chromatogram:np.ndarray) -> np.ndarray:
 

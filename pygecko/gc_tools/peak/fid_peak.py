@@ -14,19 +14,10 @@ class FID_Peak(Peak):
         flag (None|str): Flag of the peak.
         analyte (None|Analyte): Analyte of the peak.
         height (float): Height of the peak.
+        boarders (np.ndarray): Boarders of the peak.
         width (float): Width of the peak.
         boarders (np.ndarray): Boarders of the peak.
     '''
 
-    height: float
-    width: float
-    boarders: np.ndarray
-
-    __slots__ = 'height', 'width', 'boarders'
-
-
     def __init__(self, rt: float, height: float, width: float, boarders: np.ndarray, area: float):
-        super().__init__(rt, height, area=area)
-        self.height = height
-        self.width = width
-        self.boarders = boarders
+        super().__init__(rt, height, width, boarders, area=area)

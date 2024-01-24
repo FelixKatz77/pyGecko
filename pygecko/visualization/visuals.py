@@ -124,7 +124,7 @@ class Visualization:
 
         ax.plot(x, y, color=color, lw=linewidth, **kwargs)
 
-        if highlight_peaks and injection.detector == 'FID':
+        if highlight_peaks:
             ax.fill_between(x, y.min(), y.max(), where=injection._check_for_peak(x),
                              color='#005573', alpha=0.1, transform=ax.get_xaxis_transform())
 

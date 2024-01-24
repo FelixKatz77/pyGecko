@@ -13,6 +13,8 @@ class MS_Peak(Peak):
         ri (Union[None, float]): Retention index of the peak.
         area (Union[None, float]): Area of the peak. Defaults to None.
         height (float): Height of the peak.
+        width (float): Width of the peak.
+        boarders (np.ndarray): Boarders of the peak.
         flag (Union[None, str]): Flag of the peak.
         analyte (Union[None, Analyte]): Analyte of the peak.
         mass_spectrum (np.ndarray): Mass spectrum of the peak.
@@ -22,8 +24,9 @@ class MS_Peak(Peak):
 
     __slots__ = 'mass_spectrum'
 
-    def __init__(self, rt: float, height: float, mass_spectrum: np.ndarray, area=None):
-        super().__init__(rt, height, area=area)
+    def __init__(self, rt: float, height: float, width: float, boarders: np.ndarray, mass_spectrum: np.ndarray,
+                 area=None):
+        super().__init__(rt, height, width, boarders, area=area)
         self.mass_spectrum = mass_spectrum
 
     def view_mass_spectrum(self, path:str|None=None, **kwargs) -> None:
