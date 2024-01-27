@@ -1,5 +1,4 @@
 from pygecko.parsers import Agilent_FID_Parser, Agilent_MS_Parser
-from pygecko.gc_tools import load_sequence
 from pygecko.reaction import Transformation, Reaction_Array
 from pygecko.visualization.visuals import Visualization
 from pygecko.analysis.analysis import Analysis
@@ -8,20 +7,20 @@ from pygecko.reaction import Reaction_Parser
 def main():
 
     # Files with GC-MS and GC-FID data of the reaction array.
-    ms_path = 'Thiolation_Plate_GC_Data/MS'
-    fid_path = 'Thiolation_Plate_GC_Data/FID'
+    ms_path = 'Buchwald-Hartwig_Plate_GC_Data/MS'
+    fid_path = 'Buchwald-Hartwig_Plate_GC_Data/FID'
 
     # Files and folders with the retention index calibration data.
-    ms_ri_path = 'Thiolation_Plate_GC_Data/RI/MS'
-    fid_ri_path = 'Thiolation_Plate_GC_Data/RI/FID'
+    ms_ri_path = 'Buchwald-Hartwig_Plate_GC_Data/RI/MS'
+    fid_ri_path = 'Buchwald-Hartwig_Plate_GC_Data/RI/FID'
 
     # Files with the reaction layout and reaction metadata.
-    layout_path = 'Thiolation_Plate_GC_Data/plate_layout.csv'
-    meta_data_path = 'Thiolation_Plate_GC_Data/meta_data.json'
+    layout_path = 'Buchwald-Hartwig_Plate_GC_Data/plate_layout.csv'
+    meta_data_path = 'Buchwald-Hartwig_Plate_GC_Data/meta_data.json'
 
     # Reaction SMARTS used to map substrates to products.
     rxn = Transformation(
-        '[c:1]1([a:2][a:3][a:4][a:5]1)[Cl,Br:6].[SH1:7][#6:8]>>[c:1]1([a:2][a:3][a:4][a:5]1)[S:7][#6:8]')
+        '[C,c:1][Nh1,Nh2,nh1:2].[Br,Cl:3][C,c:4]>>[C,c:1][N,n:2][C,c:4]')
 
     # Create a Well_Plate object from the reaction layout and reaction SMARTS.
     layout = Reaction_Array(layout_path, rxn, meta_data_file=meta_data_path)
@@ -32,14 +31,14 @@ def main():
 
     # Pick peaks in the GC-MS and GC-FID data.
     fid_sequence.pick_peaks()
-    ms_sequence.pick_peaks()
+    ms_sequence.pick_peaks(prominence_ms=125)
 
     # Set the internal standard for the GC-FID data.
-    fid_sequence.set_internal_standard(3.407, name='Dodecane', smiles='CCCCCCCCCCCC')
+    fid_sequence.set_internal_standard(4.593, name='Dodecane', smiles='CCCCCCCCCCCC')
 
     # Load the retention index calibration data.
-    ri_conf_ms = Agilent_MS_Parser.load_ri_calibration(ms_ri_path,12, rt=2.255)
-    ri_conf_fid = Agilent_FID_Parser.load_ri_calibration(fid_ri_path, 2.4, c_count=12, rt=3.394)
+    ri_conf_ms = Agilent_MS_Parser.load_ri_calibration(ms_ri_path, 10, rt=2.154)
+    ri_conf_fid = Agilent_FID_Parser.load_ri_calibration(fid_ri_path, 2.7, c_count=12, rt=4.593)
 
     # Assign retention indices to the GC-MS and GC-FID data.
     ri_conf_ms.assign_ris(ms_sequence)
@@ -50,11 +49,11 @@ def main():
 
     # Generate plate heatmap.
     Visualization.visualize_plate(yield_array['quantity'], well_labels=True,
-                                  row_labels=["1", "2", "3", "4", "5", "6$^a$", "7$^a$", "8"],
-                                  col_labels=["9", "10", "11", "12", "13", "14", "15", "16", "17", "18$^b$", "19",
-                                              "20"])
+                                  row_labels=["21", "22", "23", "24", "25", "26", "27", "28"],
+                                  col_labels=["29$^a$", "30$^a$", "31$^a$", "32$^a$", "33$^a$", "34$^a$", "29$^b$",
+                                              "30$^b$", "31$^b$", "32$^b$", "33$^b$", "34$^b$"])
     # Generate ORD dataset.
-    Reaction_Parser.build_dataset(layout, yield_array['quantity'], 'heteroarene_thiolation.pbtxt')
+    Reaction_Parser.build_dataset(layout, yield_array['quantity'], 'buchwald_hartwig.pbtxt')
 
 if __name__ == '__main__':
     main()
