@@ -1,4 +1,5 @@
 import tempfile
+import numpy as np
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
@@ -30,7 +31,9 @@ class Agilent_MS_Parser:
             MS_Sequence: An MS_Sequence object
         '''
 
+        print('Loading GC-MS sequence...')
         sequence_metadata, injections = cls.__load_sequence_data(sequence_directory, pos=pos)
+        print(f'Sequence loaded with {len(injections)} injections.')
         return MS_Sequence(sequence_metadata, injections)
 
     @classmethod
@@ -193,8 +196,8 @@ class Agilent_MS_Parser:
             MS_Injection: An MS_Injection object
         '''
 
-        scans = MS_Base_Parser.extract_scans_from_raw_data(path, temp_dir=temp_dir)
-        chromatogram = MS_Base_Parser.construct_chromatogram_from_scans(scans)
+        scans = MS_Base_Parser.extract_scans_from_raw_data(path, temp_dir=temp_dir)[0]
+        chromatogram = np.array([scans.index / 60000, scans.sum(axis=1)])
         injection = MS_Injection(metadata, chromatogram, None, scans, pos=pos)
         return injection
 

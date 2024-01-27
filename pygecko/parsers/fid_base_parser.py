@@ -20,6 +20,7 @@ class FID_Base_Parser:
             FID_Sequence: An FID_Sequence object.
         '''
 
+        print('Loading GC-FID sequence...')
         xy_directory = Path(xy_directory)
         supported_formats = ['.xy', '.CSV']
         xy_files = []
@@ -29,10 +30,11 @@ class FID_Base_Parser:
         for xy_file in xy_files:
             injection = FID_Base_Parser.load_injection(xy_file, solvent_delay, pos=pos)
             injections[injection.sample_name] = injection
+        print(f'Sequence loaded with {len(injections)} injections.')
         return FID_Sequence({}, injections)
 
-    @classmethod
-    def load_ri_calibration(cls, xy_file: Path|str, solvent_delay, c_count: int, rt: float) -> RI_Calibration:
+    @staticmethod
+    def load_ri_calibration(xy_file: Path|str, solvent_delay, c_count: int, rt: float) -> RI_Calibration:
 
         '''
         Returns an RI_Calibration object.

@@ -18,6 +18,7 @@ setup(
         'ord_schema==0.3.37',
         'pandas==2.0.3',
         'pybaselines==1.0.0',
+        'pymzml==2.5.2',
         'pyteomics==4.6.2',
         'rdkit==2023.3.1',
         'reportlab==4.0.5',

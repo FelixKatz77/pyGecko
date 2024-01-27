@@ -1,4 +1,6 @@
+import sys, os
 from pathlib import Path
+
 
 def list_files_and_directories(directory_path):
     # Create a Path object for the directory
@@ -23,13 +25,11 @@ def find_directories_with_extension(directory_path, extension):
 
     return matching_directories
 
-if __name__ == "__main__":
-    # Provide the path to the directory
-    directory_path = r"C:\Users\felix\Documents\sciebo\AK\Research\pyGECKO\pyGECKO\data"
+class HiddenPrints:
+    def __enter__(self):
+        self._original_stdout = sys.stdout
+        sys.stdout = open(os.devnull, 'w')
 
-    # Call the function and store the result in a variable
-    file_paths = list_files_and_directories(directory_path)
-
-    # Print the result
-    print(file_paths)
-    print()
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        sys.stdout.close()
+        sys.stdout = self._original_stdout

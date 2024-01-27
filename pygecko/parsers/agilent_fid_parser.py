@@ -28,8 +28,10 @@ class Agilent_FID_Parser:
             FID_Sequence: An FID_Sequence object
         '''
 
+        print('Loading GC-FID sequence...')
         acaml_file = list(Path(raw_directory).glob('*.acaml'))[0]
         sequence_metadata, injections = cls.__load_sequence_data(acaml_file, raw_directory, solvent_delay, pos=pos)
+        print(f'Sequence loaded with {len(injections)} injections.')
         return FID_Sequence(sequence_metadata, injections)
 
     @classmethod
