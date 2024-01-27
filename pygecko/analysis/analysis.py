@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from pygecko.gc_tools.sequence import MS_Sequence, FID_Sequence
 from pygecko.gc_tools.analyte import Analyte
-from pygecko.reaction import Well_Plate
+from pygecko.reaction import Reaction_Array, Product_Array
 from numpy.lib.recfunctions import unstructured_to_structured
 
 
@@ -13,8 +13,8 @@ class Analysis:
     '''
 
     @staticmethod
-    def calc_plate_yield(ms_sequence: MS_Sequence, fid_sequence: FID_Sequence, layout: Well_Plate,
-                                 path: str|None = None):
+    def calc_plate_yield(ms_sequence: MS_Sequence, fid_sequence: FID_Sequence, layout: Reaction_Array|Product_Array,
+                         path: str|None = None):
 
         '''
         Matches GC-MS and GC-FID peaks and quantifies the yields of the reactions.
@@ -22,7 +22,8 @@ class Analysis:
         Args:
             ms_sequence (MS_Sequence): MS_Sequence object containing the GC-MS data.
             fid_sequence (FID_Sequence): FID_Sequence object containing the GC-FID data.
-            layout (Well_Plate): Well_Plate object containing the combinatorial reaction layout.
+            layout (Reaction_Array|Product_Array): Reaction_Array or Product_Array object containing the reaction
+            layout.
             path (str|None, optional): Path to write the results to. Defaults to None.
 
         Returns:
@@ -32,8 +33,8 @@ class Analysis:
         return Analysis.__match_and_quantify_plate(ms_sequence, fid_sequence, layout, path, mode='yield')
 
     @staticmethod
-    def calc_plate_conv(ms_sequence: MS_Sequence, fid_sequence: FID_Sequence, layout: Well_Plate,
-                                 path: str|None = None, index:int=0):
+    def calc_plate_conv(ms_sequence: MS_Sequence, fid_sequence: FID_Sequence, layout: Reaction_Array,
+                        path: str|None = None, index:int=0):
 
         '''
         Matches GC-MS and GC-FID peaks and quantifies the conversion of the reactions.
@@ -41,7 +42,7 @@ class Analysis:
         Args:
             ms_sequence (MS_Sequence): MS_Sequence object containing the GC-MS data.
             fid_sequence (FID_Sequence): FID_Sequence object containing the GC-FID data.
-            layout (Well_Plate): Well_Plate object containing the combinatorial reaction layout.
+            layout (Reaction_Array): Well_Plate object containing the combinatorial reaction layout.
             path (str|None, optional): Path to write the results to. Defaults to None.
 
         Returns:
@@ -51,8 +52,8 @@ class Analysis:
         return Analysis.__match_and_quantify_plate(ms_sequence, fid_sequence, layout, path, mode='conv', index=index)
 
     @staticmethod
-    def __match_and_quantify_plate(ms_sequence: MS_Sequence, fid_sequence: FID_Sequence, layout: Well_Plate,
-                                 path: str|None = None, mode:str='yield', index:int=0) -> np.ndarray:
+    def __match_and_quantify_plate(ms_sequence: MS_Sequence, fid_sequence: FID_Sequence, layout: Reaction_Array,
+                                   path: str|None = None, mode:str='yield', index:int=0) -> np.ndarray:
 
         '''
         Matches GC-MS and GC-FID peaks and quantifies the yields/conversion of the reactions.
@@ -60,7 +61,7 @@ class Analysis:
         Args:
             ms_sequence (MS_Sequence): MS_Sequence object containing the GC-MS data.
             fid_sequence (FID_Sequence): FID_Sequence object containing the GC-FID data.
-            layout (Well_Plate): Well_Plate object containing the combinatorial reaction layout.
+            layout (Reaction_Array): Well_Plate object containing the combinatorial reaction layout.
             path (str|None, optional): Path to write the results to. Defaults to None.
             mode (str, optional): Parameter (yield or conversion) to quantify. Defaults to 'yield'.
 
@@ -94,8 +95,8 @@ class Analysis:
         return results_array
 
     @staticmethod
-    def __match_and_quantify(ms_sequence: MS_Sequence, fid_sequence: FID_Sequence, layout: Well_Plate, mode: str,
-                           index: int = 0) -> dict[str, list[float, str]]:
+    def __match_and_quantify(ms_sequence: MS_Sequence, fid_sequence: FID_Sequence, layout: Reaction_Array, mode: str,
+                             index: int = 0) -> dict[str, list[float, str]]:
 
         '''
                 Matches GC-MS and GC-FID peaks and quantifies the yields of the reactions.
@@ -103,7 +104,7 @@ class Analysis:
                 Args:
                     ms_sequence (MS_Sequence): MS_Sequence object containing the GC-MS data.
                     fid_sequence (FID_Sequence): FID_Sequence object containing the GC-FID data.
-                    layout (Well_Plate): Well_Plate object containing the combinatorial reaction layout.
+                    layout (Reaction_Array): Well_Plate object containing the combinatorial reaction layout.
 
                 Returns:
                     dict: Dictionary containing the yields, retention times and the analyte smiles for each well.

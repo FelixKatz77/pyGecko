@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from datetime import datetime
-from pygecko.reaction.well_plate import Well_Plate
+from pygecko.reaction.array import Reaction_Array
 from ord_schema.proto import reaction_pb2
 from ord_schema.proto import dataset_pb2
 from ord_schema.units import UnitResolver
@@ -17,14 +17,14 @@ class Reaction_Parser:
     '''
 
     @classmethod
-    def build_dataset(cls, layout: Well_Plate, yield_array: np.ndarray,
+    def build_dataset(cls, layout: Reaction_Array, yield_array: np.ndarray,
                       path: str|None = None) -> dataset_pb2.Dataset:
 
         '''
         Returns a ORD dataset created from a combinatorial reaction layout and writes it to a file if a path is given.
 
         Args:
-            layout (Well_Plate): Well_Plate object containing the combinatorial reaction layout.
+            layout (Reaction_Array): Well_Plate object containing the combinatorial reaction layout.
             yield_array (np.ndarray): Numpy array containing the yields of the reactions.
             path (str|None, optional): Path to write the dataset to. Defaults to None.
 
@@ -38,13 +38,13 @@ class Reaction_Parser:
         return dataset
 
     @classmethod
-    def create_dataset_from_layout(cls, layout:Well_Plate, yield_array:np.ndarray) -> dataset_pb2.Dataset:
+    def create_dataset_from_layout(cls, layout:Reaction_Array, yield_array:np.ndarray) -> dataset_pb2.Dataset:
 
         '''
         Returns a ORD dataset created from a combinatorial reaction layout.
 
         Args:
-            layout (Well_Plate): Well_Plate object containing the combinatorial reaction layout.
+            layout (Reaction_Array): Well_Plate object containing the combinatorial reaction layout.
             yield_array (np.ndarray): Numpy array containing the yields of the reactions.
 
         Returns:

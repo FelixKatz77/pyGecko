@@ -4,22 +4,22 @@ import xarray as xr
 from rdkit import Chem
 from rdkit.Chem import Descriptors
 
-from pygecko.reaction.layout import Combinatorial_Layout
+from pygecko.reaction.layout import Combinatorial_Layout, Product_Layout
 from pygecko.reaction.transformation import Transformation
 
 
 
-class Well_Plate(Combinatorial_Layout):
+class Reaction_Array(Combinatorial_Layout):
 
     '''
-    A class for storing information about a combinatorial reaction layout in a well plate.
+    A class for storing information about the combinatorial layout of a reaction array.
 
     Attributes:
-        design (xr.DataArray): xarray DataArray containing the combinatorial design of the well plate.
-        rows (dict): Dictionary containing the mapping of the well plate rows to the combinatorial dimensions of the
-        well plate.
-        columns (dict): Dictionary containing the mapping of the well plate columns to the combinatorial dimensions of
-        the well plate.
+        design (xr.DataArray): xarray DataArray containing the combinatorial design of the reaction array.
+        rows (dict): Dictionary containing the mapping of the reaction array rows to the combinatorial dimensions of the
+        reaction array.
+        columns (dict): Dictionary containing the mapping of the reaction array columns to the combinatorial dimensions
+        ofthe reaction array.
     '''
 
     def __init__(self, layout_file:Path|str, transformation:Transformation, meta_data_file:str|None=None):
@@ -125,3 +125,58 @@ class Well_Plate(Combinatorial_Layout):
         for i in sorted(set(del_entries), reverse=True):
             del self.meta_data['stock_solutions'][i]
         self.meta_data['stock_solutions'].extend(new_entries)
+
+
+class Product_Array(Product_Layout):
+
+    '''
+    A class for storing information about the products of a reaction array.
+
+    Attributes:
+        design (xr.DataArray): xarray DataArray containing the product design of the reaction array.
+    '''
+
+    def __init__(self, layout_file:Path|str):
+        super().__init__(layout_file)
+        self.design = xr.DataArray(self.array, dims=['x', 'y'],
+                                   coords={'x': list(map(chr, range(65, 65 + self.array.shape[0]))),
+                                           'y': list(range(1, self.array.shape[1] + 1))})
+
+    def __getitem__(self, pos:str) -> list|str:
+
+        '''
+        Takes a well position and returns the product in this position.
+        '''
+
+        item = self.design.loc[pos[0], int(pos[1:])].item()
+        return item
+
+    def get_product_mw(self, pos: str):
+        '''
+        Returns the molecular weight of the product in the given position.
+
+        Args:
+            pos (str): Well position.
+
+        Returns:
+            float: Molecular weight of the product.
+
+        '''
+
+        product = self[pos]
+        mol = Chem.MolFromSmiles(product)
+        mw = Descriptors.ExactMolWt(mol)
+        return mw
+
+    def get_product_mz(self, pos: str):
+        '''
+        Returns the mass to charge ratio of the single charged product in the given position.
+        Args:
+            pos (str): Well position.
+
+        Returns:
+            float: Mass to charge ratio of the single charged product.
+        '''
+
+        mw = self.get_product_mw(pos)
+        return round(mw, 0)

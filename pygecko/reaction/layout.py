@@ -39,4 +39,24 @@ class Combinatorial_Layout:
         self.array = np.array([[x + '.' + y for y in arr2] for x in arr1])
 
 
+class Product_Layout:
 
+    '''
+    A class for storing information about a product layout.
+
+    Attributes:
+        layout (pd.DataFrame): DataFrame containing the product layout.
+        dimensions (int): Number of dimensions of the layout.
+        array (np.ndarray): A numpy array containing the layout.
+    '''
+
+    layout: pd.DataFrame
+    dimensions:int
+    array: np.ndarray
+
+    __slots__ = 'layout', 'dimensions', 'array'
+
+    def __init__(self, layout_file: Path|str):
+        self.layout = pd.read_csv(layout_file)
+        self.dimensions = self.layout.shape[1]
+        self.array = self.layout.to_numpy(dtype=str)
