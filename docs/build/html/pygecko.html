@@ -35,6 +35,7 @@
           
           <a href="index.html" class="icon icon-home">
             pyGecko
+              <img src="_static/pyGecko_icon.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -225,11 +226,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="pygecko.parsers.html#module-pygecko.parsers.ms_base_parser">pygecko.parsers.ms_base_parser module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="pygecko.parsers.html#pygecko.parsers.ms_base_parser.MS_Base_Parser"><code class="docutils literal notranslate"><span class="pre">MS_Base_Parser</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pygecko.parsers.html#pygecko.parsers.ms_base_parser.MS_Base_Parser.construct_chromatogram_from_scans"><code class="docutils literal notranslate"><span class="pre">MS_Base_Parser.construct_chromatogram_from_scans()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pygecko.parsers.html#pygecko.parsers.ms_base_parser.MS_Base_Parser.extract_scans_from_raw_data"><code class="docutils literal notranslate"><span class="pre">MS_Base_Parser.extract_scans_from_raw_data()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pygecko.parsers.html#pygecko.parsers.ms_base_parser.MS_Base_Parser.initialize_injection"><code class="docutils literal notranslate"><span class="pre">MS_Base_Parser.initialize_injection()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pygecko.parsers.html#pygecko.parsers.ms_base_parser.MS_Base_Parser.load_injection"><code class="docutils literal notranslate"><span class="pre">MS_Base_Parser.load_injection()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pygecko.parsers.html#pygecko.parsers.ms_base_parser.MS_Base_Parser.load_ri_calibration"><code class="docutils literal notranslate"><span class="pre">MS_Base_Parser.load_ri_calibration()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.parsers.html#pygecko.parsers.ms_base_parser.MS_Base_Parser.load_sequence"><code class="docutils literal notranslate"><span class="pre">MS_Base_Parser.load_sequence()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -239,6 +240,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="pygecko.parsers.html#module-pygecko.parsers.utilities">pygecko.parsers.utilities module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.parsers.html#pygecko.parsers.utilities.HiddenPrints"><code class="docutils literal notranslate"><span class="pre">HiddenPrints</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="pygecko.parsers.html#pygecko.parsers.utilities.find_directories_with_extension"><code class="docutils literal notranslate"><span class="pre">find_directories_with_extension()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="pygecko.parsers.html#pygecko.parsers.utilities.list_files_and_directories"><code class="docutils literal notranslate"><span class="pre">list_files_and_directories()</span></code></a></li>
 </ul>
@@ -262,6 +264,15 @@
 <li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#id4"><code class="docutils literal notranslate"><span class="pre">Combinatorial_Layout.transformation</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.layout.Product_Layout"><code class="docutils literal notranslate"><span class="pre">Product_Layout</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.layout.Product_Layout.layout"><code class="docutils literal notranslate"><span class="pre">Product_Layout.layout</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.layout.Product_Layout.dimensions"><code class="docutils literal notranslate"><span class="pre">Product_Layout.dimensions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.layout.Product_Layout.array"><code class="docutils literal notranslate"><span class="pre">Product_Layout.array</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#id5"><code class="docutils literal notranslate"><span class="pre">Product_Layout.array</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#id6"><code class="docutils literal notranslate"><span class="pre">Product_Layout.dimensions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#id7"><code class="docutils literal notranslate"><span class="pre">Product_Layout.layout</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="pygecko.reaction.html#module-pygecko.reaction.reaction_parser">pygecko.reaction.reaction_parser module</a><ul>
@@ -276,8 +287,8 @@
 <li class="toctree-l3"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.transformation.Transformation"><code class="docutils literal notranslate"><span class="pre">Transformation</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.transformation.Transformation.rxn_smarts"><code class="docutils literal notranslate"><span class="pre">Transformation.rxn_smarts</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.transformation.Transformation.transform"><code class="docutils literal notranslate"><span class="pre">Transformation.transform</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#id5"><code class="docutils literal notranslate"><span class="pre">Transformation.rxn_smarts</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#id6"><code class="docutils literal notranslate"><span class="pre">Transformation.transform</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#id8"><code class="docutils literal notranslate"><span class="pre">Transformation.rxn_smarts</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#id9"><code class="docutils literal notranslate"><span class="pre">Transformation.transform</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -287,24 +298,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.utilities.read_json"><code class="docutils literal notranslate"><span class="pre">read_json()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="pygecko.reaction.html#module-pygecko.reaction.well_plate">pygecko.reaction.well_plate module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.well_plate.Well_Plate"><code class="docutils literal notranslate"><span class="pre">Well_Plate</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.well_plate.Well_Plate.design"><code class="docutils literal notranslate"><span class="pre">Well_Plate.design</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.well_plate.Well_Plate.rows"><code class="docutils literal notranslate"><span class="pre">Well_Plate.rows</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.well_plate.Well_Plate.columns"><code class="docutils literal notranslate"><span class="pre">Well_Plate.columns</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.well_plate.Well_Plate.array"><code class="docutils literal notranslate"><span class="pre">Well_Plate.array</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.well_plate.Well_Plate.dimensions"><code class="docutils literal notranslate"><span class="pre">Well_Plate.dimensions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.well_plate.Well_Plate.get_product"><code class="docutils literal notranslate"><span class="pre">Well_Plate.get_product()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.well_plate.Well_Plate.get_product_mw"><code class="docutils literal notranslate"><span class="pre">Well_Plate.get_product_mw()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.well_plate.Well_Plate.get_product_mz"><code class="docutils literal notranslate"><span class="pre">Well_Plate.get_product_mz()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.well_plate.Well_Plate.get_substrate"><code class="docutils literal notranslate"><span class="pre">Well_Plate.get_substrate()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.well_plate.Well_Plate.layout"><code class="docutils literal notranslate"><span class="pre">Well_Plate.layout</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.well_plate.Well_Plate.meta_data"><code class="docutils literal notranslate"><span class="pre">Well_Plate.meta_data</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pygecko.reaction.html#pygecko.reaction.well_plate.Well_Plate.transformation"><code class="docutils literal notranslate"><span class="pre">Well_Plate.transformation</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="pygecko.reaction.html#pygecko-reaction-well-plate-module">pygecko.reaction.well_plate module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pygecko.reaction.html#module-pygecko.reaction">Module contents</a></li>
 </ul>
 </li>
@@ -333,6 +327,8 @@
 </section>
 <section id="module-pygecko">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pygecko" title="Link to this heading"></a></h2>
+<p>pyGecko</p>
+<p>An open-access python library for the parsing, processing and analysis of GC/MS and GC/FID raw data.</p>
 </section>
 </section>
 

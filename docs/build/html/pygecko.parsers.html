@@ -35,6 +35,7 @@
           
           <a href="index.html" class="icon icon-home">
             pyGecko
+              <img src="_static/pyGecko_icon.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -276,7 +277,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pygecko.parsers.fid_base_parser.FID_Base_Parser.load_ri_calibration">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_ri_calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent_delay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration" title="pygecko.gc_tools.analysis.retention_indices.RI_Calibration"><span class="pre">RI_Calibration</span></a></span></span><a class="headerlink" href="#pygecko.parsers.fid_base_parser.FID_Base_Parser.load_ri_calibration" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_ri_calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent_delay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration" title="pygecko.gc_tools.analysis.retention_indices.RI_Calibration"><span class="pre">RI_Calibration</span></a></span></span><a class="headerlink" href="#pygecko.parsers.fid_base_parser.FID_Base_Parser.load_ri_calibration" title="Link to this definition"></a></dt>
 <dd><p>Returns an RI_Calibration object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -329,17 +330,18 @@
 <span id="pygecko-parsers-file-readers-module"></span><h2>pygecko.parsers.file_readers module<a class="headerlink" href="#module-pygecko.parsers.file_readers" title="Link to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="pygecko.parsers.file_readers.extract_scans_from_mzml">
-<span class="sig-prename descclassname"><span class="pre">pygecko.parsers.file_readers.</span></span><span class="sig-name descname"><span class="pre">extract_scans_from_mzml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mzml_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#pygecko.parsers.file_readers.extract_scans_from_mzml" title="Link to this definition"></a></dt>
-<dd><p>Takes in the path to a mzml file containing the scans of an injection, returns a DataFrame containing the scans.</p>
+<span class="sig-prename descclassname"><span class="pre">pygecko.parsers.file_readers.</span></span><span class="sig-name descname"><span class="pre">extract_scans_from_mzml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mzml_file:</span> <span class="pre">~pathlib.Path)</span> <span class="pre">-&gt;</span> <span class="pre">(&lt;class</span> <span class="pre">'pandas.core.frame.DataFrame'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;class</span> <span class="pre">'str'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.parsers.file_readers.extract_scans_from_mzml" title="Link to this definition"></a></dt>
+<dd><p>Takes in the path to a mzml file containing the scans of an injection, returns a DataFrame containing the scans and
+the sample name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>mzml_file</strong> (<em>Path</em>) – Path to the mzml file.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>DataFrame containing the scans.</p>
+<dd class="field-even"><p>DataFrame containing the scans and the sample name.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pd.DataFrame</p>
+<dd class="field-odd"><p>tuple[pd.DataFrame, str]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -347,16 +349,17 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="pygecko.parsers.file_readers.extract_scans_from_mzxml">
 <span class="sig-prename descclassname"><span class="pre">pygecko.parsers.file_readers.</span></span><span class="sig-name descname"><span class="pre">extract_scans_from_mzxml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mzxml_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#pygecko.parsers.file_readers.extract_scans_from_mzxml" title="Link to this definition"></a></dt>
-<dd><p>Takes in the path to a mzxml file containing the scans of an injection, returns a DataFrame containing the scans.</p>
+<dd><p>Takes in the path to a mzxml file containing the scans of an injection, returns a DataFrame containing the scans and
+the sample name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>mzxml_file</strong> (<em>Path</em>) – Path to the mzxml file.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>DataFrame containing the scans.</p>
+<dd class="field-even"><p>DataFrame containing the scans and the sample name.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pd.DataFrame</p>
+<dd class="field-odd"><p>tuple[pd.DataFrame, str]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -369,31 +372,15 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.parsers.ms_base_parser.</span></span><span class="sig-name descname"><span class="pre">MS_Base_Parser</span></span><a class="headerlink" href="#pygecko.parsers.ms_base_parser.MS_Base_Parser" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt class="sig sig-object py" id="pygecko.parsers.ms_base_parser.MS_Base_Parser.construct_chromatogram_from_scans">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">construct_chromatogram_from_scans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scans</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#pygecko.parsers.ms_base_parser.MS_Base_Parser.construct_chromatogram_from_scans" title="Link to this definition"></a></dt>
-<dd><p>Returns a total ion chromatogram.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>scans</strong> (<em>pd.DataFrame</em>) – A DataFrame containing the scans of an injection.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The total ion chromatogram of the scans.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="pygecko.parsers.ms_base_parser.MS_Base_Parser.extract_scans_from_raw_data">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_scans_from_raw_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TemporaryDirectory</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#pygecko.parsers.ms_base_parser.MS_Base_Parser.extract_scans_from_raw_data" title="Link to this definition"></a></dt>
-<dd><p>Takes in the path to a raw file containing the scans of an injection, returns a DataFrame containing the scans.</p>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_scans_from_raw_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_path:</span> <span class="pre">~pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir:</span> <span class="pre">~tempfile.TemporaryDirectory</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None)</span> <span class="pre">-&gt;</span> <span class="pre">(&lt;class</span> <span class="pre">'pandas.core.frame.DataFrame'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;class</span> <span class="pre">'str'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.parsers.ms_base_parser.MS_Base_Parser.extract_scans_from_raw_data" title="Link to this definition"></a></dt>
+<dd><p>Takes in the path to a raw file containing the scans of an injection, returns a DataFrame containing the scans
+and the injection’s sample name.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pygecko.parsers.ms_base_parser.MS_Base_Parser.initialize_injection">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">initialize_injection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TemporaryDirectory</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.ms_injection.MS_Injection" title="pygecko.gc_tools.injection.ms_injection.MS_Injection"><span class="pre">MS_Injection</span></a></span></span><a class="headerlink" href="#pygecko.parsers.ms_base_parser.MS_Base_Parser.initialize_injection" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">initialize_injection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TemporaryDirectory</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.ms_injection.MS_Injection" title="pygecko.gc_tools.injection.ms_injection.MS_Injection"><span class="pre">MS_Injection</span></a></span></span><a class="headerlink" href="#pygecko.parsers.ms_base_parser.MS_Base_Parser.initialize_injection" title="Link to this definition"></a></dt>
 <dd><p>Returns an MS_Injection object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -410,7 +397,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pygecko.parsers.ms_base_parser.MS_Base_Parser.load_injection">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_injection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TemporaryDirectory</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.ms_injection.MS_Injection" title="pygecko.gc_tools.injection.ms_injection.MS_Injection"><span class="pre">MS_Injection</span></a></span></span><a class="headerlink" href="#pygecko.parsers.ms_base_parser.MS_Base_Parser.load_injection" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_injection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TemporaryDirectory</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pygecko.gc_tools.injection.html#pygecko.gc_tools.injection.ms_injection.MS_Injection" title="pygecko.gc_tools.injection.ms_injection.MS_Injection"><span class="pre">MS_Injection</span></a></span></span><a class="headerlink" href="#pygecko.parsers.ms_base_parser.MS_Base_Parser.load_injection" title="Link to this definition"></a></dt>
 <dd><p>Returns an MS_Injection object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -430,7 +417,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pygecko.parsers.ms_base_parser.MS_Base_Parser.load_ri_calibration">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_ri_calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration" title="pygecko.gc_tools.analysis.retention_indices.RI_Calibration"><span class="pre">RI_Calibration</span></a></span></span><a class="headerlink" href="#pygecko.parsers.ms_base_parser.MS_Base_Parser.load_ri_calibration" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_ri_calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration" title="pygecko.gc_tools.analysis.retention_indices.RI_Calibration"><span class="pre">RI_Calibration</span></a></span></span><a class="headerlink" href="#pygecko.parsers.ms_base_parser.MS_Base_Parser.load_ri_calibration" title="Link to this definition"></a></dt>
 <dd><p>Returns an RI_Calibration object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -445,6 +432,23 @@
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="pygecko.gc_tools.analysis.html#pygecko.gc_tools.analysis.retention_indices.RI_Calibration" title="pygecko.gc_tools.analysis.retention_indices.RI_Calibration">RI_Calibration</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygecko.parsers.ms_base_parser.MS_Base_Parser.load_sequence">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence" title="pygecko.gc_tools.sequence.ms_sequence.MS_Sequence"><span class="pre">MS_Sequence</span></a></span></span><a class="headerlink" href="#pygecko.parsers.ms_base_parser.MS_Base_Parser.load_sequence" title="Link to this definition"></a></dt>
+<dd><p>Returns an MS_Sequence object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>raw_directory</strong> (<em>Path</em><em>|</em><em>str</em>) – Path to a directory containing raw data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An MS_Sequence object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pygecko.gc_tools.sequence.html#pygecko.gc_tools.sequence.ms_sequence.MS_Sequence" title="pygecko.gc_tools.sequence.ms_sequence.MS_Sequence">MS_Sequence</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -473,6 +477,12 @@ saves them in the output directory.</p>
 </section>
 <section id="module-pygecko.parsers.utilities">
 <span id="pygecko-parsers-utilities-module"></span><h2>pygecko.parsers.utilities module<a class="headerlink" href="#module-pygecko.parsers.utilities" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygecko.parsers.utilities.HiddenPrints">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygecko.parsers.utilities.</span></span><span class="sig-name descname"><span class="pre">HiddenPrints</span></span><a class="headerlink" href="#pygecko.parsers.utilities.HiddenPrints" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="pygecko.parsers.utilities.find_directories_with_extension">
 <span class="sig-prename descclassname"><span class="pre">pygecko.parsers.utilities.</span></span><span class="sig-name descname"><span class="pre">find_directories_with_extension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygecko.parsers.utilities.find_directories_with_extension" title="Link to this definition"></a></dt>
