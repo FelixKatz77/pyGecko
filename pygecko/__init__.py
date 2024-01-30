@@ -1,7 +1,7 @@
 """
 pyGecko
 
-An open-access python library for the parsing, processing and analysis of GC/MS and GC/FID raw data.
+An open-source Python library for the parsing, processing and analysis of GC/MS and GC/FID raw data.
 """
 import configparser
 import pathlib

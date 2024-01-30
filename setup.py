@@ -4,7 +4,7 @@ import setuptools
 setup(
     name='pyGecko',
     version='0.1.0',
-    description='An open-access python libary for the parsing, processing and analysis of GC/MS and GC/FID raw data',
+    description='An open-source Python libary for the parsing, processing and analysis of GC/MS and GC/FID raw data',
     url='https://github.com/shuds13/pyexample',
     author='Felix Katzenburg',
     author_email='felix.katzenburg@uni-muenster.de',

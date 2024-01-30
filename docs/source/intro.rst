@@ -4,7 +4,7 @@ Introduction
    :width: 200
    :alt: Alternative text
 
-pyGecko is an open-access python library for the parsing, processing and analysis of GC-MS and GC-FID raw data. pyGecko
+pyGecko is an open-source Python library for the parsing, processing and analysis of GC-MS and GC-FID raw data. pyGecko
 offers a variety of analysis tools for the automated or semi-automated handling of GC measurements and sequences. This
 includes the interpretation of measurements in the context of the experiment, the automatic identification of internal
 standards and compound identifications based on retention times, the mass of a molecular ion or fragment and spectral

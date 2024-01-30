@@ -1,12 +1,12 @@
 # pyGecko
 <img src="docs/pyGecko_icon.png" alt="pyGecko_Logo" width="300" height="300"/>
 
-> pyGecko an open-access python library for the parsing, processing and analysis of GC-MS and GC-FID raw data.
+> pyGecko an open-source Python library for the parsing, processing and analysis of GC-MS and GC-FID raw data.
 
 With increasing amounts of analytical and metadata generated in HTE, data processing and analysis quickly become a 
 workflow's limiting step if conducted manually. The automated processing of analytical data opens up time for chemists 
 to focus on relevant outcomes, enables the standardized storage of reaction data, and facilitates the integration of 
-analytical methods into closed-loop systems. Herein we present pyGecko, an open-access python library for the parsing,
+analytical methods into closed-loop systems. Herein we present pyGecko, an open-source Python library for the parsing,
 processing and analysis of GC-MS and GC-FID raw data. pyGecko offers a variety of analysis tools for the automated or 
 semi-automated handling of GC measurements and sequences. This includes the interpretation of measurements in the context 
 of the experiment, the automatic identification of internal standards and compound identifications based on retention 
