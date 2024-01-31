@@ -44,5 +44,4 @@ pyGecko supports the following file formats:
 | .RAW (Thermo) ||
 
 > [!NOTE]
-> To achieve the best results, we recommend using the .mzML file format for GC-MS data and the .xy file format for 
-> GC-FID data.
+> To achieve the best performance, we recommend using the .mzML file format for GC-MS data.
