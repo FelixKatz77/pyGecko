@@ -14,7 +14,7 @@ setup(
         'epam.indigo==1.13.0',
         'lxml==5.1.0',
         'matplotlib==3.6.2',
-        'numba==0.58.1'
+        'numba==0.58.1',
         'numpy==1.26.3',
         'ord_schema==0.3.37',
         'pandas==2.0.3',
