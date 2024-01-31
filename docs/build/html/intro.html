@@ -50,6 +50,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#installation">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#supported-file-formats">Supported file formats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pygecko.html">pygecko package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 </ul>
@@ -80,7 +81,6 @@
              
   <section id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h1>
-<a class="reference internal image-reference" href="_images/pyGecko_icon.png"><img alt="Alternative text" src="_images/pyGecko_icon.png" style="width: 200px;" /></a>
 <p>pyGecko is an open-source Python library for the parsing, processing and analysis of GC-MS and GC-FID raw data. pyGecko
 offers a variety of analysis tools for the automated or semi-automated handling of GC measurements and sequences. This
 includes the interpretation of measurements in the context of the experiment, the automatic identification of internal
@@ -107,6 +107,35 @@ You will be asked to specify the path to the msConvert.exe during the first run 
 examples for the usage of pyGecko for the quantitative analysis of reaction outcomes and spectral matching. The Python
 scripts used to perform the data processing for the publication can be found in the examples folder. GC-MS and GC-FID
 raw data for all experiments is available on Zenodo.</p>
+</section>
+<section id="supported-file-formats">
+<h1>Supported file formats<a class="headerlink" href="#supported-file-formats" title="Link to this heading"></a></h1>
+<p>pyGecko supports the following file formats:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>GC-MS</p></th>
+<th class="head"><p>GC-FID</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>.mzML</p></td>
+<td><p>.xy</p></td>
+</tr>
+<tr class="row-odd"><td><p>.mzXML</p></td>
+<td><p>.CSV</p></td>
+</tr>
+<tr class="row-even"><td><p>.D (Agilent)</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>.RAW (Thermo)</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 </section>
 
 

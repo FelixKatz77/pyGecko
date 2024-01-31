@@ -33,3 +33,16 @@ examples for the usage of pyGecko for the quantitative analysis of reaction outc
 scripts used to perform the data processing for the publication can be found in the examples folder. GC-MS and GC-FID 
 raw data for all experiments is available on Zenodo.
 
+## Supported File Formats
+pyGecko supports the following file formats:
+
+| GC-MS         | GC-FID    |
+|---------------|-----------|
+| .mzML         | .xy       |
+| .mzXML        | .CSV      |
+| .D (Agilent)  ||
+| .RAW (Thermo) ||
+
+> [!NOTE]
+> To achieve the best results, we recommend using the .mzML file format for GC-MS data and the .xy file format for 
+> GC-FID data.

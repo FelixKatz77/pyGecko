@@ -1,9 +1,5 @@
 Introduction
 ============
-.. image:: ../pyGecko_icon.png
-   :width: 200
-   :alt: Alternative text
-
 pyGecko is an open-source Python library for the parsing, processing and analysis of GC-MS and GC-FID raw data. pyGecko
 offers a variety of analysis tools for the automated or semi-automated handling of GC measurements and sequences. This
 includes the interpretation of measurements in the context of the experiment, the automatic identification of internal
@@ -32,3 +28,22 @@ For non-automated workflows pyGecko is best used with jupyter notebooks. The not
 examples for the usage of pyGecko for the quantitative analysis of reaction outcomes and spectral matching. The Python
 scripts used to perform the data processing for the publication can be found in the examples folder. GC-MS and GC-FID
 raw data for all experiments is available on Zenodo.
+
+Supported file formats
+======================
+pyGecko supports the following file formats:
+
+.. list-table::
+   :widths: 25 25
+   :header-rows: 1
+
+   * - GC-MS
+     - GC-FID
+   * - .mzML
+     - .xy
+   * - .mzXML
+     - .CSV
+   * - .D (Agilent)
+     -
+   * - .RAW (Thermo)
+     -
