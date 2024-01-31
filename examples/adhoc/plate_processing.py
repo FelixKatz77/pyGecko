@@ -1,4 +1,4 @@
-from pygecko.parsers import Agilent_FID_Parser, Agilent_MS_Parser
+from pygecko.parsers import Agilent_FID_Parser, MS_Base_Parser
 from pygecko.reaction import Transformation, Reaction_Array
 from pygecko.visualization.visuals import Visualization
 from pygecko.analysis.analysis import Analysis
@@ -11,7 +11,7 @@ def main():
     fid_path = 'AD-HoC_Plate_GC_Data/FID'
 
     # Files and folders with the retention index calibration data.
-    ms_ri_path = 'AD-HoC_Plate_GC_Data/RI/MS'
+    ms_ri_path = 'AD-HoC_Plate_GC_Data/RI/MS/FBS-FA-033-RI-II.mzML'
     fid_ri_path = 'AD-HoC_Plate_GC_Data/RI/FID'
 
     # Files with the reaction layout and reaction metadata.
@@ -27,7 +27,7 @@ def main():
 
     # Load the GC-MS and GC-FID data.
     fid_sequence = Agilent_FID_Parser.load_sequence(fid_path, 3.0, pos=True)
-    ms_sequence = Agilent_MS_Parser.load_sequence(ms_path, pos=True)
+    ms_sequence = MS_Base_Parser.load_sequence(ms_path, pos=True)
 
     # Pick peaks in the GC-MS and GC-FID data.
     fid_sequence.pick_peaks()
@@ -37,7 +37,7 @@ def main():
     fid_sequence.set_internal_standard(4.570, name='Dodecane', smiles='CCCCCCCCCCCC')
 
     # Load the retention index calibration data.
-    ri_conf_ms = Agilent_MS_Parser.load_ri_calibration(ms_ri_path, 12, rt=3.320)
+    ri_conf_ms = MS_Base_Parser.load_ri_calibration(ms_ri_path, 12, rt=3.320)
     ri_conf_fid = Agilent_FID_Parser.load_ri_calibration(fid_ri_path, 2.4, c_count=12, rt=4.570)
 
     # Assign retention indices to the GC-MS and GC-FID data.
