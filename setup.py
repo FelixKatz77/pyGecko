@@ -24,6 +24,7 @@ setup(
         'rdkit==2023.3.1',
         'reportlab==4.0.5',
         'scipy==1.11.4',
+        'sphinx-rtd-theme==2.0.0',
         'statsmodels==0.14.0',
         'xarray==2023.6.0'
     ],
