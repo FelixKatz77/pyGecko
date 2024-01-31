@@ -27,6 +27,9 @@ pip install ./
 > To read vendor files you need to install the msConvert tool from ProteoWizard. You can download it from [here](http://proteowizard.sourceforge.net/download.html).
 > You will be asked to specify the path to the msConvert.exe during the first run of pyGecko.
 
+## Documentation
+The documentation for pyGecko can be found [here](https://pygecko.readthedocs.io/en/latest/).
+
 ## Usage
 For non-automated workflows pyGecko is best used with jupyter notebooks. The notebooks folder of the repository contains
 examples for the usage of pyGecko for the quantitative analysis of reaction outcomes and spectral matching. The Python 
