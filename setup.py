@@ -40,5 +40,6 @@ setup(
     ],
     include_package_data=True,
     packages=setuptools.find_packages(),
+    package_data={'pygecko': ['config.ini']},
     python_requires='>= 3.10, < 3.11',
 )
