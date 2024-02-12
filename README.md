@@ -16,6 +16,11 @@ and reported in standardized formats like the Open Reaction Database (ORD) schem
 integrated into automated workflows and can be used as a stand-alone tool or as a python library.
 
 ## Installation
+
+> [!IMPORTANT]
+> To read vendor files you need to install the msConvert tool from ProteoWizard. You can download it from [here](http://proteowizard.sourceforge.net/download.html).
+> You need to specify the path to the msConvert.exe before the first run of pyGecko.
+
 pyGecko can be installed via pip:
 
 ```bash 
@@ -23,9 +28,19 @@ git clone https://github.com/FelixKatz77/pyGecko.git
 cd pyGecko
 pip install ./
 ```
-> [!IMPORTANT]
-> To read vendor files you need to install the msConvert tool from ProteoWizard. You can download it from [here](http://proteowizard.sourceforge.net/download.html).
-> You will be asked to specify the path to the msConvert.exe during the first run of pyGecko.
+Afterward the path to the msConvert.exe needs to be specified. This can be done by running the following command:
+
+```bash
+cd pygecko
+python __init__.py
+```
+This will prompt you to specify the path to the msConvert.exe file:
+
+```bash
+"Please provide the path to the msConvert executable or specify it in the config.ini:"
+```
+After that pyGecko is ready to use.
+
 
 ## Documentation
 The documentation for pyGecko can be found [here](https://pygecko.readthedocs.io/en/latest/).

@@ -11,6 +11,9 @@ a stand-alone tool or as a python library.
 
 Installation
 ============
+To read vendor files you need to install the msConvert tool from ProteoWizard. You can download it from [here](http://proteowizard.sourceforge.net/download.html).
+You need to specify the path to the msConvert.exe before the first run of pyGecko.
+
 pyGecko can be installed via pip:
 
 .. code-block:: bash
@@ -19,8 +22,20 @@ pyGecko can be installed via pip:
    cd pyGecko
    pip install ./
 
-To read vendor files you need to install the msConvert tool from ProteoWizard. You can download it from `here. <http://proteowizard.sourceforge.net/download.html>`_
-You will be asked to specify the path to the msConvert.exe during the first run of pyGecko.
+Afterward the path to the msConvert.exe needs to be specified. This can be done by running the following command:
+
+.. code-block:: bash
+   cd pygecko
+   python __init__.py
+
+This will prompt you to specify the path to the msConvert.exe file:
+
+.. code-block:: bash
+   "Please provide the path to the msConvert executable or specify it in the config.ini:"
+
+After that pyGecko is ready to use.
+
+
 
 Usage
 =====
