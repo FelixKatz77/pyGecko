@@ -25,12 +25,14 @@ pyGecko can be installed via pip:
 Afterward the path to the msConvert.exe needs to be specified. This can be done by running the following command:
 
 .. code-block:: bash
+
    cd pygecko
    python __init__.py
 
 This will prompt you to specify the path to the msConvert.exe file:
 
 .. code-block:: bash
+
    Please provide the path to the msConvert executable or specify it in the config.ini:
 
 After that pyGecko is ready to use.
