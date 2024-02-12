@@ -37,7 +37,7 @@ python __init__.py
 This will prompt you to specify the path to the msConvert.exe file:
 
 ```bash
-"Please provide the path to the msConvert executable or specify it in the config.ini:"
+Please provide the path to the msConvert executable or specify it in the config.ini:
 ```
 After that pyGecko is ready to use.
 
