@@ -9,6 +9,8 @@ analysis as well as chromatograms and spectra can be visualized and reported in 
 Reaction Database (ORD) schema. pyGecko is designed to be easily integrated into automated workflows and can be used as
 a stand-alone tool or as a python library.
 
+Preprint: https://chemrxiv.org/engage/chemrxiv/article-details/66adfc465101a2ffa8001761
+
 Installation
 ============
 To read vendor files you need to install the msConvert tool from ProteoWizard. You can download it from [here](http://proteowizard.sourceforge.net/download.html).
