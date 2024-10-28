@@ -22,3 +22,6 @@ def test_agilent_fid_parser():
     assert injection.chromatogram.shape[0] == 2
     assert injection.detector == 'MS'
     assert injection.peaks is None
+
+if __name__ == '__main__':
+    test_agilent_fid_parser()

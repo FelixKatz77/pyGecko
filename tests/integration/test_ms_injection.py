@@ -11,3 +11,6 @@ def test_fid_base_parser():
     assert injection.chromatogram.shape[0] == 2
     assert injection.detector == 'MS'
     assert injection.peaks is None
+
+if __name__ == '__main__':
+    test_fid_base_parser()
