@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
 from scipy.signal import find_peaks
+from xarray.util.generate_ops import inplace
+
+
 from pygecko.gc_tools.analysis.analysis_settings import Analysis_Settings
 from pygecko.gc_tools.peak.fid_peak import FID_Peak
 from pygecko.gc_tools.peak.ms_peak import MS_Peak
@@ -58,7 +61,7 @@ class Peak_Detection_MS:
         width = analysis_settings.pop('width', 0)
 
         peak_indices, peak_properties = find_peaks(intensities,
-                                                   prominence=prominence, width=width, height=min_height, rel_height=1)
+                                                   prominence=prominence, width=width, height=min_height, rel_height=0.97)
         peak_heights = peak_properties['peak_heights']
         peak_boarders = np.vstack((peak_properties['left_ips'], peak_properties['right_ips'])).transpose()
         peak_boarders = (peak_boarders * analysis_settings.scan_rate) + time[0]
@@ -85,9 +88,9 @@ class Peak_Detection_MS:
 
         prominence = analysis_settings.pop('trace_prominence', 500)
 
-        mass_spectrums = {}
+        mass_spectra = {}
         for i in peak_rts:
-            mass_spectrums[i] = {}
+            mass_spectra[i] = {}
         for mass_trace in scans:
             rts = scans.index.to_numpy() / 60000
             chromatogram = scans[mass_trace].to_numpy().transpose()
@@ -95,8 +98,8 @@ class Peak_Detection_MS:
             for peak_index in peak_indices:
                 for index in indices:
                     if Utilities.check_interval(index, peak_index, 5):
-                        mass_spectrums[rts[peak_index]].update({mass_trace: chromatogram[peak_index]})
-        return mass_spectrums
+                        mass_spectra[rts[peak_index]].update({mass_trace: chromatogram[peak_index]})
+        return mass_spectra
 
     @staticmethod
     def __initialize_peaks(peak_rts: np.ndarray, peak_heights: np.ndarray, peak_widths: np.ndarray,

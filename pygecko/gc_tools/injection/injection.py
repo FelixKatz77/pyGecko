@@ -121,13 +121,13 @@ class Injection:
                 candidates[deviation] = peak
         if candidates:
             best_candidate = candidates[min(candidates)]
-            best_candidate.flag = flag
+            best_candidate.flags.append(flag)
             best_candidate.analyte = analyte
             return best_candidate
         else:
             return None
 
-    def match_ri(self, ri:float, tolerance=20, analyte=None) -> Peak|None:
+    def match_ri(self, ri:float, tolerance:int=20, analyte:str|None=None, return_candidates:bool=False) -> Peak|None:
 
         '''
         Returns the peak with the closest retention index to the given retention index within the tolerance. Returns
@@ -135,8 +135,8 @@ class Injection:
 
         Args:
             ri (float): Retention index to match.
-            tolerance: Tolerance for the retention index matching. Default is 20.
-            analyte: Analyte object to be assigned to the peak. Default is None.
+            tolerance(int): Tolerance for the retention index matching. Default is 20.
+            analyte(str|None): Analyte object to be assigned to the peak. Default is None.
 
         Returns:
             Peak|None: The peak with the closest retention index to the given retention index or None if
@@ -150,14 +150,17 @@ class Injection:
                     deviation = abs(ri-peak.ri)
                     candidates[deviation] = peak
         if candidates:
-            if len(candidates) > 1:
-                for key in list(candidates.keys()):
-                    if candidates[key].flag == 'standard':
-                        del candidates[key]
-            peak = candidates[min(candidates)]
-            if analyte:
-                peak.analyte = analyte
-            return peak
+            if return_candidates:
+                return candidates
+            else:
+                if len(candidates) > 1:
+                    for key in list(candidates.keys()):
+                        if 'standard' in candidates[key].flags:
+                            del candidates[key]
+                peak = candidates[min(candidates)]
+                if analyte:
+                    peak.analyte = analyte
+                return peak
         else:
             return None
 

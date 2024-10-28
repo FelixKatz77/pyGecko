@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import ndarray
 from pybaselines import Baseline
 from scipy.integrate import simpson
 from scipy.signal import find_peaks, savgol_filter, argrelmin
@@ -47,9 +48,9 @@ class Peak_Detection_FID:
             dict[float:FID_Peak]: Dictionary of FID peaks.
         '''
 
-        peak_rts, peak_widths, peak_heights, peak_boarders, peak_areas = Peak_Detection_FID.__detect_peaks(chromatogram,
+        peak_rts, peak_widths, peak_heights, peak_boarders, peak_areas, flag_peaks_list = Peak_Detection_FID.__detect_peaks(chromatogram,
                                                                                                            analysis_settings)
-        peaks = Peak_Detection_FID.__initialize_peaks(peak_rts, peak_heights, peak_widths, peak_boarders, peak_areas)
+        peaks = Peak_Detection_FID.__initialize_peaks(peak_rts, peak_heights, peak_widths, peak_boarders, peak_areas, flag_peaks_list)
         return peaks
 
     @staticmethod
@@ -63,8 +64,8 @@ class Peak_Detection_FID:
             analysis_settings (Analysis_Settings): Data_Method object containing settings for the peak detection.
 
         Returns:
-            tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, list[float]]: Peak retention times, widths, heights,
-            boarders and areas.
+            tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, list[float], list[int]|None]: Peak retention times, widths, heights,
+            boarders, areas and the indices of the peaks to flag for boarder overlap.
         '''
 
         indices_range = analysis_settings.pop('indices_range', [None, None])
@@ -78,13 +79,13 @@ class Peak_Detection_FID:
         peak_widths, peak_heights = peak_properties['widths'], peak_properties['peak_heights']
         peak_boarders = Peak_Detection_FID.__detect_borders(chrom_corr, peak_indices, peak_widths,
                                                              analysis_settings)
-        peak_boarders = Peak_Detection_FID.__resolve_boarder_overlap(peak_boarders, peak_indices, chrom_corr)
+        peak_boarders, flag_peaks_list = Peak_Detection_FID.__resolve_boarder_overlap(peak_boarders, peak_indices, chrom_corr)
         peak_areas = Peak_Detection_FID.__calculate_areas(chrom_corr, peak_boarders)
         peak_widths = [((boarder[1] - boarder[0])*analysis_settings.scan_rate) for boarder in peak_boarders]
         peak_indices = peak_indices + indices_range[0]
         peak_boarders = ((peak_boarders+indices_range[0])*analysis_settings.scan_rate) + chrom_corr[0][0]
         peak_rts = chrom_corr[0][peak_indices]
-        return peak_rts, peak_widths, peak_heights, peak_boarders, peak_areas
+        return peak_rts, peak_widths, peak_heights, peak_boarders, peak_areas, flag_peaks_list
 
     @staticmethod
     def __baseline_filter(chromatogram: np.ndarray, analysis_settings: Analysis_Settings) -> tuple[np.ndarray, np.ndarray]:
@@ -240,7 +241,8 @@ class Peak_Detection_FID:
         right = min(chromatogram.shape[0], _r + window / 4)
         return right
     @staticmethod
-    def __resolve_boarder_overlap(boarders: np.ndarray, peak_indices: np.ndarray, chromatogram:np.ndarray) -> np.ndarray:
+    def __resolve_boarder_overlap(boarders: np.ndarray, peak_indices: np.ndarray, chromatogram:np.ndarray) -> tuple[
+        ndarray, list[int]|None]:
 
         '''
         Returns the boarders of the peaks in a chromatogram.
@@ -252,6 +254,7 @@ class Peak_Detection_FID:
             np.ndarray: Boarders of the peaks.
         '''
         new_boarders = copy(boarders)
+        flag_peaks = []
         for i, boarder in enumerate(boarders):
             if i > 0:
                 if boarder[0] < boarders[i - 1][1]:
@@ -259,12 +262,16 @@ class Peak_Detection_FID:
                     smooth_window = gaussian_filter1d(window, 10)
                     minima = argrelmin(smooth_window, order=10)[0]
                     if not len(minima) > 0:
-                        return boarders
-                    y_values = np.take(smooth_window, minima)
-                    new_boarder = minima[np.argmin(y_values)] + peak_indices[i-1]
-                    new_boarders[i][0] = new_boarder
-                    new_boarders[i-1][1] = new_boarder
-        return new_boarders
+                        continue
+                    else:
+                        flag_peaks += [i-1, i]
+                        y_values = np.take(smooth_window, minima)
+                        new_boarder = minima[np.argmin(y_values)] + peak_indices[i-1]
+                        new_boarders[i][0] = new_boarder
+                        new_boarders[i-1][1] = new_boarder
+        if flag_peaks:
+            flag_peaks = list(set(flag_peaks))
+        return new_boarders, flag_peaks
 
     @staticmethod
     def __calculate_areas(chromatogram: np.ndarray, boarders: np.ndarray) -> list[float]:
@@ -301,7 +308,7 @@ class Peak_Detection_FID:
 
     @staticmethod
     def __initialize_peaks(peak_rts: np.ndarray, peak_heights: np.ndarray, peak_widths: np.ndarray,
-                           peak_boarders: np.ndarray, peak_areas: list[float]) -> dict[float, FID_Peak]:
+                           peak_boarders: np.ndarray, peak_areas: list[float], flag_peaks_list: list[int]|None) -> dict[float, FID_Peak]:
         '''
         Returns a dictionary of FID peaks.
 
@@ -311,6 +318,7 @@ class Peak_Detection_FID:
             peak_widths (np.ndarray): Widths of the peaks.
             peak_boarders (np.ndarray): Boarders of the peaks.
             peak_areas (list[float]): Areas of the peaks.
+            flag_peaks_list (list[int]|None): List of indices of peaks to flag for boarder overlap.
 
         Returns:
             dict[float, FID_Peak]: Dictionary of FID peaks.
@@ -318,8 +326,16 @@ class Peak_Detection_FID:
 
         peaks = {}
         for i, rt in enumerate(peak_rts):
+            if flag_peaks_list:
+                if i in flag_peaks_list:
+                    flag =  "overlap"
+                else:
+                    flag = None
+            else:
+                flag = None
             rt = round(rt, 3)
+
             peak = FID_Peak(rt, peak_heights[i], peak_widths[i], np.array([peak_boarders[i][0], peak_boarders[i][1]]),
-                            peak_areas[i])
+                            peak_areas[i], flag)
             peaks[peak.rt] = peak
         return peaks

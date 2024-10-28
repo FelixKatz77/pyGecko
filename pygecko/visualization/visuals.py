@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from pygecko.gc_tools.utilities import Utilities
 import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
+from matplotlib.patches import Circle, Wedge
 import matplotlib
 from matplotlib.ticker import (MultipleLocator)
 from matplotlib.figure import figaspect
@@ -21,7 +22,7 @@ plt.rcParams['font.weight'] = 'regular'
 class Visualization:
 
     @staticmethod
-    def visualize_plate(data: np.ndarray, path:str|None=None, well_labels=True, **kwargs) -> None:
+    def visualize_plate(data: np.ndarray, path:str|None=None, well_labels=True, show_flags:bool=False, **kwargs) -> None:
 
         '''
         Visualizes a well plate as a heatmap of yields and saves the figure if a path is given.
@@ -35,6 +36,8 @@ class Visualization:
         row_labels = kwargs.pop('row_labels', ["A", "B", "C", "D", "E", "F", "G", "H"])
         col_labels = kwargs.pop('col_labels', ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"])
 
+        flags = data['flags']
+        data = data['quantity']
         masked_data = np.ma.array (data, mask=np.isnan(data))
         cmap, norm = yield_cmap
         cmap.set_bad('darkgrey', 0.5)
@@ -50,6 +53,15 @@ class Visualization:
         circles = [plt.Circle((j, i), radius=r) for j, i in zip(x.flat, y.flat)]
         col = PatchCollection(circles, array=masked_data.flatten(), cmap=cmap, norm=norm)
         ax.add_collection(col)
+
+        if show_flags:
+            for i in range(N):
+                for j in range(M):
+                    if flags[i, j] == 1:
+                        indicator = Wedge((j+0.3, i-0.3), r * 0.4, 0, 360, color='orange')
+                        ax.add_patch(indicator)
+                        ax.text(j + 0.3, i - 0.29, '!', color='#a44018', fontsize=12,
+                                ha='center', va='center', fontweight='bold')
 
         ax.set_xticks(np.arange(data.shape[1]), labels=col_labels, weight='bold')
         ax.set_yticks(np.arange(data.shape[0]), labels=row_labels, weight='bold')

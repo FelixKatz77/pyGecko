@@ -15,7 +15,7 @@ from reportlab.lib.units import cm
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from indigo import *
 from indigo.renderer import IndigoRenderer
-from pygecko.reaction import Well_Plate
+from pygecko.reaction import Reaction_Array
 
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
@@ -29,7 +29,7 @@ report_style_bold = ParagraphStyle('report_style', alignment=0, allowOrphans=0, 
 
 class Report:
 
-    def __init__(self, experiment_id:str, layout:Well_Plate, yield_array:np.ndarray):
+    def __init__(self, experiment_id:str, layout:Reaction_Array, yield_array:np.ndarray):
         self.id = experiment_id
         self.layout = layout
         self.yield_array = yield_array
@@ -37,7 +37,7 @@ class Report:
 
 class PDF_Report(Report):
 
-    def __init__(self, filename: str, experiment_id:str, layout:Well_Plate, yield_array:np.ndarray):
+    def __init__(self, filename: str, experiment_id:str, layout:Reaction_Array, yield_array:np.ndarray):
         super().__init__(experiment_id, layout, yield_array)
         self.doc = SimpleDocTemplate(filename, pagesize=A4, rightMargin=1.5*cm, leftMargin=1.5*cm, topMargin=2*cm,
                                     bottomMargin=2*cm, showBoundary=0)

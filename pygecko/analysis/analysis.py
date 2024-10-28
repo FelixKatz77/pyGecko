@@ -1,9 +1,12 @@
 import numpy as np
 import pandas as pd
+
+from pygecko.gc_tools import FID_Peak, FID_Injection
 from pygecko.gc_tools.sequence import MS_Sequence, FID_Sequence
 from pygecko.gc_tools.analyte import Analyte
 from pygecko.reaction import Reaction_Array, Product_Array
 from numpy.lib.recfunctions import unstructured_to_structured
+from pygecko.visualization.utilities import Flags
 
 
 class Analysis:
@@ -79,17 +82,19 @@ class Analysis:
 
         results_array = results_df.to_numpy()
         results_array = np.array([row.tolist() for row in results_array])
-        dtype = np.dtype([('quantity', float), ('rt_ms', float), ('rt_fid', float)])
+        dtype = np.dtype([('quantity', float), ('rt_ms', float), ('rt_fid', float), ('flags', int)])
         results_array = unstructured_to_structured(results_array[:,:,:-1], dtype=dtype)
         if path:
             if mode == 'yield':
                 quantity = 'Yield [%]'
                 report_df = pd.DataFrame.from_dict(results_dict, orient='index',
-                                                   columns=[quantity, 'RT-MS [min]', 'RT-FID [min]', 'Analyte'])
+                                                   columns=[quantity, 'RT-MS [min]', 'RT-FID [min]', 'Flags', 'Analyte'])
+                report_df.drop(columns=['Flags'], inplace=True)
             else:
                 quantity = 'Conversion [%]'
                 report_df = pd.DataFrame.from_dict(results_dict, orient='index',
-                                                   columns=[quantity, 'RT-MS [min]', 'RT-FID [min]', 'Analyte'])
+                                                   columns=[quantity, 'RT-MS [min]', 'RT-FID [min]', 'Flags', 'Analyte'])
+                report_df.drop(columns=['Flags'], inplace=True)
             report_df.sort_index(inplace=True)
             report_df.to_csv(path)
         return results_array
@@ -120,18 +125,23 @@ class Analysis:
             if mode == 'conv':
                 analyte = layout.get_substrate(pos, index=index)
             mz_match = ms_injection.match_mol(analyte)
-
             if mz_match:
-                ri_match = fid_injection.match_ri(mz_match.ri, analyte=mz_match.analyte)
+                ms_height_ratio = mz_match.height / ms_injection[ms_injection.internal_standard.rt].height
+                ri_match = fid_injection.match_ri(mz_match.ri, analyte=mz_match.analyte, return_candidates=True)
+
                 if ri_match:
+                    ri_match = Analysis.__find_best_ri_match(ri_match, fid_injection, ms_height_ratio, analyte=mz_match.analyte)
                     yield_ = fid_injection.quantify(ri_match.rt)
                     if mode == 'conv':
                         yield_ = 100 - yield_
-                    results_dict[pos] = [yield_, mz_match.rt, ri_match.rt, analyte]
+
+                    flags = list(set(mz_match.flags + ri_match.flags))
+                    flags = Flags.return_flags_value(flags)
+                    results_dict[pos] = [yield_, mz_match.rt, ri_match.rt, flags, analyte]
                 else:
-                    results_dict[pos] = [np.nan, np.nan, np.nan, '']
+                    results_dict[pos] = [np.nan, np.nan, np.nan, 0, '']
             else:
-                results_dict[pos] = [np.nan, np.nan, np.nan, '']
+                results_dict[pos] = [np.nan, np.nan, np.nan, 0, '']
         return results_dict
 
 
@@ -162,3 +172,29 @@ class Analysis:
             else:
                 yield_dict[injection.sample_name] = yield_
         return yield_dict
+
+    @staticmethod
+    def __find_best_ri_match(match_candidates:dict[float:FID_Peak], fid_injection:FID_Injection, ms_height_ratio:float, analyte:str|None=None) -> FID_Peak:
+
+        '''
+        Returns the best retention index match based on the height ratios of the peaks.
+
+        Args:
+            ri_match (FID_Peak): FID_Peak object to match.
+            fid_injection (FID_Injection): FID_Injection object to match the peak to.
+            ms_height_ratio (float): Height ratio of the MS peak.
+            analyte(str|None): Analyte object to be assigned to the peak. Default is None.
+
+        Returns:
+            FID_Peak: FID_Peak object with the best match based on the height ratios.
+        '''
+
+        ratio_candidates = {}
+        for ri_diff, peak in match_candidates.items():
+            fid_height_ratio = peak.height / fid_injection[fid_injection.internal_standard.rt].height
+            height_ratio_diff = abs(fid_height_ratio  - ms_height_ratio)
+            ratio_candidates[height_ratio_diff] = peak
+        best_match = ratio_candidates[min(ratio_candidates)]
+        if analyte:
+            best_match.analyte = analyte
+        return best_match

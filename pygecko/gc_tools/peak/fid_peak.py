@@ -11,7 +11,7 @@ class FID_Peak(Peak):
         rt (float): Retention time of the peak.
         ri (None|float): Retention index of the peak.
         area (None|float): Area of the peak. Defaults to None.
-        flag (None|str): Flag of the peak.
+        flags (list[Any|str]): List of flags of the peak.
         analyte (None|Analyte): Analyte of the peak.
         height (float): Height of the peak.
         boarders (np.ndarray): Boarders of the peak.
@@ -19,5 +19,7 @@ class FID_Peak(Peak):
         boarders (np.ndarray): Boarders of the peak.
     '''
 
-    def __init__(self, rt: float, height: float, width: float, boarders: np.ndarray, area: float):
+    def __init__(self, rt: float, height: float, width: float, boarders: np.ndarray, area: float, flag: str|None):
         super().__init__(rt, height, width, boarders, area=area)
+        if flag:
+            self.flags = [flag]

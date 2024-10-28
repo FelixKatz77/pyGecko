@@ -15,7 +15,7 @@ class MS_Peak(Peak):
         height (float): Height of the peak.
         width (float): Width of the peak.
         boarders (np.ndarray): Boarders of the peak.
-        flag (Union[None, str]): Flag of the peak.
+        flags (list[Any|str]): List of flags of the peak.
         analyte (Union[None, Analyte]): Analyte of the peak.
         mass_spectrum (np.ndarray): Mass spectrum of the peak.
     '''
@@ -25,9 +25,11 @@ class MS_Peak(Peak):
     __slots__ = 'mass_spectrum'
 
     def __init__(self, rt: float, height: float, width: float, boarders: np.ndarray, mass_spectrum: np.ndarray,
-                 area=None):
+                 flag:str|None=None, area=None):
         super().__init__(rt, height, width, boarders, area=area)
         self.mass_spectrum = mass_spectrum
+        if flag:
+            self.flags = [flag]
 
     def view_mass_spectrum(self, path:str|None=None, **kwargs) -> None:
         '''

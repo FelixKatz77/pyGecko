@@ -25,7 +25,7 @@ class RI_Calibration:
     gradient: float
     intercept: float
 
-    __slots__ = 'calibration', 'alkanes', 'gradient', 'intercept', 'detector'
+    __slots__ = 'calibration', 'alkanes', 'gradient', 'intercept'
 
     def __init__(self, injection:FID_Injection|MS_Injection, c_count:int, rt:float):
         self.calibration = injection
@@ -142,10 +142,10 @@ class RI_Calibration:
         index = rts.index(seed_rt)
         for i in range(index, len(self.calibration.peaks)):
             self.calibration.peaks[rts[i]].analyte = Analyte(rts[i], smiles='C'*(c_count + i - index))
-            self.calibration.peaks[rts[i]].flag = 'Alkane_RI'
+            self.calibration.peaks[rts[i]].flags.append('Alkane_RI')
         for i in range(0, index):
             self.calibration.peaks[rts[i]].analyte = Analyte(rts[i], smiles='C'*(c_count + i - index))
-            self.calibration.peaks[rts[i]].flag = 'Alkane_RI'
+            self.calibration.peaks[rts[i]].flags.append('Alkane_RI')
 
     def __construct_alkanes_array(self) -> dict[float:int]:
 
@@ -158,7 +158,7 @@ class RI_Calibration:
 
         _alkanes_list = []
         for rt, peak in self.calibration.peaks.items():
-            if peak.flag == 'Alkane_RI':
+            if 'Alkane_RI' in peak.flags:
                 _alkanes_list.append((peak.analyte.smiles, len(peak.analyte.smiles), rt))
             else:
                 pass
