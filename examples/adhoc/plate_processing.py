@@ -33,8 +33,9 @@ def main():
     fid_sequence.pick_peaks()
     ms_sequence.pick_peaks()
 
-    # Set the internal standard for the GC-FID data.
+    # Set the internal standard.
     fid_sequence.set_internal_standard(4.570, name='Dodecane', smiles='CCCCCCCCCCCC')
+    ms_sequence.set_internal_standard(3.320, name='Dodecane', smiles='CCCCCCCCCCCC')
 
     # Load the retention index calibration data.
     ri_conf_ms = MS_Base_Parser.load_ri_calibration(ms_ri_path, 12, rt=3.320)
