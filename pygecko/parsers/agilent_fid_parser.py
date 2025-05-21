@@ -272,8 +272,11 @@ class Agilent_FID_Parser:
         path = Path(xy_directory)
         supported_formats = ['.xy', '.CSV']
         for sample_name in sample_names:
-            file_paths = list(path.glob(f'{sample_name}*.*'))
-            file_paths = list(filter(lambda x: x.suffix in supported_formats, file_paths))
+            file_paths = [fp for fp in path.glob(f'*{sample_name}*') if fp.suffix.upper() in supported_formats]
+            if not file_paths:
+                print(f"Warning: No matching file for sample {sample_name}")
+                continue
+
             xy_array = FID_Base_Parser.read_xy_array(file_paths[0])
             if xy_array is not None:
                 xy_arrays[sample_name] = xy_array
