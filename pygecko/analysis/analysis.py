@@ -198,3 +198,33 @@ class Analysis:
         if analyte:
             best_match.analyte = analyte
         return best_match
+
+    @staticmethod
+    def fit_calibration_curve(fid_sequence:FID_Sequence, analyte:Analyte, ratios:list[float]) -> tuple[float, float]:
+
+        '''
+        Fits a calibration curve to the analyte in a FID sequence.
+
+        Args:
+            fid_sequence (FID_Sequence): FID_Sequence object containing the GC-FID data.
+            analyte (Analyte): Analyte to fit the calibration curve to.
+
+        Returns:
+            dict: Dictionary containing the slope and intercept of the calibration curve.
+        '''
+
+        area_ratios = []
+        for injection in fid_sequence.injections.values():
+            analyte_peak = injection.flag_peak(rt=analyte.rt, analyte=analyte)
+            standard_peak = injection.flag_peak(injection.internal_standard.rt)
+            if analyte_peak:
+                area_ratio = analyte_peak.area / standard_peak.area
+                area_ratios.append(area_ratio)
+            else:
+                area_ratio = 0
+                area_ratios.append(area_ratio)
+        slope, intercept, rvalue, _, _ = linregress(area_ratios, ratios)
+        print(f'Calibration fitted: Slope: {slope}, Intercept: {intercept}, R-value: {rvalue}')
+        if rvalue < 0.9:
+            print('Calibration curve fit is not accurate.')
+        return slope, intercept
