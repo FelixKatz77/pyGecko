@@ -49,7 +49,7 @@ def main():
     yield_array = Analysis.calc_plate_yield(ms_sequence, fid_sequence, layout)
 
     # Generate plate heatmap.
-    Visualization.visualize_plate(yield_array['quantity'], well_labels=True,
+    Visualization.visualize_plate(yield_array, well_labels=True,
                                   row_labels=["21", "22", "23", "24", "25", "26", "27", "28"],
                                   col_labels=["29$^c$", "30$^c$", "31$^c$", "32$^c$", "33$^c$", "34$^c$", "29$^d$",
                                               "30$^d$", "31$^d$", "32$^d$", "33$^d$", "34$^d$"])
