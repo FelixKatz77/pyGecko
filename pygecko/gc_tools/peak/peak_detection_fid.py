@@ -8,6 +8,8 @@ from statsmodels.stats.stattools import durbin_watson
 from copy import copy
 from pygecko.gc_tools.analysis.analysis_settings import Analysis_Settings
 from pygecko.gc_tools.peak.fid_peak import FID_Peak
+from pygecko.gc_tools.utilities import Utilities
+
 
 class Peak_Detection_FID:
     '''
@@ -52,6 +54,8 @@ class Peak_Detection_FID:
                                                                                                            analysis_settings)
         peaks = Peak_Detection_FID.__initialize_peaks(peak_rts, peak_heights, peak_widths, peak_boarders, peak_areas, flag_peaks_list)
         return peaks
+
+
 
     @staticmethod
     def __detect_peaks(chrom_corr: np.ndarray, analysis_settings: Analysis_Settings):
@@ -230,7 +234,7 @@ class Peak_Detection_FID:
 
         _r = int(round(index + peak_width / 2, 0))
         if _r >= first_diff.shape[0]:
-            return chromatogram.shape[1]
+            return chromatogram.shape[0]
         right = min(first_diff.shape[0], _r + window)
 
         while abs(np.mean(first_diff[_r:int(right)])) > threshold:

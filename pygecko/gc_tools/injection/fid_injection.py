@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from scipy import integrate
+from scipy.signal import find_peaks
 
 from pygecko.gc_tools.injection import Injection
 from pygecko.gc_tools.peak import FID_Peak, Peak_Detection_FID
@@ -40,14 +41,16 @@ class FID_Injection(Injection):
 
     peaks: None|list[FID_Peak]
 
-    def __init__(self, metadata:dict, chromatogram:np.ndarray, solvent_delay:float, pos:bool=False):
+    def __init__(self, metadata:dict, chromatogram:np.ndarray, solvent_delay:float|None=None, pos:bool=False):
         super().__init__(metadata, pos=pos)
         self.injector_pos = metadata.get('InjectorPosition')
         self.sample_number = metadata.get('SampleOrderNumber')
         self.acq_time = metadata.get('InjectionAcqDateTime')
         self.analysis_settings = Analysis_Settings(chromatogram)
-        self.solvent_delay = solvent_delay
-        self.chromatogram = chromatogram[:, Utilities.convert_time_to_scan(solvent_delay, self.analysis_settings.scan_rate):]
+        if solvent_delay: self.solvent_delay = solvent_delay
+        else: self.solvent_delay = self.__set_solvent_delay(chromatogram)
+        self.chromatogram = chromatogram[:,
+                            Utilities.convert_time_to_scan(solvent_delay, self.analysis_settings.scan_rate):]
         self.processed_chromatogram = None
         self.peaks = None
         self.detector = 'FID'
@@ -84,8 +87,7 @@ class FID_Injection(Injection):
 
         self.analysis_settings.update(**kwargs)
         if not isinstance(self.processed_chromatogram, np.ndarray):
-            self.processed_chromatogram = Peak_Detection_FID.baseline_correction(self.chromatogram,
-                                                                                 self.analysis_settings)
+            self.baseline_correction()
         peaks = Peak_Detection_FID.pick_peaks(self.processed_chromatogram, self.analysis_settings)
         if inplace:
             self.peaks = peaks
@@ -105,7 +107,7 @@ class FID_Injection(Injection):
         else:
             print('Peaks list is empty.')
 
-    def quantify(self, rt:float, method:str='polyarc') -> int:
+    def quantify(self, rt:float, method:str='polyarc', **kwargs) -> int:
 
         '''
         Returns the yield of the analyte with the given retention time calculated using the internal standard of the
@@ -121,6 +123,10 @@ class FID_Injection(Injection):
 
         if method == 'polyarc':
             yield_ = Quantification.quantify_polyarc(self.peaks[rt], self.peaks[self.internal_standard.rt])
+            return yield_
+        if method == 'calibration':
+            yield_ = Quantification.quantify_calibration(self.peaks[rt], self.peaks[self.internal_standard.rt],
+                                                         kwargs['slope'], kwargs['intercept'])
             return yield_
 
     def report(self, path:str) -> None:
@@ -148,3 +154,21 @@ class FID_Injection(Injection):
         injection_info.to_csv(path, header=False)
         peaks_info.to_csv(path, mode='a')
 
+    @staticmethod
+    def __set_solvent_delay(chromatogram: np.ndarray) -> float:
+
+        '''
+        Returns the solvent delay of a chromatogram assuming the solvent peak is the highest peak.
+
+        Args:
+            chromatogram (np.ndarray): Chromatogram to detect the solvent delay for.
+
+        Returns:
+            float: Solvent delay for the chromatogram.
+        '''
+
+        peak_indices, peak_properties = find_peaks(chromatogram[1], width=0,
+                                                   height=chromatogram[1].max(), rel_height=0.5)
+        right_booarder = int(peak_properties['right_ips'][0].round(0))
+        solvent_delay = chromatogram[0][right_booarder]
+        return solvent_delay
