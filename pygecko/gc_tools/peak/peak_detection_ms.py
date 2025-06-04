@@ -55,7 +55,7 @@ class Peak_Detection_MS:
         time = chromatogram[0]
         intensities = chromatogram[1]
 
-        min_height = analysis_settings.pop('height', np.min(intensities) * 50)
+        min_height = analysis_settings.pop('height', np.min(intensities[intensities != 0]) * 50)
         prominence = analysis_settings.pop('prominence_ms', 1)
         prominence = np.median(intensities) * prominence
         width = analysis_settings.pop('width', 0)

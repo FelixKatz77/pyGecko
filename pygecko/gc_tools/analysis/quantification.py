@@ -24,7 +24,7 @@ class Quantification:
             yield_ (int): Relative quantity of analyte.
         '''
 
-        yield_ = peak.area/standard.area
+        yield_ = peak.area/standard.area * 100
         return int(round(yield_, 0))
 
     @staticmethod
@@ -43,8 +43,9 @@ class Quantification:
             yield_ (int): Relative quantity of analyte.
         '''
 
-        yield_ = slope * (peak.area/standard.area) + intercept
-        return int(round(yield_, 0))
+        yield_ = (slope * (peak.area/standard.area) + intercept) * 100
+        yield_ = int(round(yield_, 0))
+        return yield_
 
     @staticmethod
     def quantify_polyarc(peak:FID_Peak, std_peak:FID_Peak) -> int:

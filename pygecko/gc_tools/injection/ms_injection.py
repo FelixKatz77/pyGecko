@@ -45,7 +45,7 @@ class MS_Injection(Injection):
         self.analysis_settings = Analysis_Settings(chromatogram)
         self.solvent_delay = chromatogram[0][0]
 
-    def match_mz(self, mz:float) -> MS_Peak|list[MS_Peak]|None:
+    def match_mz(self, mz:float, **kwargs) -> MS_Peak|list[MS_Peak]|None:
 
         '''
         Returns the peak or a list of peaks whose mass spectra contain the given m/z. Returns None if no peak was found
@@ -59,6 +59,8 @@ class MS_Injection(Injection):
             no peak was found matching the criteria.
 
         '''
+
+        self.analysis_settings.update(**kwargs)
 
         candidates = []
         for rt, peak in self.peaks.items():
@@ -74,7 +76,7 @@ class MS_Injection(Injection):
                 return candidates[0]
         return None
 
-    def match_mol(self, smiles:str) -> MS_Peak|None:
+    def match_mol(self, smiles:str, return_canidates=False, check_iso=True, **kwargs) -> MS_Peak|dict[float:MS_Peak]|None:
 
         '''
         Returns the peak with the lowest isotope error for the m/z corresponding to the given molecule's parent
@@ -88,15 +90,17 @@ class MS_Injection(Injection):
             found matching the criteria.
         '''
 
+        self.analysis_settings.update(**kwargs)
+
         mol = Chem.MolFromSmiles(smiles)
         mz = round(Descriptors.ExactMolWt(mol), 0)
-        peak = self.__match_mz_mol(mz, smiles=smiles)
-        if peak:
-            analyte = Analyte(peak.rt, smiles=smiles)
-            peak.analyte = analyte
-        return peak
+        result = self.__match_mz_mol(mz, smiles=smiles, return_canidates=return_canidates, check_iso=check_iso)
+        if isinstance(result, MS_Peak):
+            analyte = Analyte(result.rt, smiles=smiles)
+            result.analyte = analyte
+        return result
 
-    def __match_mz_mol(self, mz:float, smiles:str) -> MS_Peak|None:
+    def __match_mz_mol(self, mz:float, smiles:str, return_canidates=False, check_iso=True) -> MS_Peak|dict[float:MS_Peak]|None:
 
         '''
         Returns the peak with the lowest isotope error for a given m/z and molecule. Returns None if no peak was found
@@ -111,22 +115,34 @@ class MS_Injection(Injection):
             found matching the criteria.
         '''
 
+        min_rel_int = self.analysis_settings.pop('min_rel_intensity', 4)
+
         candidates = {}
         for rt, peak in self.peaks.items():
             if mz in peak.mass_spectrum['mz']:
                 index = np.where(peak.mass_spectrum['mz'] == mz)[0]
-                if peak.mass_spectrum['rel_intensity'][index][0] > 4 and mz > peak.mass_spectrum['mz'].max() * (
+                if peak.mass_spectrum['rel_intensity'][index][0] > min_rel_int and mz > peak.mass_spectrum['mz'].max() * (
                         2 / 3):  # TODO: Check if this is a good decision.
-                    isotope_error = self.__isotope_check(smiles, peak, mz)
-                    if isotope_error:
-                        candidates[isotope_error] = peak
+                    if check_iso:
+                        isotope_error = self.__isotope_check(smiles, peak, mz)
+                        if isotope_error and return_canidates:
+                            candidates[rt] = peak
+                        elif isotope_error:
+                            candidates[isotope_error] = peak
+                    else:
+                        candidates[rt] = peak
         if candidates:
             if len(candidates) > 1:
-                print(f'Multiple peaks with m/z {mz} fitting the calculated isotope pattern were found for {self.sample_name}.')
-            peak = candidates[min(candidates)]
-            peak.analyte = Analyte(peak.rt, smiles=smiles)
-            return peak
+                print(
+                    f'Multiple peaks with m/z {mz} were found for {self.sample_name}.')
+            if return_canidates:
+                return candidates
+            else:
+                peak = candidates[min(candidates)]
+                peak.analyte = Analyte(peak.rt, smiles=smiles)
+                return peak
         return None
+
     def pick_peaks(self, inplace: bool = True, **kwargs: dict) -> None|dict[float, MS_Peak]:
 
         '''
@@ -187,6 +203,8 @@ class MS_Injection(Injection):
             if the difference is smaller than 5% and None otherwise.
         '''
 
+        max_diff = self.analysis_settings.pop('max_isotope_diff', 0.055)
+
         mol = Chem.MolFromSmiles(smiles)
         mol = Chem.AddHs(mol)
         i = np.where(peak.mass_spectrum['mz'] == mz)[0]
@@ -197,7 +215,7 @@ class MS_Injection(Injection):
         mol_formula = self.__get_mol_formula_dict(mol)
         isotopic_dist = isotopic_variants(mol_formula, npeaks=3, charge=0)
         theo_ratio = isotopic_dist[diff].intensity/isotopic_dist[0].intensity
-        if (theo_ratio - 0.055) < ratio < (theo_ratio + 0.055):
+        if (theo_ratio - max_diff) < ratio < (theo_ratio + max_diff):
             return abs(theo_ratio - ratio)
         else:
             return None

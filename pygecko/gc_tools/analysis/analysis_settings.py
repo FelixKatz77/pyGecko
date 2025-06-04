@@ -19,6 +19,8 @@ class Analysis_Settings:
         max_half_window (int): Maximum half window size for Snip algorithm.
         boarder_threshold (int): Threshold for boarder detection.
         boarder_window (int): Window size for boarder detection.
+        max_isotopic_diff (float): Max deviation of isotopic peak intensity for analyte assignment.
+        min_rel_intensity (float): Minimum relative intensity for m/z trace to be considered for analyte assignment.
         scan_rate (float): Scan rate of chromatogram.
     '''
 
@@ -34,10 +36,13 @@ class Analysis_Settings:
     max_half_window: int|None
     boarder_threshold: int|None
     boarder_window: int|None
+    max_isotopic_diff: float|None
+    min_rel_intensity: float|None
     scan_rate: float
 
+
     __slots__ = 'sn', 'time_range', 'indices_range', 'width', 'prominence_ms', 'prominence_fid', 'trace_prominence', 'height', \
-                'savgol_window', 'max_half_window', 'boarder_threshold', 'boarder_window', 'scan_rate'
+                'savgol_window', 'max_half_window', 'boarder_threshold', 'boarder_window', 'max_isotopic_diff', 'min_rel_intensity', 'scan_rate'
 
     def __init__(self, chromatogram:np.ndarray):
         self.sn = 5
@@ -52,6 +57,8 @@ class Analysis_Settings:
         self.max_half_window = None
         self.boarder_threshold = None
         self.boarder_window = None
+        self.max_isotopic_diff = None
+        self.min_rel_intensity = None
         self.scan_rate = chromatogram[0, 2] - chromatogram[0, 1]
 
     def __str__(self) -> str:
@@ -60,6 +67,7 @@ class Analysis_Settings:
                f'Trace Prominence: {self.trace_prominence}\nHeight: {self.height}\n' \
                f'Savitzky-Golay Window: {self.savgol_window}\nMax Half Window: {self.max_half_window}\n' \
                f'Boarder Threshold: {self.boarder_threshold}\nBoarder Window: {self.boarder_window}\n' \
+               f'Max Isotopic Diff: {self.max_isotopic_diff}\nMin Relative Intensity: {self.min_rel_intensity}\n' \
                f'Scan Rate: {self.scan_rate}'
 
 
@@ -101,9 +109,9 @@ class Analysis_Settings:
             bool: True if setting is valid.
         '''
 
-        options = {'sn': int, 'time_range': tuple, 'width': (int, float), 'prominence_ms': int, 'prominence_fid': int,
+        options = {'sn': int, 'time_range': tuple, 'width': (int, float), 'prominence_ms': (int, float), 'prominence_fid': int,
                    'trace_prominence': int, 'height': int, 'savgol_window': int, 'max_half_window': int,
-                   'boarder_threshold': int, 'boarder_window': int}
+                   'boarder_threshold': int, 'boarder_window': int, 'max_isotopic_diff': float, 'min_rel_intensity': float}
         if setting in options.keys():
             if isinstance(value, options[setting]):
                 return True

@@ -34,6 +34,7 @@ class Injection:
     detector: None|str
     plate_pos: str | None
 
+
     __slots__ = 'acq_method', 'instrument_name', 'sample_description', 'sample_name', 'sample_type', 'vial_pos', 'internal_standard', 'peaks', 'detector', 'plate_pos'
 
     def __init__(self, metadata:dict, peaks:dict[float, Peak]|None=None, pos:bool=False):
@@ -50,6 +51,7 @@ class Injection:
             self.plate_pos = self.sample_name.split('-')[-1]
         else:
             self.plate_pos = None
+        self.analysis_settings = None
 
     def __getitem__(self, rt:float) -> Peak:
 
@@ -94,6 +96,8 @@ class Injection:
         '''
 
         peak = self.flag_peak(rt, flag='standard', tolerance=tolerance)
+        if not peak:
+            raise ValueError(f'Error while setting internal standard: No peak found with retention time {rt} within tolerance {tolerance}.')
         self.internal_standard = Analyte(peak.rt, name=name, smiles=smiles)
         peak.analyte = self.internal_standard
 
@@ -141,8 +145,9 @@ class Injection:
         Returns:
             Peak|None: The peak with the closest retention index to the given retention index or None if
              no peak was found within the tolerance.
-
         '''
+
+
         candidates = {}
         for peak in self.peaks.values():
             if peak.ri:

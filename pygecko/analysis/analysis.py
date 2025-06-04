@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from scipy.stats import linregress
 
 from pygecko.gc_tools import FID_Peak, FID_Injection
 from pygecko.gc_tools.sequence import MS_Sequence, FID_Sequence
@@ -17,7 +18,7 @@ class Analysis:
 
     @staticmethod
     def calc_plate_yield(ms_sequence: MS_Sequence, fid_sequence: FID_Sequence, layout: Reaction_Array|Product_Array,
-                         path: str|None = None):
+                         path: str|None = None, **kwargs) -> np.ndarray:
 
         '''
         Matches GC-MS and GC-FID peaks and quantifies the yields of the reactions.
@@ -33,11 +34,11 @@ class Analysis:
             np.ndarray: Numpy array containing the quantification results, retention times and smiles for the analytes.
         '''
 
-        return Analysis.__match_and_quantify_plate(ms_sequence, fid_sequence, layout, path, mode='yield')
+        return Analysis.__match_and_quantify_plate(ms_sequence, fid_sequence, layout, path, mode='yield', **kwargs)
 
     @staticmethod
     def calc_plate_conv(ms_sequence: MS_Sequence, fid_sequence: FID_Sequence, layout: Reaction_Array,
-                        path: str|None = None, index:int=0):
+                        path: str|None = None, index:int=0, **kwargs) -> np.ndarray:
 
         '''
         Matches GC-MS and GC-FID peaks and quantifies the conversion of the reactions.
@@ -52,11 +53,11 @@ class Analysis:
             np.ndarray: Numpy array containing the quantification results, retention times and smiles for the analytes.
         '''
 
-        return Analysis.__match_and_quantify_plate(ms_sequence, fid_sequence, layout, path, mode='conv', index=index)
+        return Analysis.__match_and_quantify_plate(ms_sequence, fid_sequence, layout, path, mode='conv', index=index, **kwargs)
 
     @staticmethod
     def __match_and_quantify_plate(ms_sequence: MS_Sequence, fid_sequence: FID_Sequence, layout: Reaction_Array,
-                                   path: str|None = None, mode:str='yield', index:int=0) -> np.ndarray:
+                                   path: str|None = None, mode:str='yield', index:int=0, **kwargs) -> np.ndarray:
 
         '''
         Matches GC-MS and GC-FID peaks and quantifies the yields/conversion of the reactions.
@@ -75,7 +76,7 @@ class Analysis:
         results_df = pd.DataFrame(columns=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
                                       index=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
 
-        results_dict = Analysis.__match_and_quantify(ms_sequence, fid_sequence, layout, mode, index)
+        results_dict = Analysis.__match_and_quantify(ms_sequence, fid_sequence, layout, mode, index, **kwargs)
 
         for key, value in results_dict.items():
             results_df.loc[key[0], key[1:]] = value
@@ -101,7 +102,7 @@ class Analysis:
 
     @staticmethod
     def __match_and_quantify(ms_sequence: MS_Sequence, fid_sequence: FID_Sequence, layout: Reaction_Array, mode: str,
-                             index: int = 0) -> dict[str, list[float, str]]:
+                             index: int = 0, **kwargs) -> dict[str, list[float, str]]:
 
         '''
                 Matches GC-MS and GC-FID peaks and quantifies the yields of the reactions.
@@ -115,6 +116,8 @@ class Analysis:
                     dict: Dictionary containing the yields, retention times and the analyte smiles for each well.
         '''
 
+        ri_tolerance = kwargs.pop('ri_tolerance', 20)
+
         results_dict = {}
         for name, ms_injection in ms_sequence.injections.items():
             fid_injection = fid_sequence[name]
@@ -124,10 +127,10 @@ class Analysis:
                 pass
             if mode == 'conv':
                 analyte = layout.get_substrate(pos, index=index)
-            mz_match = ms_injection.match_mol(analyte)
+            mz_match = ms_injection.match_mol(analyte, **kwargs)
             if mz_match:
                 ms_height_ratio = mz_match.height / ms_injection[ms_injection.internal_standard.rt].height
-                ri_match = fid_injection.match_ri(mz_match.ri, analyte=mz_match.analyte, return_candidates=True)
+                ri_match = fid_injection.match_ri(mz_match.ri, analyte=mz_match.analyte, return_candidates=True, tolerance=ri_tolerance)
 
                 if ri_match:
                     ri_match = Analysis.__find_best_ri_match(ri_match, fid_injection, ms_height_ratio, analyte=mz_match.analyte)
@@ -146,7 +149,7 @@ class Analysis:
 
 
     @staticmethod
-    def quantify_analyte(fid_sequence:FID_Sequence, rt:float, analyte:Analyte|None=None) -> dict[str, float]:
+    def quantify_analyte(fid_sequence:FID_Sequence, rt:float, analyte:Analyte|None=None, method='polyarc', **kwargs) -> dict[str, list[float, str]]:
 
         '''
         Returns the yields of Analytes at a given retention time in a FID sequence.
@@ -164,13 +167,22 @@ class Analysis:
         for injection in fid_sequence.injections.values():
             peak = injection.flag_peak(rt, analyte=analyte)
             if peak:
-                yield_ = injection.quantify(peak.rt)
+                yield_ = injection.quantify(peak.rt, method=method, **kwargs)
+                flags = Flags.return_flags_value(peak.flags)
+                rt = peak.rt
+                if peak.analyte:
+                    analyte_name = peak.analyte.name
+                else:
+                    analyte_name = ''
             else:
                 yield_ = 0
+                flags = np.nan
+                rt = np.nan
+                analyte_name = ''
             if injection.plate_pos:
-                yield_dict[injection.plate_pos] = yield_
+                yield_dict[injection.plate_pos] = [yield_, rt, flags, analyte_name]
             else:
-                yield_dict[injection.sample_name] = yield_
+                yield_dict[injection.sample_name] = [yield_, rt, flags, analyte_name]
         return yield_dict
 
     @staticmethod
@@ -228,3 +240,110 @@ class Analysis:
         if rvalue < 0.9:
             print('Calibration curve fit is not accurate.')
         return slope, intercept
+
+    @staticmethod
+    def quantify_plate(fid_sequence: FID_Sequence, rt: float, analyte: Analyte =None, method: str = 'polyarc',
+                                   path: str | None = None, mode: str = 'yield', **kwargs) -> np.ndarray:
+
+        '''
+        Matches GC-MS and GC-FID peaks and quantifies the yields/conversion of the reactions.
+
+        Args:
+            ms_sequence (MS_Sequence): MS_Sequence object containing the GC-MS data.
+            fid_sequence (FID_Sequence): FID_Sequence object containing the GC-FID data.
+            layout (Reaction_Array): Well_Plate object containing the combinatorial reaction layout.
+            path (str|None, optional): Path to write the results to. Defaults to None.
+            mode (str, optional): Parameter (yield or conversion) to quantify. Defaults to 'yield'.
+
+        Returns:
+            np.ndarray: Numpy array containing the quantification results, retention times and smiles for the analytes.
+        '''
+
+        results_df = pd.DataFrame(columns=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+                                  index=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
+
+        results_dict = Analysis.quantify_analyte(fid_sequence, rt, analyte=analyte, method=method, **kwargs)
+
+        for key, value in results_dict.items():
+            results_df.loc[key[0], key[1:]] = value
+
+        results_array = results_df.to_numpy()
+        results_array = np.array([row.tolist() for row in results_array])
+        dtype = np.dtype([('quantity', float), ('rt_fid', float), ('flags', int)])
+        results_array = unstructured_to_structured(results_array[:, :, :-1], dtype=dtype)
+        if path:
+            if mode == 'yield':
+                quantity = 'Yield [%]'
+                report_df = pd.DataFrame.from_dict(results_dict, orient='index',
+                                                   columns=[quantity, 'RT-FID [min]', 'Flags',
+                                                            'Analyte'])
+                report_df.drop(columns=['Flags'], inplace=True)
+            else:
+                quantity = 'Conversion [%]'
+                report_df = pd.DataFrame.from_dict(results_dict, orient='index',
+                                                   columns=[quantity, 'RT-FID [min]', 'Flags',
+                                                            'Analyte'])
+                report_df.drop(columns=['Flags'], inplace=True)
+            report_df.sort_index(inplace=True)
+            report_df.to_csv(path)
+        return results_array
+
+    @staticmethod
+    def match_mz_plate(ms_sequence: MS_Sequence, layout: Reaction_Array, path: str|None = None,
+                       return_canidates:bool = True, check_iso:bool = False, **kwargs) -> pd.DataFrame:
+
+        '''
+        Matches m/z values of the MS peaks to the analytes in the reaction layout.
+        Args:
+            ms_sequence: MS_Sequence object containing the GC-MS data.
+            layout: Reaction_Array object containing the combinatorial reaction layout.
+            path: (str|None): Path to write the results to. Defaults to None.
+            **kwargs: Additional keyword arguments to pass to the match_mol method.
+
+        Returns:
+            pd.DataFrame: DataFrame containing the m/z values, retention times and smiles for the analytes.
+        '''
+
+        results_dict = Analysis.__match_mz(ms_sequence, layout, return_canidates=return_canidates, check_iso=check_iso,
+                                           **kwargs)
+        data = {}
+        columns = ['RT-MS [min]']*max([len(entry[0]) for entry in results_dict.values()])
+        columns.append('Analyte')
+        for pos, mz_match in results_dict.items():
+            if mz_match[0]:
+                a = list(mz_match[0].keys())
+                row = list(mz_match[0].keys()) + [np.nan]*(len(columns)-len(mz_match[0])-1)
+                row.append(mz_match[1])
+                data[pos] = row
+            else:
+                data[pos] = [np.nan]*len(columns)
+        report_df = pd.DataFrame.from_dict(data, orient='index',
+                                                   columns=columns)
+        report_df.sort_index(inplace=True)
+        if path:
+            report_df.to_csv(path)
+        return report_df
+
+    @staticmethod
+    def __match_mz(ms_sequence: MS_Sequence, layout: Reaction_Array, return_canidates:bool = True, check_iso:bool = False, **kwargs) -> dict[str, list[float, str]]:
+
+        '''
+        Matches m/z values of the MS peaks to the analytes in the reaction layout.
+
+        Args:
+            ms_sequence (MS_Sequence): MS_Sequence object containing the GC-MS data.
+            layout (Reaction_Array): Well_Plate object containing the combinatorial reaction layout.
+
+        Returns:
+            dict: Dictionary containing the m/z values, retention times and smiles for the analytes.
+        '''
+
+        results_dict = {}
+        for name, ms_injection in ms_sequence.injections.items():
+            pos = ms_injection.get_plate_position()
+            mz_match = ms_injection.match_mol(layout.get_product(pos), return_canidates=return_canidates, check_iso=check_iso, **kwargs)
+            if mz_match:
+                results_dict[pos] = [mz_match, layout.get_product(pos)]
+            else:
+                results_dict[pos] = [{}]
+        return results_dict
