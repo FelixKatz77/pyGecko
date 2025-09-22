@@ -1,4 +1,7 @@
 import _pickle as cPickle
+
+import numpy as np
+
 from pygecko.gc_tools.peak import Peak
 from pygecko.gc_tools.analyte import Analyte
 from pygecko.gc_tools.utilities import Utilities
@@ -33,9 +36,11 @@ class Injection:
     peaks: dict[float, Peak]|None
     detector: None|str
     plate_pos: str | None
+    analysis_settings: None
+    chromatogram: None
 
 
-    __slots__ = 'acq_method', 'instrument_name', 'sample_description', 'sample_name', 'sample_type', 'vial_pos', 'internal_standard', 'peaks', 'detector', 'plate_pos'
+    __slots__ = 'acq_method', 'instrument_name', 'sample_description', 'sample_name', 'sample_type', 'vial_pos', 'internal_standard', 'peaks', 'detector', 'plate_pos', 'analysis_settings', 'chromatogram'
 
     def __init__(self, metadata:dict, peaks:dict[float, Peak]|None=None, pos:bool=False):
         self.acq_method = metadata.get('AcqMethodName')
@@ -52,6 +57,7 @@ class Injection:
         else:
             self.plate_pos = None
         self.analysis_settings = None
+        self.chromatogram = None
 
     def __getitem__(self, rt:float) -> Peak:
 
@@ -226,6 +232,16 @@ class Injection:
         with open(filename, 'wb') as outp:
             cPickle.dump(self, outp)
 
+    def _check_for_missing_signal(self):
+
+        '''Check if there is any part of the chromatogram with no signal and print the time ranges with no signal'''
+
+        if np.any(self.chromatogram[1] == 0):
+            print('No signal in the following time ranges:')
+            ranges = Utilities.find_empty_ranges(self.chromatogram)
+            for i, (start, end) in enumerate(Utilities.find_empty_ranges(self.chromatogram)):
+                print(f'Range {i}: {start} - {end}')
+
 
 def load_injection(filename) -> Injection:
 
@@ -242,6 +258,8 @@ def load_injection(filename) -> Injection:
     with open(filename, 'rb') as file:
         sequence = cPickle.load(file)
     return sequence
+
+
 
 
 

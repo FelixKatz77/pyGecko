@@ -39,6 +39,7 @@ class MS_Injection(Injection):
     def __init__(self, metadata:dict|None, chromatogram:np.ndarray, peaks:dict|None, scans:pd.DataFrame, pos:bool=False):
         super().__init__(metadata, pos=pos)
         self.chromatogram = chromatogram
+        self._check_for_missing_signal()
         self.peaks = peaks
         self.scans = scans
         self.detector = 'MS'
@@ -203,7 +204,7 @@ class MS_Injection(Injection):
             if the difference is smaller than 5% and None otherwise.
         '''
 
-        max_diff = self.analysis_settings.pop('max_isotope_diff', 0.055)
+        max_diff = self.analysis_settings.pop('max_isotopic_diff', 0.055)
 
         mol = Chem.MolFromSmiles(smiles)
         mol = Chem.AddHs(mol)

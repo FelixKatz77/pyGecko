@@ -51,6 +51,7 @@ class FID_Injection(Injection):
         else: self.solvent_delay = self.__set_solvent_delay(chromatogram)
         self.chromatogram = chromatogram[:,
                             Utilities.convert_time_to_scan(solvent_delay, self.analysis_settings.scan_rate):]
+        self._check_for_missing_signal()
         self.processed_chromatogram = None
         self.peaks = None
         self.detector = 'FID'
@@ -154,6 +155,8 @@ class FID_Injection(Injection):
         injection_info.to_csv(path, header=False)
         peaks_info.to_csv(path, mode='a')
 
+
+
     @staticmethod
     def __set_solvent_delay(chromatogram: np.ndarray) -> float:
 
@@ -172,3 +175,4 @@ class FID_Injection(Injection):
         right_booarder = int(peak_properties['right_ips'][0].round(0))
         solvent_delay = chromatogram[0][right_booarder]
         return solvent_delay
+

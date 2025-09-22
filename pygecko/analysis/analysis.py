@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
-from scipy.stats import linregress
+from statistics import linear_regression
+
+from sklearn.linear_model import LinearRegression
 
 from pygecko.gc_tools import FID_Peak, FID_Injection
 from pygecko.gc_tools.sequence import MS_Sequence, FID_Sequence
@@ -73,10 +75,12 @@ class Analysis:
             np.ndarray: Numpy array containing the quantification results, retention times and smiles for the analytes.
         '''
 
-        results_df = pd.DataFrame(columns=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-                                      index=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
+
 
         results_dict = Analysis.__match_and_quantify(ms_sequence, fid_sequence, layout, mode, index, **kwargs)
+
+        results_df = pd.DataFrame(columns=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+                                  index=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
 
         for key, value in results_dict.items():
             results_df.loc[key[0], key[1:]] = value
@@ -149,8 +153,7 @@ class Analysis:
 
 
     @staticmethod
-    def quantify_analyte(fid_sequence:FID_Sequence, rt:float, analyte:Analyte|None=None, method='polyarc', **kwargs) -> dict[str, list[float, str]]:
-
+    def quantify_analyte(fid_sequence:FID_Sequence, rt:float, analyte:Analyte|None=None, method='polyarc', path: str|None = None, **kwargs) -> np.ndarray:
         '''
         Returns the yields of Analytes at a given retention time in a FID sequence.
 
@@ -162,6 +165,8 @@ class Analysis:
         Returns:
             dict: Dictionary containing the yields of the Analytes in the FID sequence.
         '''
+
+
 
         yield_dict = {}
         for injection in fid_sequence.injections.values():
@@ -175,15 +180,34 @@ class Analysis:
                 else:
                     analyte_name = ''
             else:
-                yield_ = 0
-                flags = np.nan
+                yield_ = np.nan
+                flags = 0
                 rt = np.nan
                 analyte_name = ''
             if injection.plate_pos:
                 yield_dict[injection.plate_pos] = [yield_, rt, flags, analyte_name]
             else:
                 yield_dict[injection.sample_name] = [yield_, rt, flags, analyte_name]
-        return yield_dict
+
+        results_df = pd.DataFrame(columns=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+                                  index=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
+
+        for key, value in yield_dict.items():
+            results_df.loc[key[0], key[1:]] = value
+
+        results_array = results_df.to_numpy()
+        results_array = np.array([row.tolist() for row in results_array])
+        dtype = np.dtype([('quantity', float), ('rt_fid', float), ('flags', int)])
+        results_array = unstructured_to_structured(results_array[:, :, :-1], dtype=dtype)
+
+        if path:
+            report_df = pd.DataFrame.from_dict(yield_dict, orient='index',
+                                               columns=['Yield [%]', 'RT-FID [min]', 'Flags', 'Analyte'])
+            report_df.drop(columns=['Flags'], inplace=True)
+            report_df.sort_index(inplace=True)
+            report_df.to_csv(path)
+
+        return results_array
 
     @staticmethod
     def __find_best_ri_match(match_candidates:dict[float:FID_Peak], fid_injection:FID_Injection, ms_height_ratio:float, analyte:str|None=None) -> FID_Peak:
@@ -212,19 +236,24 @@ class Analysis:
         return best_match
 
     @staticmethod
-    def fit_calibration_curve(fid_sequence:FID_Sequence, analyte:Analyte, ratios:list[float]) -> tuple[float, float]:
-
-        '''
-        Fits a calibration curve to the analyte in a FID sequence.
+    def fit_calibration_curve(
+            fid_sequence: FID_Sequence,
+            analyte: Analyte,
+            ratios: list[float],
+            intercept: bool = False,  # set to False to force through (0,0)
+    ) -> tuple[float, float]:
+        """
+        Fits a calibration curve to the analyte in a FID sequence using scikit-learn.
 
         Args:
             fid_sequence (FID_Sequence): FID_Sequence object containing the GC-FID data.
             analyte (Analyte): Analyte to fit the calibration curve to.
+            ratios (list[float]): List of concentration ratios for calibration.
+            intercept (bool): If True, fit intercept (default True). If False, force through origin.
 
         Returns:
-            dict: Dictionary containing the slope and intercept of the calibration curve.
-        '''
-
+            tuple[float, float]: (slope, intercept) of calibration curve.
+        """
         area_ratios = []
         for injection in fid_sequence.injections.values():
             analyte_peak = injection.flag_peak(rt=analyte.rt, analyte=analyte)
@@ -233,13 +262,27 @@ class Analysis:
                 area_ratio = analyte_peak.area / standard_peak.area
                 area_ratios.append(area_ratio)
             else:
-                area_ratio = 0
-                area_ratios.append(area_ratio)
-        slope, intercept, rvalue, _, _ = linregress(area_ratios, ratios)
-        print(f'Calibration fitted: Slope: {slope}, Intercept: {intercept}, R-value: {rvalue}')
-        if rvalue < 0.9:
+                area_ratios.append(0.0)
+
+        # Prepare data for sklearn (X must be 2D)
+        X = np.asarray(area_ratios, dtype=float).reshape(-1, 1)
+        y = np.asarray(ratios, dtype=float)
+
+        # Fit linear model (optionally without intercept to force through origin)
+        model = LinearRegression(fit_intercept=intercept)
+        model.fit(X, y)
+
+        slope = float(model.coef_[0])
+        b = float(model.intercept_) if intercept else 0.0
+
+        # R^2 score
+        r2 = float(model.score(X, y))
+
+        print(f'Calibration fitted: Slope: {slope}, Intercept: {b}, R^2: {r2}')
+        if r2 < 0.9:
             print('Calibration curve fit is not accurate.')
-        return slope, intercept
+
+        return slope, b
 
     @staticmethod
     def quantify_plate(fid_sequence: FID_Sequence, rt: float, analyte: Analyte =None, method: str = 'polyarc',
@@ -347,3 +390,4 @@ class Analysis:
             else:
                 results_dict[pos] = [{}]
         return results_dict
+
