@@ -32,3 +32,9 @@ pygecko/analysis/__pycache__/
 pygecko/data_handling/__pycache__/
 
 pygecko/reaction/__pycache__/
+
+# Ignore local configurations
+pygecko/config.ini
+
+# Ignore personal run scripts
+run_JWI.py

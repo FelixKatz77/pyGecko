@@ -26,7 +26,8 @@ setup(
         'scipy==1.11.4',
         'sphinx-rtd-theme==2.0.0',
         'statsmodels==0.14.0',
-        'xarray==2023.6.0'
+        'xarray==2023.6.0',
+        'scikit-learn== 1.7.2'
     ],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
