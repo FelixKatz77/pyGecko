@@ -153,7 +153,7 @@ class Analysis:
 
 
     @staticmethod
-    def quantify_analyte(fid_sequence:FID_Sequence, rt:float, analyte:Analyte|None=None, method='polyarc', path: str|None = None, **kwargs) -> np.ndarray:
+    def quantify_analyte(fid_sequence:FID_Sequence, rt_analyte:float, analyte:Analyte|None=None, method='polyarc', path: str|None = None, **kwargs) -> np.ndarray:
         '''
         Returns the yields of Analytes at a given retention time in a FID sequence.
 
@@ -170,7 +170,7 @@ class Analysis:
 
         yield_dict = {}
         for injection in fid_sequence.injections.values():
-            peak = injection.flag_peak(rt, analyte=analyte)
+            peak = injection.flag_peak(rt_analyte, analyte=analyte)
             if peak:
                 yield_ = injection.quantify(peak.rt, method=method, **kwargs)
                 flags = Flags.return_flags_value(peak.flags)

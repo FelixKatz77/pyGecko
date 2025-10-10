@@ -32,3 +32,8 @@ pygecko/analysis/__pycache__/
 pygecko/data_handling/__pycache__/
 
 pygecko/reaction/__pycache__/
+
+plateopt/
+
+pygecko/data_handling/tmp/
+
