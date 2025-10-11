@@ -123,9 +123,10 @@ class Analysis:
         ri_tolerance = kwargs.pop('ri_tolerance', 20)
 
         results_dict = {}
-        for name, ms_injection in ms_sequence.injections.items():
-            fid_injection = fid_sequence[name]
+        for ms_injection in ms_sequence:
             pos = ms_injection.get_plate_position()
+            fid_injection = fid_sequence.get_injection_by_pos(pos)
+
             if mode == 'yield':
                 analyte = layout.get_product(ms_injection.get_plate_position())
                 pass

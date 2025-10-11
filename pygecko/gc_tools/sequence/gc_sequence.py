@@ -80,6 +80,20 @@ class GC_Sequence:
 
         del self.injections[injection_name]
 
+    def get_injection_by_pos(self, pos:str) -> Injection:
+
+        '''
+        Returns the injection with the given plate position if positions are assigned to the injections. Raises an error if positions are not assigned.
+        '''
+
+        try:
+            by_pos = {injection.plate_pos: injection for injection in self.injections.values()}
+            return by_pos[pos]
+        except KeyError:
+            raise KeyError(f'Injection with plate position {pos} not found.')
+        except AttributeError:
+            raise AttributeError('Plate position is not assigned.')
+
     def pick_peaks(self, **kwargs):
 
         '''
