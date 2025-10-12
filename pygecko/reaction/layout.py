@@ -14,17 +14,17 @@ class Combinatorial_Layout:
         layout (pd.DataFrame): DataFrame containing the combinatorial dimensions of the layout.
         transformation (Transformation): Transformation object.
         meta_data (dict): Dictionary containing the metadata of the layout.
-        dimensions (int): Number of dimensions of the layout.
+        shape (tuple): Shape of the layout.
         array (np.ndarray): A numpy array containing the layout.
     '''
 
     layout: pd.DataFrame
     transformation: Transformation
     meta_data: dict
-    dimensions:int
+    shape: tuple
     array: np.ndarray
 
-    __slots__ = 'layout', 'transformation', 'meta_data', 'dimensions', 'array'
+    __slots__ = 'layout', 'transformation', 'meta_data', 'shape', 'array'
 
     def __init__(self, layout_file: Path|str, meta_data_file:Path|str, transformation:Transformation):
         self.layout = pd.read_csv(layout_file)
@@ -33,10 +33,10 @@ class Combinatorial_Layout:
             self.meta_data = read_json(meta_data_file)
         else:
             self.meta_data = {}
-        self.dimensions = self.layout.shape[1]
         arr1 = self.layout.x.dropna().to_numpy(dtype=str)
         arr2 = self.layout.y.dropna().to_numpy(dtype=str)
         self.array = np.array([[x + '.' + y for y in arr2] for x in arr1])
+        self.shape = self.array.shape
 
 
 class Product_Layout:
@@ -46,17 +46,17 @@ class Product_Layout:
 
     Attributes:
         layout (pd.DataFrame): DataFrame containing the product layout.
-        dimensions (int): Number of dimensions of the layout.
+        shape (tuple): Shape of the layout.
         array (np.ndarray): A numpy array containing the layout.
     '''
 
     layout: pd.DataFrame
-    dimensions:int
+    shape: tuple
     array: np.ndarray
 
-    __slots__ = 'layout', 'dimensions', 'array'
+    __slots__ = 'layout', 'shape', 'array'
 
     def __init__(self, layout_file: Path|str):
         self.layout = pd.read_csv(layout_file)
-        self.dimensions = self.layout.shape[1]
         self.array = self.layout.to_numpy(dtype=str)
+        self.shape = self.array.shape
