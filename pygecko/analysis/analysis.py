@@ -154,7 +154,7 @@ class Analysis:
 
 
     @staticmethod
-    def quantify_analyte(fid_sequence:FID_Sequence, rt_analyte:float, analyte:Analyte|None=None, method='polyarc', path: str|None = None, **kwargs) -> np.ndarray:
+    def quantify_analyte(fid_sequence:FID_Sequence, rt_analyte:float, analyte:Analyte|None=None, method='polyarc', path: str|None = None, **kwargs) -> dict:
         '''
         Returns the yields of Analytes at a given retention time in a FID sequence.
 
@@ -162,6 +162,8 @@ class Analysis:
             fid_sequence (FID_Sequence): FID_Sequence object containing the GC-FID data.
             rt (float): Retention time to quantify the Analytes at.
             analyte (Analyte): Analyte to quantify.
+            method (str): Method to use for quantification. Defaults to 'polyarc' can be set to calibration to use calibration curve.
+            path (str|None): Path to write the results to. Defaults to None.
 
         Returns:
             dict: Dictionary containing the yields of the Analytes in the FID sequence.
@@ -190,17 +192,6 @@ class Analysis:
             else:
                 yield_dict[injection.sample_name] = [yield_, rt, flags, analyte_name]
 
-        results_df = pd.DataFrame(columns=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-                                  index=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
-
-        for key, value in yield_dict.items():
-            results_df.loc[key[0], key[1:]] = value
-
-        results_array = results_df.to_numpy()
-        results_array = np.array([row.tolist() for row in results_array])
-        dtype = np.dtype([('quantity', float), ('rt_fid', float), ('flags', int)])
-        results_array = unstructured_to_structured(results_array[:, :, :-1], dtype=dtype)
-
         if path:
             report_df = pd.DataFrame.from_dict(yield_dict, orient='index',
                                                columns=['Yield [%]', 'RT-FID [min]', 'Flags', 'Analyte'])
@@ -208,7 +199,7 @@ class Analysis:
             report_df.sort_index(inplace=True)
             report_df.to_csv(path)
 
-        return results_array
+        return yield_dict
 
     @staticmethod
     def __find_best_ri_match(match_candidates:dict[float:FID_Peak], fid_injection:FID_Injection, ms_height_ratio:float, analyte:str|None=None) -> FID_Peak:
@@ -286,50 +277,62 @@ class Analysis:
         return slope, b
 
     @staticmethod
-    def quantify_plate(fid_sequence: FID_Sequence, rt: float, analyte: Analyte =None, method: str = 'polyarc',
-                                   path: str | None = None, mode: str = 'yield', **kwargs) -> np.ndarray:
-
+    def quantify_plate(fid_sequence:FID_Sequence, rt_analyte:float, analyte:Analyte|None=None, method='polyarc', path: str|None = None, **kwargs) -> np.ndarray:
         '''
-        Matches GC-MS and GC-FID peaks and quantifies the yields/conversion of the reactions.
+        Returns the yields of Analytes at a given retention time in the FID sequence of a plate.
 
         Args:
-            ms_sequence (MS_Sequence): MS_Sequence object containing the GC-MS data.
             fid_sequence (FID_Sequence): FID_Sequence object containing the GC-FID data.
-            layout (Reaction_Array): Well_Plate object containing the combinatorial reaction layout.
-            path (str|None, optional): Path to write the results to. Defaults to None.
-            mode (str, optional): Parameter (yield or conversion) to quantify. Defaults to 'yield'.
+            rt (float): Retention time to quantify the Analytes at.
+            analyte (Analyte): Analyte to quantify.
+            method (str): Method to use for quantification. Defaults to 'polyarc' can be set to calibration to use calibration curve.
+            path (str|None): Path to write the results to. Defaults to None.
 
         Returns:
-            np.ndarray: Numpy array containing the quantification results, retention times and smiles for the analytes.
+            np.ndarray: Array containing the yields of the Analytes in the FID sequence.
         '''
+
+
+
+        yield_dict = {}
+        for injection in fid_sequence.injections.values():
+            peak = injection.flag_peak(rt_analyte, analyte=analyte)
+            if peak:
+                yield_ = injection.quantify(peak.rt, method=method, **kwargs)
+                flags = Flags.return_flags_value(peak.flags)
+                rt = peak.rt
+                if peak.analyte:
+                    analyte_name = peak.analyte.name
+                else:
+                    analyte_name = ''
+            else:
+                yield_ = np.nan
+                flags = 0
+                rt = np.nan
+                analyte_name = ''
+            if injection.plate_pos:
+                yield_dict[injection.plate_pos] = [yield_, rt, flags, analyte_name]
+            else:
+                yield_dict[injection.sample_name] = [yield_, rt, flags, analyte_name]
 
         results_df = pd.DataFrame(columns=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
                                   index=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
 
-        results_dict = Analysis.quantify_analyte(fid_sequence, rt, analyte=analyte, method=method, **kwargs)
-
-        for key, value in results_dict.items():
+        for key, value in yield_dict.items():
             results_df.loc[key[0], key[1:]] = value
 
         results_array = results_df.to_numpy()
         results_array = np.array([row.tolist() for row in results_array])
         dtype = np.dtype([('quantity', float), ('rt_fid', float), ('flags', int)])
         results_array = unstructured_to_structured(results_array[:, :, :-1], dtype=dtype)
+
         if path:
-            if mode == 'yield':
-                quantity = 'Yield [%]'
-                report_df = pd.DataFrame.from_dict(results_dict, orient='index',
-                                                   columns=[quantity, 'RT-FID [min]', 'Flags',
-                                                            'Analyte'])
-                report_df.drop(columns=['Flags'], inplace=True)
-            else:
-                quantity = 'Conversion [%]'
-                report_df = pd.DataFrame.from_dict(results_dict, orient='index',
-                                                   columns=[quantity, 'RT-FID [min]', 'Flags',
-                                                            'Analyte'])
-                report_df.drop(columns=['Flags'], inplace=True)
+            report_df = pd.DataFrame.from_dict(yield_dict, orient='index',
+                                               columns=['Yield [%]', 'RT-FID [min]', 'Flags', 'Analyte'])
+            report_df.drop(columns=['Flags'], inplace=True)
             report_df.sort_index(inplace=True)
             report_df.to_csv(path)
+
         return results_array
 
     @staticmethod
