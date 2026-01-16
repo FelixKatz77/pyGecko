@@ -165,6 +165,15 @@ class MS_Injection(Injection):
         else:
             return peaks
 
+    def save_peaks_mass_spectrum(self, rt:float, path:str) -> None:
+        '''
+        Saves the mass spectrum of all peaks in the injection to a CSV file.
+        Args:
+            path (str): Path to the file where the mass spectra will be saved.
+        '''
+        peak = self.peaks[rt]
+        peak.save_mass_spectrum(path)
+
     def __isotope_check(self, smiles:str, peak:MS_Peak, mz:float) -> float|None:
 
         '''

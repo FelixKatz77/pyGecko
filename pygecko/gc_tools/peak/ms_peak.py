@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from pygecko.gc_tools.peak import Peak
 from pygecko.visualization import Visualization
@@ -47,4 +48,15 @@ class MS_Peak(Peak):
         '''
 
         return item in self.mass_spectrum['mz']
+
+    def save_mass_spectrum(self, path:str) -> None:
+        '''
+        Saves the mass spectrum of the peak to a CSV file.
+        Args:
+            path (str): Path to the file where the mass spectrum will be saved.
+        '''
+
+        mass_spectrum = pd.DataFrame(self.mass_spectrum)
+        mass_spectrum.to_csv(path, index=False)
+
 
