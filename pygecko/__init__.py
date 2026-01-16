@@ -15,15 +15,21 @@ if __name__ == '__main__':
     config = configparser.ConfigParser()
     config_path = Path(__file__).parent.joinpath('config.ini')
     config.read(config_path)
-    msconvert_exe = config.get('msConvertSettings','exe_path')
+    msconvert_exe = config.get('msConvertSettings', 'exe_path')
+
+    # Check if the existing path is valid; if not, reset it to trigger the prompt
+    if msconvert_exe and not pathlib.Path(msconvert_exe).exists():
+        print(f"Current configured path not found: {msconvert_exe}")
+        msconvert_exe = None
+
     if not msconvert_exe:
-        msconvert_exe = input("Please provide the path to the msConvert executable or specify it in the config.ini:")
-        if pathlib.Path.exists(Path(msconvert_exe)):
+        msconvert_exe = input("Please provide the path to the msConvert executable or specify it in the config.ini: ")
+        # Remove surrounding quotes if user added them
+        msconvert_exe = msconvert_exe.strip('"').strip("'")
+
+        if pathlib.Path(msconvert_exe).exists():
             config['msConvertSettings']['exe_path'] = str(msconvert_exe)
             with open(config_path, "w") as file_object:
                 config.write(file_object)
         else:
             raise FileNotFoundError("msConvert executable not found at the specified location.")
-    else:
-        if not pathlib.Path.exists(Path(msconvert_exe)):
-            raise FileNotFoundError("msConvert executable not found at the specified location. Please check the path to the msConvert executable or specify it in the config.ini.")
