@@ -38,7 +38,8 @@ dependencies = [
     "sphinx-rtd-theme==2.0.0",
     "statsmodels==0.14.0",
     "xarray==2023.6.0",
-    "scikit-learn==1.7.2"
+    "scikit-learn==1.7.2",
+    "psycopg2-binary"
 ]
 
 [project.optional-dependencies]

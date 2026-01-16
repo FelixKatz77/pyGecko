@@ -15,7 +15,7 @@ can be performed for GC-FID measurements. Results of an analysis as well as chro
 and reported in standardized formats like the Open Reaction Database (ORD) schema. pyGecko is designed to be easily 
 integrated into automated workflows and can be used as a stand-alone tool or as a python library.
 
-Preprint: https://chemrxiv.org/engage/chemrxiv/article-details/66adfc465101a2ffa8001761
+Preprint: https://chemrxiv.org/engage/chemrxiv/article-details/66adfc465101a2ffa8001761  <br>
 Paper: https://doi.org/10.1039/D4DD00347K
 
 ## Installation
