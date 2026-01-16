@@ -16,6 +16,7 @@ and reported in standardized formats like the Open Reaction Database (ORD) schem
 integrated into automated workflows and can be used as a stand-alone tool or as a python library.
 
 Preprint: https://chemrxiv.org/engage/chemrxiv/article-details/66adfc465101a2ffa8001761
+Paper: https://doi.org/10.1039/D4DD00347K
 
 ## Installation
 
@@ -65,3 +66,12 @@ pyGecko supports the following file formats:
 
 > [!NOTE]
 > To achieve the best performance, we recommend using the .mzML file format for GC-MS data.
+
+## How to Cite
+
+If you use pyGecko in your research, please cite the following publication:
+
+**Calibration-free quantification and automated data analysis for high-throughput reaction screening**
+Felix Katzenburg, et al.
+*Digital Discovery*, 2025, **4**, 384-394.
+DOI: [10.1039/D4DD00347K](https://doi.org/10.1039/D4DD00347K)
