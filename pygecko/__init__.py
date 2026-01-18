@@ -23,13 +23,17 @@ if __name__ == '__main__':
         msconvert_exe = None
 
     if not msconvert_exe:
-        msconvert_exe = input("Please provide the path to the msConvert executable or specify it in the config.ini: ")
+        msconvert_exe = input(
+            "Please provide the path to the msConvert executable or specify it in the config.ini (Press Enter to skip): ")
         # Remove surrounding quotes if user added them
         msconvert_exe = msconvert_exe.strip('"').strip("'")
 
-        if pathlib.Path(msconvert_exe).exists():
-            config['msConvertSettings']['exe_path'] = str(msconvert_exe)
-            with open(config_path, "w") as file_object:
-                config.write(file_object)
+        if msconvert_exe:
+            if pathlib.Path(msconvert_exe).exists():
+                config['msConvertSettings']['exe_path'] = str(msconvert_exe)
+                with open(config_path, "w") as file_object:
+                    config.write(file_object)
+            else:
+                print("Warning: msConvert executable not found. Vendor file conversion will be unavailable.")
         else:
-            raise FileNotFoundError("msConvert executable not found at the specified location.")
+            print("Skipping msConvert configuration. Vendor file conversion will be unavailable.")
