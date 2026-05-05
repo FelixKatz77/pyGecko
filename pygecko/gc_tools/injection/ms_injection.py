@@ -123,7 +123,7 @@ class MS_Injection(Injection):
             if mz in peak.mass_spectrum['mz']:
                 index = np.where(peak.mass_spectrum['mz'] == mz)[0]
                 if peak.mass_spectrum['rel_intensity'][index][0] > min_rel_int and mz > peak.mass_spectrum['mz'].max() * (
-                        2 / 3):  # TODO: Check if this is a good decision.
+                        1 / 3):  # TODO: Check if this is a good decision.
                     if check_iso:
                         isotope_error = self.__isotope_check(smiles, peak, mz)
                         if isotope_error and return_canidates:
@@ -213,7 +213,8 @@ class MS_Injection(Injection):
             if the difference is smaller than 5% and None otherwise.
         '''
 
-        max_diff = self.analysis_settings.pop('max_isotopic_diff', 0.055)
+        max_diff = self.analysis_settings.pop('max_isotopic_diff', 0.15) # 0.055
+        # Results in higher ratio of False Positives
 
         mol = Chem.MolFromSmiles(smiles)
         mol = Chem.AddHs(mol)
