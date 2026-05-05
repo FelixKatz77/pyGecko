@@ -1,17 +1,17 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
-[project]
+[tool.poetry]
 name = "pyGecko"
 version = "0.1.0"
-description = "An open-source Python libary for the parsing, processing and analysis of GC/MS and GC/FID raw data"
+description = "An open-source Python library for the parsing, processing and analysis of GC/MS and GC/FID raw data"
 readme = "README.md"
-requires-python = ">=3.10, <3.11"
-license = {text = "MIT License"}
 authors = [
-    {name = "Felix Katzenburg", email = "felix.katzenburg@uni-muenster.de"}
+    "Felix Katzenburg <felix.katzenburg@uni-muenster.de>",
+    "Florian Boser <florian.boser@uni-muenster.de>"
 ]
+license = "MIT"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
@@ -20,37 +20,38 @@ classifiers = [
     "Operating System :: Microsoft :: Windows :: Windows 11",
     "Programming Language :: Python :: 3.10",
 ]
-dependencies = [
-    "brain_isotopic_distribution==1.5.14",
-    "epam.indigo==1.13.0",
-    "lxml==5.1.0",
-    "matplotlib==3.6.2",
-    "numba==0.58.1",
-    "numpy==1.26.3",
-    "ord_schema==0.3.37",
-    "pandas==2.0.3",
-    "pybaselines==1.0.0",
-    "pymzml==2.5.2",
-    "pyteomics==4.6.2",
-    "rdkit==2023.3.1",
-    "reportlab==4.0.5",
-    "scipy==1.11.4",
-    "statsmodels==0.14.0",
-    "xarray==2023.6.0",
-    "scikit-learn==1.7.2",
-    "psycopg2-binary"
+packages = [
+    { include = "pygecko" }
 ]
+include = ["pygecko/config.ini"]
 
-[project.optional-dependencies]
-test = ["pytest"]
-docs = ["sphinx-rtd-theme==2.0.0"]
+[tool.poetry.dependencies]
+python = ">=3.10, <3.13"
+brain_isotopic_distribution = "1.5.14"
+epam-indigo = "1.13.0"
+lxml = "5.1.0"
+matplotlib = "3.6.2"
+numba = "0.58.1"
+numpy = "1.26.3"
+ord-schema = "0.3.37"
+pandas = "2.0.3"
+pybaselines = "1.0.0"
+pymzml = "2.5.2"
+pyteomics = "4.6.2"
+rdkit = "2023.3.1"
+reportlab = "4.0.5"
+scipy = "1.11.4"
+statsmodels = "0.14.0"
+xarray = "2023.6.0"
+scikit-learn = "1.7.2"
+psycopg2-binary = "*"
+netcdf4 = "<=1.6.5"
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["pygecko*"]
+[tool.poetry.group.test.dependencies]
+pytest = "*"
 
-[tool.setuptools.package-data]
-pygecko = ["config.ini"]
+[tool.poetry.group.docs.dependencies]
+sphinx-rtd-theme = "2.0.0"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
