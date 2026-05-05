@@ -45,9 +45,6 @@ class SplitGC_Parser:
                 an ``.acaml`` file and an ``AIA/`` subdirectory.
             solvent_delay_fid: Retention time of the solvent peak in the FID
                 trace, in minutes.
-            solvent_delay_ms: Retention time of the solvent peak in the MS
-                trace, in minutes. May differ slightly from ``solvent_delay_fid``
-                because of the post-column splitter dead-volume difference.
             sample_filter: Optional iterable of allowed ``SampleName`` values.
                 Use this to exclude cleaning/conditioning runs that OpenLab
                 tags as ``SampleType='Sample'`` (and that would otherwise be
@@ -85,12 +82,9 @@ class SplitGC_Parser:
             sample_filter=sample_filter,
         )
 
-        # MS side. MS_Base_Parser.load_sequence does not (yet) accept a
-        # sample_filter, so we apply it post-hoc to the returned sequence's
-        # injections dict. This keeps the MS parser untouched.
-        ms_sequence = MS_Base_Parser.load_sequence(str(aia_path), pos=pos)
-        if sample_filter is not None:
-            cls.__apply_sample_filter_to_ms_sequence(ms_sequence, sample_filter)
+        ms_sequence = MS_Base_Parser.load_sequence(
+            str(aia_path), pos=pos, sample_filter=sample_filter,
+        )
 
         return fid_sequence, ms_sequence
 
@@ -201,28 +195,6 @@ class SplitGC_Parser:
         ri_calibration_ms = RI_Calibration(ms_injection, c_count, rt_ms, **ms_kwargs)
         return ri_calibration_fid, ri_calibration_ms
 
-    @staticmethod
-    def __apply_sample_filter_to_ms_sequence(
-            ms_sequence: MS_Sequence,
-            sample_filter: Iterable[str],
-    ) -> None:
-        """Drops MS injections whose sample names are not in ``sample_filter``.
-
-        Mutates ``ms_sequence.injections`` in place. Used because
-        ``MS_Base_Parser.load_sequence`` does not (yet) accept a
-        ``sample_filter`` argument and we do not want to modify it in this
-        change set.
-
-        Args:
-            ms_sequence: The MS_Sequence to filter.
-            sample_filter: Iterable of allowed sample names.
-        """
-        allowed_names = set(sample_filter)
-        ms_sequence.injections = {
-            name: injection
-            for name, injection in ms_sequence.injections.items()
-            if name in allowed_names
-        }
 
 
 if __name__ == '__main__':
