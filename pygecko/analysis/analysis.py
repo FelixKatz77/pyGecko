@@ -31,6 +31,12 @@ class Analysis:
             layout (Reaction_Array|Product_Array): Reaction_Array or Product_Array object containing the reaction
             layout.
             path (str|None, optional): Path to write the results to. Defaults to None.
+            **kwargs: Matching options forwarded to the matching routine. ``matching`` selects the MS-to-FID
+                matching mode: ``'ri'`` (retention index, default; legacy two-machine workflow) or ``'rt'``
+                (nearest retention time; split-GC workflow). For ``matching='rt'`` use ``rt_func`` (an MS-to-FID
+                retention-time mapping, e.g. ``Analysis.constant_offset()``) and ``rt_tolerance`` (RT match
+                half-window in minutes, default 1/60). For ``matching='ri'`` use ``ri_tolerance`` (RI match
+                tolerance, default 20). Remaining kwargs are forwarded to ``MS_Injection.match_mol``.
 
         Returns:
             np.ndarray: Numpy array containing the quantification results, retention times and smiles for the analytes.
@@ -58,6 +64,56 @@ class Analysis:
         return Analysis.__match_and_quantify_plate(ms_sequence, fid_sequence, layout, path, mode='conv', index=index, **kwargs)
 
     @staticmethod
+    def constant_offset(b:float=0.0):
+
+        '''
+        Returns a retention-time mapping function applying a constant offset, for use as the rt_func of the
+        nearest-retention-time matching mode (matching='rt').
+
+        For a split GC the FID and MS traces originate from a single injection and share a retention-time axis
+        up to a small, near-constant splitter dead-volume offset. The returned function maps a source (MS)
+        retention time to the expected (FID) retention time as t_fid = t_ms + b.
+
+        Args:
+            b (float): Constant offset added to the source retention time, in minutes. Positive if the FID
+                peak elutes later than the MS peak. Defaults to 0.0 (assume identical retention times).
+
+        Returns:
+            Callable[[float], float]: Function mapping a source (MS) retention time to the expected (FID)
+            retention time.
+        '''
+
+        def offset(rt:float) -> float:
+            return rt + b
+        return offset
+
+    @staticmethod
+    def linear_drift(a:float, b:float):
+
+        '''
+        Returns a retention-time mapping function applying a linear drift, for use as the rt_func of the
+        nearest-retention-time matching mode (matching='rt').
+
+        Models a retention-time-dependent (rather than constant) difference between the detectors as
+        t_fid = a * t_ms + b. Use this when the FID-vs-MS offset is observed to grow or shrink across the
+        chromatogram instead of staying constant; the slope a and intercept b can be fitted from two or more
+        compounds seen on both detectors (e.g. the internal standard plus a second anchor). Provided as an
+        alternative to constant_offset; not used by default.
+
+        Args:
+            a (float): Slope of the linear mapping (dimensionless).
+            b (float): Intercept of the linear mapping, in minutes.
+
+        Returns:
+            Callable[[float], float]: Function mapping a source (MS) retention time to the expected (FID)
+            retention time.
+        '''
+
+        def drift(rt:float) -> float:
+            return a * rt + b
+        return drift
+
+    @staticmethod
     def __match_and_quantify_plate(ms_sequence: MS_Sequence, fid_sequence: FID_Sequence, layout: Reaction_Array,
                                    path: str|None = None, mode:str='yield', index:int=0, **kwargs) -> np.ndarray:
 
@@ -79,8 +135,11 @@ class Analysis:
 
         results_dict = Analysis.__match_and_quantify(ms_sequence, fid_sequence, layout, mode, index, **kwargs)
 
-        results_df = pd.DataFrame(columns=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-                                  index=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
+        # Plate shape is taken from the layout (rows A.. , columns 1..) so non-8x12 plates (e.g. the split-GC
+        # A1..K3 sequence) are handled. Legacy 8x12 layouts yield the same A-H / 1-12 grid as before.
+        row_labels = [str(x) for x in layout.design.x.values]
+        col_labels = [str(y) for y in layout.design.y.values]
+        results_df = pd.DataFrame(columns=col_labels, index=row_labels)
 
         for key, value in results_dict.items():
             results_df.loc[key[0], key[1:]] = value
@@ -109,18 +168,36 @@ class Analysis:
                              index: int = 0, **kwargs) -> dict[str, list[float, str]]:
 
         '''
-                Matches GC-MS and GC-FID peaks and quantifies the yields of the reactions.
+        Matches GC-MS and GC-FID peaks and quantifies the yields/conversion of the reactions for each well.
 
-                Args:
-                    ms_sequence (MS_Sequence): MS_Sequence object containing the GC-MS data.
-                    fid_sequence (FID_Sequence): FID_Sequence object containing the GC-FID data.
-                    layout (Reaction_Array): Well_Plate object containing the combinatorial reaction layout.
+        For every MS injection the expected analyte (from the layout) is identified in the MS trace by
+        parent-ion m/z (match_mol), the corresponding FID peak is located, and the yield is quantified against
+        the internal standard. The MS-to-FID matching is selected by the ``matching`` keyword: ``'ri'`` bridges
+        the detectors via retention index (legacy two-machine data), ``'rt'`` matches by nearest retention time
+        (split-GC data, where both traces come from one injection).
 
-                Returns:
-                    dict: Dictionary containing the yields, retention times and the analyte smiles for each well.
+        Args:
+            ms_sequence (MS_Sequence): MS_Sequence object containing the GC-MS data.
+            fid_sequence (FID_Sequence): FID_Sequence object containing the GC-FID data.
+            layout (Reaction_Array): Reaction_Array or Product_Array object containing the reaction layout.
+            mode (str): Parameter to quantify, 'yield' or 'conv'.
+            index (int): Substrate index used to pick the analyte in conversion mode. Defaults to 0.
+            **kwargs: matching (str): MS-to-FID matching mode, 'ri' (retention index, default) or 'rt' (nearest
+                retention time). ri_tolerance (int): RI match tolerance for matching='ri'. Defaults to 20.
+                rt_func (callable|None): MS-to-FID retention-time mapping for matching='rt' (e.g.
+                Analysis.constant_offset()); the identity mapping is used if None. rt_tolerance (float): RT
+                match half-window in minutes for matching='rt'. Defaults to 1/60 (one second). Remaining kwargs
+                are forwarded to MS_Injection.match_mol.
+
+        Returns:
+            dict: Dictionary containing the yields/conversion, retention times, flags and the analyte smiles for
+            each well, keyed by plate position.
         '''
 
+        matching = kwargs.pop('matching', 'ri')
         ri_tolerance = kwargs.pop('ri_tolerance', 20)
+        rt_func = kwargs.pop('rt_func', None)
+        rt_tolerance = kwargs.pop('rt_tolerance', 1 / 60)
 
         results_dict = {}
         for ms_injection in ms_sequence:
@@ -135,17 +212,25 @@ class Analysis:
             mz_match = ms_injection.match_mol(analyte, **kwargs)
             if mz_match:
                 ms_height_ratio = mz_match.height / ms_injection[ms_injection.internal_standard.rt].height
-                ri_match = fid_injection.match_ri(mz_match.ri, analyte=mz_match.analyte, return_candidates=True, tolerance=ri_tolerance)
+                if matching == 'rt':
+                    # Split-GC: FID and MS share one retention-time axis, so match the FID peak by nearest
+                    # retention time (rt_func maps the MS rt to the expected FID rt; identity by default).
+                    fid_candidates = fid_injection.match_rt(mz_match.rt, func=rt_func, tolerance=rt_tolerance,
+                                                            analyte=mz_match.analyte, return_candidates=True)
+                else:
+                    # Legacy two-machine: bridge the detectors via retention index.
+                    fid_candidates = fid_injection.match_ri(mz_match.ri, analyte=mz_match.analyte,
+                                                            return_candidates=True, tolerance=ri_tolerance)
 
-                if ri_match:
-                    ri_match = Analysis.__find_best_ri_match(ri_match, fid_injection, ms_height_ratio, analyte=mz_match.analyte)
-                    yield_ = fid_injection.quantify(ri_match.rt)
+                if fid_candidates:
+                    fid_match = Analysis.__find_best_ri_match(fid_candidates, fid_injection, ms_height_ratio, analyte=mz_match.analyte)
+                    yield_ = fid_injection.quantify(fid_match.rt)
                     if mode == 'conv':
                         yield_ = 100 - yield_
 
-                    flags = list(set(mz_match.flags + ri_match.flags))
+                    flags = list(set(mz_match.flags + fid_match.flags))
                     flags = Flags.return_flags_value(flags)
-                    results_dict[pos] = [yield_, mz_match.rt, ri_match.rt, flags, analyte]
+                    results_dict[pos] = [yield_, mz_match.rt, fid_match.rt, flags, analyte]
                 else:
                     results_dict[pos] = [np.nan, np.nan, np.nan, 0, '']
             else:

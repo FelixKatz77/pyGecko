@@ -37,3 +37,6 @@ jobs/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Claude Code working notes (private, not part of the published library)
+CLAUDE.md
