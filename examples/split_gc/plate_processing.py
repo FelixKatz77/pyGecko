@@ -5,7 +5,6 @@ but for the new **split GC**: a single injection is split post-column to BOTH an
 Polyarc-FID detector, so the FID and MS traces share one retention-time axis. FID and MS peaks are
 therefore matched by **nearest retention time** (``matching='rt'``) instead of by retention index (RI).
 No alkane standard / RI calibration is required.
-
 It uses the SAME raw data as ``process_splitgc_sequence.py`` (the ``FBS-FB-021-ALL.rslt`` SuperGC
 sequence) but routes the analysis through ``Analysis.calc_plate_yield(matching='rt', ...)`` instead of a
 hand-rolled per-well loop, so the matching logic lives in the core library.
@@ -27,7 +26,7 @@ from pygecko.visualization.visuals import Visualization
 
 # Path to the OpenLab SuperGC result folder holding BOTH detector traces (same data as the RI example).
 RSLT_PATH: Path = Path(
-    r'C:\Users\flori\Doktorarbeit\22_Super_GC\data\FBS-FB-021-ALL.rslt'
+    r'C:\Users\hoelt\Downloads\FBS-FB-021-ALL.rslt'
 )
 
 # Per-well expected product SMILES as an 11x3 grid keyed A1..K3 (one analyte per row, repeated per column).
@@ -45,12 +44,15 @@ IS_RT_TOLERANCE: float = 0.05
 
 # --- Nearest-RT matching parameters -------------------------------------------------------------------
 # RT_FUNC maps an MS retention time to the EXPECTED FID retention time. Because both detectors see one
-# shared column, a constant offset of 0 (i.e. identical retention times) is the right first assumption.
-# Once the small, near-constant splitter dead-volume offset (~0.01 min) is measured, pass it to
-# Analysis.constant_offset, e.g. Analysis.constant_offset(0.010) if the FID elutes slightly later. If the
-# offset is found to drift across the chromatogram, use Analysis.linear_drift(a, b) instead
+# shared column, the FID and MS retention times differ only by the small, near-constant splitter
+# dead-volume offset. Measured on this FBS-FB-021-ALL dataset across 27 wells the FID elutes a mean of
+# +0.0094 min (median +0.010 min, range +0.002..+0.015) after the MS, so a constant +0.010 min offset is
+# applied: it centres the match window (cutting the worst-case residual from ~0.015 to ~0.007 min) and
+# recovers two wells (B3, F1) whose FID peak sat just outside the +-1 s window at offset 0. If the offset
+# is ever found to drift across the chromatogram, use Analysis.linear_drift(a, b) instead
 # (t_fid = a * t_ms + b), e.g. Analysis.linear_drift(1.0008, 0.004).
-RT_FUNC = Analysis.constant_offset(0.0)
+RT_FUNC = Analysis.constant_offset(0.010)
+RT_FUNC = Analysis.linear_drift(0.9979, +0.0232)
 RT_TOLERANCE: float = 1 / 60  # half-window of the RT match, in minutes (one second)
 
 OUTPUT_CSV: Path = Path(__file__).with_name('FBS-FB-021-ALL_yields_rt.csv')

@@ -151,6 +151,25 @@ class Product_Array(Product_Layout):
         item = self.design.loc[pos[0], int(pos[1:])].item()
         return item
 
+    def get_product(self, pos:str) -> str:
+
+        '''
+        Returns the product in the given position.
+
+        Unlike ``Reaction_Array``, a ``Product_Array`` stores the product SMILES directly (no reaction
+        transformation is applied), so the product is simply the layout entry for the well. Provided so that
+        ``Product_Array`` and ``Reaction_Array`` expose the same product-lookup API to the analysis engine.
+
+        Args:
+            pos (str): Well position.
+
+        Returns:
+            str: SMILES string of the product.
+
+        '''
+
+        return self[pos]
+
     def get_product_mw(self, pos: str):
         '''
         Returns the molecular weight of the product in the given position.
