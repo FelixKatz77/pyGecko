@@ -46,22 +46,34 @@ class Analysis:
 
     @staticmethod
     def calc_plate_conv(ms_sequence: MS_Sequence, fid_sequence: FID_Sequence, layout: Reaction_Array,
-                        path: str|None = None, index:int=0, **kwargs) -> np.ndarray:
+                        path: str|None = None, index:int=0, equivalents:float=1.0, **kwargs) -> np.ndarray:
 
         '''
         Matches GC-MS and GC-FID peaks and quantifies the conversion of the reactions.
+
+        Conversion is computed as ``100 - remaining%``, where ``remaining%`` is the substrate's
+        carbon-normalised (Polyarc) peak area relative to the internal standard. ``remaining% = 100`` is taken
+        to mean "0% conversion", which only holds if the substrate was charged at the same carbon-normalised
+        molar amount as the internal standard (1 equiv). For a substrate charged at a different loading, pass
+        ``equivalents`` so the baseline is scaled accordingly (``conversion = 100 - remaining% / equivalents``);
+        otherwise an excess substrate reads as a negative conversion. The result is floored at 0.
 
         Args:
             ms_sequence (MS_Sequence): MS_Sequence object containing the GC-MS data.
             fid_sequence (FID_Sequence): FID_Sequence object containing the GC-FID data.
             layout (Reaction_Array): Well_Plate object containing the combinatorial reaction layout.
             path (str|None, optional): Path to write the results to. Defaults to None.
+            index (int, optional): Substrate index used to pick the analyte in conversion mode. Defaults to 0.
+            equivalents (float, optional): Molar loading of the tracked substrate relative to the internal
+                standard (which defines the 100% = no-conversion baseline). Defaults to 1.0. Pass e.g. 1.5 for
+                a substrate charged at 1.5 equiv so its conversion is referenced to its actual starting amount.
 
         Returns:
             np.ndarray: Numpy array containing the quantification results, retention times and smiles for the analytes.
         '''
 
-        return Analysis.__match_and_quantify_plate(ms_sequence, fid_sequence, layout, path, mode='conv', index=index, **kwargs)
+        return Analysis.__match_and_quantify_plate(ms_sequence, fid_sequence, layout, path, mode='conv',
+                                                   index=index, equivalents=equivalents, **kwargs)
 
     @staticmethod
     def constant_offset(b:float=0.0):
@@ -198,6 +210,7 @@ class Analysis:
         ri_tolerance = kwargs.pop('ri_tolerance', 20)
         rt_func = kwargs.pop('rt_func', None)
         rt_tolerance = kwargs.pop('rt_tolerance', 1 / 60)
+        equivalents = kwargs.pop('equivalents', 1.0)
 
         results_dict = {}
         for ms_injection in ms_sequence:
@@ -232,7 +245,9 @@ class Analysis:
                     fid_match = Analysis.__find_best_ri_match(fid_candidates, fid_injection, ms_height_ratio, analyte=mz_match.analyte)
                     yield_ = fid_injection.quantify(fid_match.rt)
                     if mode == 'conv':
-                        yield_ = 100 - yield_
+                        # Reference the remaining substrate to its charged loading (equivalents) so an excess
+                        # substrate is not reported as negative conversion, and floor at 0.
+                        yield_ = max(0.0, round(100 - yield_ / equivalents, 0))
 
                     flags = list(set(mz_match.flags + fid_match.flags))
                     flags = Flags.return_flags_value(flags)
