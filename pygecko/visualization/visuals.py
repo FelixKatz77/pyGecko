@@ -31,10 +31,13 @@ class Visualization:
             data (np.ndarray): A numpy array containing the yields of the reactions.
             results (str, optional): The type results to visualize. Defaults to 'hit'.
             path (str|None, optional): Path to save the figure to. Defaults to None.
+            cbar_label (str, optional): Label for the colorbar. Defaults to 'Yield [%]'; pass e.g.
+                'Conversion [%]' when plotting conversion data.
         '''
 
         row_labels = kwargs.pop('row_labels', ["A", "B", "C", "D", "E", "F", "G", "H"])
         col_labels = kwargs.pop('col_labels', ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"])
+        cbar_label = kwargs.pop('cbar_label', 'Yield [%]')
 
         flags = data['flags']
         data = data['quantity']
@@ -90,7 +93,7 @@ class Visualization:
 
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
         cbar = plt.colorbar(sm, ticks=[0, 25, 50, 75, 100])
-        cbar.ax.set_ylabel('Yield [%]', size=14)
+        cbar.ax.set_ylabel(cbar_label, size=14)
         cbar.ax.tick_params(labelsize=12, )
         fig.tight_layout()
         if path:
