@@ -76,6 +76,32 @@ class Analysis:
                                                    index=index, equivalents=equivalents, **kwargs)
 
     @staticmethod
+    def calc_plate_rsm(ms_sequence: MS_Sequence, fid_sequence: FID_Sequence, layout: Reaction_Array,
+                       path: str|None = None, index:int=0, **kwargs) -> np.ndarray:
+
+        '''
+        Matches GC-MS and GC-FID peaks and quantifies the remaining starting material (RSM) of the reactions.
+
+        RSM is the substrate analogue of yield: the substrate's carbon-normalised (Polyarc) peak area relative
+        to the internal standard, in percent. Unlike ``calc_plate_conv`` it is reported **as measured and is
+        never clamped** - a substrate charged in excess of the internal standard reads above 100% (e.g. ~150%
+        for a 1.5-equiv loading), and a fully consumed substrate reads near 0%. Use this when you want the raw
+        remaining level; use ``calc_plate_conv`` for the (floored, equivalents-referenced) conversion.
+
+        Args:
+            ms_sequence (MS_Sequence): MS_Sequence object containing the GC-MS data.
+            fid_sequence (FID_Sequence): FID_Sequence object containing the GC-FID data.
+            layout (Reaction_Array): Well_Plate object containing the combinatorial reaction layout.
+            path (str|None, optional): Path to write the results to. Defaults to None.
+            index (int, optional): Substrate index used to pick the analyte. Defaults to 0.
+
+        Returns:
+            np.ndarray: Numpy array containing the quantification results, retention times and smiles for the analytes.
+        '''
+
+        return Analysis.__match_and_quantify_plate(ms_sequence, fid_sequence, layout, path, mode='rsm', index=index, **kwargs)
+
+    @staticmethod
     def constant_offset(b:float=0.0):
 
         '''
@@ -137,7 +163,9 @@ class Analysis:
             fid_sequence (FID_Sequence): FID_Sequence object containing the GC-FID data.
             layout (Reaction_Array): Well_Plate object containing the combinatorial reaction layout.
             path (str|None, optional): Path to write the results to. Defaults to None.
-            mode (str, optional): Parameter (yield or conversion) to quantify. Defaults to 'yield'.
+            mode (str, optional): Quantity to compute: 'yield' (product), 'conv' (conversion, floored and
+                referenced to substrate equivalents) or 'rsm' (remaining starting material, raw and unclamped).
+                Defaults to 'yield'.
 
         Returns:
             np.ndarray: Numpy array containing the quantification results, retention times and smiles for the analytes.
@@ -161,16 +189,10 @@ class Analysis:
         dtype = np.dtype([('quantity', float), ('rt_ms', float), ('rt_fid', float), ('flags', int)])
         results_array = unstructured_to_structured(results_array[:,:,:-1], dtype=dtype)
         if path:
-            if mode == 'yield':
-                quantity = 'Yield [%]'
-                report_df = pd.DataFrame.from_dict(results_dict, orient='index',
-                                                   columns=[quantity, 'RT-MS [min]', 'RT-FID [min]', 'Flags', 'Analyte'])
-                report_df.drop(columns=['Flags'], inplace=True)
-            else:
-                quantity = 'Conversion [%]'
-                report_df = pd.DataFrame.from_dict(results_dict, orient='index',
-                                                   columns=[quantity, 'RT-MS [min]', 'RT-FID [min]', 'Flags', 'Analyte'])
-                report_df.drop(columns=['Flags'], inplace=True)
+            quantity = {'yield': 'Yield [%]', 'conv': 'Conversion [%]', 'rsm': 'Remaining SM [%]'}[mode]
+            report_df = pd.DataFrame.from_dict(results_dict, orient='index',
+                                               columns=[quantity, 'RT-MS [min]', 'RT-FID [min]', 'Flags', 'Analyte'])
+            report_df.drop(columns=['Flags'], inplace=True)
             report_df.sort_index(inplace=True)
             report_df.to_csv(path)
         return results_array
@@ -192,8 +214,9 @@ class Analysis:
             ms_sequence (MS_Sequence): MS_Sequence object containing the GC-MS data.
             fid_sequence (FID_Sequence): FID_Sequence object containing the GC-FID data.
             layout (Reaction_Array): Reaction_Array or Product_Array object containing the reaction layout.
-            mode (str): Parameter to quantify, 'yield' or 'conv'.
-            index (int): Substrate index used to pick the analyte in conversion mode. Defaults to 0.
+            mode (str): Quantity to compute: 'yield' (product), 'conv' (conversion) or 'rsm' (remaining
+                starting material, raw and unclamped).
+            index (int): Substrate index used to pick the analyte in conversion/rsm mode. Defaults to 0.
             **kwargs: matching (str): MS-to-FID matching mode, 'ri' (retention index, default) or 'rt' (nearest
                 retention time). ri_tolerance (int): RI match tolerance for matching='ri'. Defaults to 20.
                 rt_func (callable|None): MS-to-FID retention-time mapping for matching='rt' (e.g.
@@ -226,7 +249,7 @@ class Analysis:
             if mode == 'yield':
                 analyte = layout.get_product(ms_injection.get_plate_position())
                 pass
-            if mode == 'conv':
+            if mode in ('conv', 'rsm'):
                 analyte = layout.get_substrate(pos, index=index)
             mz_match = ms_injection.match_mol(analyte, **kwargs)
             if mz_match:
