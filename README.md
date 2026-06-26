@@ -54,15 +54,42 @@ examples for the usage of pyGecko for the quantitative analysis of reaction outc
 scripts used to perform the data processing for the publication can be found in the examples folder. GC-MS and GC-FID 
 raw data for all experiments is available on Zenodo.
 
+### Split-GC: single-injection FID + MS
+
+For instruments that split one GC column post-column to both an MS and a Polyarc-FID detector, both traces
+come from a single injection and share a retention-time axis. `SplitGC_Parser.load_sequence` reads such an
+OpenLab `.rslt`/`.sirslt` folder and returns paired FID/MS sequences. Because the detectors share a time axis,
+FID and MS peaks can be matched directly by **nearest retention time** (`matching='rt'` in
+`Analysis.calc_plate_yield` / `Analysis.calc_plate_conv`), so no retention-index alkane standard is required;
+the legacy two-machine retention-index workflow remains available via `matching='ri'` (the default). If the
+result folder's `.acaml` metadata file is missing (e.g. an incomplete export), the FID injections are
+enumerated directly from the `AIA/*_FID1A.cdf` files.
+
+### Starting-material conversion and remaining starting material
+
+In addition to product yields (`Analysis.calc_plate_yield`), pyGecko can quantify a **starting material**
+relative to the internal standard:
+
+- `Analysis.calc_plate_conv` reports **conversion** (`100 - remaining%`). By default it assumes the substrate
+  was charged at the same loading as the internal standard (1 equiv); for a substrate charged in excess pass
+  `equivalents` (e.g. `equivalents=1.5`) so its conversion is referenced to its actual starting amount instead
+  of reading as a negative conversion. The result is floored at 0.
+- `Analysis.calc_plate_rsm` reports the **remaining starting material** (the raw carbon-normalised area
+  relative to the internal standard, in percent). It is reported as measured and never clamped, so an
+  excess substrate can read above 100%.
+
+See `examples/split_gc/` for a worked split-GC plate.
+
 ## Supported File Formats
 pyGecko supports the following file formats:
 
-| GC-MS         | GC-FID    |
-|---------------|-----------|
-| .mzML         | .xy       |
-| .mzXML        | .CSV      |
-| .D (Agilent)  ||
+| GC-MS         | GC-FID         |
+|---------------|----------------|
+| .mzML         | .xy            |
+| .mzXML        | .CSV           |
+| .D (Agilent)  | .cdf (ANDI/AIA)|
 | .RAW (Thermo) ||
+| .cdf (ANDI/AIA) ||
 
 > [!NOTE]
 > To achieve the best performance, we recommend using the .mzML file format for GC-MS data.
