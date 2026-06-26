@@ -204,6 +204,12 @@ class Analysis:
             pos = ms_injection.get_plate_position()
             fid_injection = fid_sequence.get_injection_by_pos(pos)
 
+            # An injection without an internal standard (e.g. the IS peak was missing and a warning was raised
+            # by set_internal_standard) cannot be quantified; report it as unmatched instead of crashing.
+            if ms_injection.internal_standard is None or fid_injection.internal_standard is None:
+                results_dict[pos] = [np.nan, np.nan, np.nan, 0, '']
+                continue
+
             if mode == 'yield':
                 analyte = layout.get_product(ms_injection.get_plate_position())
                 pass

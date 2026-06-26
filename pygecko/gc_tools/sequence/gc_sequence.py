@@ -1,5 +1,6 @@
 import _pickle as cPickle
 import pickle as pickle
+import warnings
 from pygecko.gc_tools.injection.injection import Injection
 from pygecko.gc_tools.analyte import Analyte
 from pathlib import Path
@@ -111,6 +112,10 @@ class GC_Sequence:
         Assigns the internal standard of the sequence to the corresponding peaks by creating an Analyte object for the
         internal standard and setting it as the peaks' analyte.
 
+        The internal standard is expected in every injection. If an injection has no peak within ``tolerance``
+        of ``rt``, a warning is raised identifying that injection and processing continues with the remaining
+        injections (that injection is left without an internal standard, so it cannot be quantified later).
+
         Args:
             rt (float|int): Retention time of the internal standard.
             tolerance (float): Tolerance for the retention time matching. Default is 0.05.
@@ -119,8 +124,19 @@ class GC_Sequence:
         '''
 
         self.internal_standard = Analyte(rt, name=name, smiles=smiles)
-        for injection in self.injections.values():
-            injection.set_internal_standard(rt, tolerance=tolerance, name=name, smiles=smiles)
+        missing = []
+        for sample_name, injection in self.injections.items():
+            try:
+                injection.set_internal_standard(rt, tolerance=tolerance, name=name, smiles=smiles)
+            except ValueError:
+                missing.append(sample_name)
+        if missing:
+            warnings.warn(
+                f'No internal standard peak found within {tolerance} of rt {rt} for '
+                f'{len(missing)} injection(s): {", ".join(map(str, missing))}. '
+                f'These injections were left without an internal standard and cannot be quantified.',
+                stacklevel=2,
+            )
 
     def save(self, filename: str) -> None:
 
