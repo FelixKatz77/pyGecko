@@ -35,15 +35,32 @@ class Agilent_FID_Parser:
         '''
 
         print('Loading GC-FID sequence...')
-        acaml_file = list(Path(raw_directory).glob('*.acaml'))[0]
-        sequence_metadata, injections = cls.__load_sequence_data(
-            acaml_file,
-            raw_directory,
-            solvent_delay,
-            pos=pos,
-            file_source=file_source,
-            sample_filter=sample_filter,
-        )
+        acaml_files = list(Path(raw_directory).glob('*.acaml'))
+        if acaml_files:
+            sequence_metadata, injections = cls.__load_sequence_data(
+                acaml_files[0],
+                raw_directory,
+                solvent_delay,
+                pos=pos,
+                file_source=file_source,
+                sample_filter=sample_filter,
+            )
+        else:
+            # No acaml (sequence-level OpenLab metadata) in the result folder.
+            # This happens with incomplete/partial exports. Fall back to
+            # enumerating the FID injections straight from the AIA/*_FID1A.cdf
+            # files, deriving the sample name from each filename.
+            print(
+                f'No .acaml file found in {raw_directory}; falling back to '
+                f'enumerating FID injections from AIA/*_FID1A.cdf.'
+            )
+            sequence_metadata, injections = cls.__load_sequence_data_from_aia(
+                raw_directory,
+                solvent_delay,
+                pos=pos,
+                file_source=file_source,
+                sample_filter=sample_filter,
+            )
         print(f'Sequence loaded with {len(injections)} injections.')
         return FID_Sequence(sequence_metadata, injections)
 
@@ -160,6 +177,74 @@ class Agilent_FID_Parser:
         xy_arrays = Agilent_FID_Parser.__get_xy_arrays(
             xy_directory, injections_metadata, file_source=file_source)
         injections = Agilent_FID_Parser.__initialize_injections(injections_metadata, xy_arrays, solvent_delay, pos=pos)
+        return sequence_metadata, injections
+
+    @staticmethod
+    def __load_sequence_data_from_aia(raw_directory: str, solvent_delay: float | int, pos: bool = False,
+                                      file_source: str = 'cdf',
+                                      sample_filter: Optional[Iterable[str]] = None) -> (dict, dict[str:FID_Injection]):
+
+        '''
+        Returns sequence metadata and injections enumerated from the AIA/*_FID1A.cdf files.
+
+        Fallback for result folders that lack an acaml (the sequence-level OpenLab metadata file), e.g. from an
+        incomplete or partial export. Instead of reading the injection list from the acaml, each FID injection is
+        discovered directly from an ``AIA/<sample>_FID1A.cdf`` file, with the sample name taken from the filename
+        (the part preceding ``_FID1A``). The retention-time axis is reconstructed from the cdf exactly as in the
+        acaml-driven path. No acaml means no acquisition-method/instrument/timestamp metadata is available, so those
+        fields are left as None.
+
+        Args:
+            raw_directory (str): Path to the result directory; must contain an ``AIA`` subdirectory with the
+                ``*_FID1A.cdf`` traces.
+            solvent_delay (float): Retention time of the solvent peak in minutes.
+            pos (bool, optional): Indicates if plate position is given in the injection names. Defaults to False.
+            file_source (str): FID ingestion strategy. Only ``'cdf'`` (or ``'auto'`` resolving to ``'cdf'``) is
+                supported here, since enumeration relies on the AIA cdf files. Defaults to ``'cdf'``.
+            sample_filter: Optional iterable of allowed sample names. Injections whose name is not in this set are
+                skipped. Defaults to None (no extra filtering).
+
+        Returns:
+            tuple[dict, dict[str:FID_Injection]]: A tuple containing a dict with the sequence metadata and a dict
+            containing the injections keyed by sample name.
+
+        Raises:
+            FileNotFoundError: If the ``AIA`` subdirectory or any ``*_FID1A.cdf`` files are missing, or if
+                ``file_source`` does not resolve to ``'cdf'`` (the only mode enumeration supports without an acaml).
+        '''
+
+        resolved_source = Agilent_FID_Parser.__resolve_file_source(raw_directory, file_source)
+        if resolved_source != 'cdf':
+            raise FileNotFoundError(
+                f'No .acaml file found in {raw_directory} and file_source={file_source!r} does not resolve to '
+                f"'cdf'. Without an acaml the FID injections can only be enumerated from AIA/*_FID1A.cdf files; "
+                f"pass file_source='cdf' (or restore the .acaml)."
+            )
+        aia_path = Path(raw_directory) / 'AIA'
+        if not aia_path.exists():
+            raise FileNotFoundError(
+                f'No .acaml file and no AIA subdirectory found in {raw_directory}; cannot enumerate FID injections.'
+            )
+        cdf_files = sorted(aia_path.glob('*_FID1A.cdf'))
+        if not cdf_files:
+            raise FileNotFoundError(
+                f'No .acaml file and no *_FID1A.cdf files found in {aia_path}; cannot enumerate FID injections.'
+            )
+
+        allowed_names = set(sample_filter) if sample_filter is not None else None
+        injections = {}
+        for cdf_path in cdf_files:
+            sample_name = cdf_path.stem.removesuffix('_FID1A')
+            if allowed_names is not None and sample_name not in allowed_names:
+                continue
+            metadata = {'AcqMethodName': None, 'InjectionAcqDateTime': None, 'InstrumentName': None,
+                        'InjectorPosition': None, 'SampleDescription': None, 'SampleName': sample_name,
+                        'SampleType': 'Sample', 'VialNumber': None, 'RawDataFileName': cdf_path.name}
+            xy_array = Agilent_FID_Parser.__read_cdf_file(cdf_path)
+            injection = FID_Injection(metadata, xy_array, solvent_delay, pos=pos)
+            injections[injection.sample_name] = injection
+
+        sequence_metadata = {'sequence_name': Path(raw_directory).stem, 'instrument_name': None, 'instrument': None}
         return sequence_metadata, injections
 
     @staticmethod

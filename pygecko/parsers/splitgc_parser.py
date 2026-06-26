@@ -42,7 +42,10 @@ class SplitGC_Parser:
 
         Args:
             rslt_directory: Path to the OpenLab ``.rslt`` folder. Must contain
-                an ``.acaml`` file and an ``AIA/`` subdirectory.
+                an ``AIA/`` subdirectory. An ``.acaml`` (sequence-level OpenLab
+                metadata) is used when present; if it is missing (e.g. an
+                incomplete export) the FID injections are enumerated directly
+                from the ``AIA/*_FID1A.cdf`` filenames instead.
             solvent_delay_fid: Retention time of the solvent peak in the FID
                 trace, in minutes.
             sample_filter: Optional iterable of allowed ``SampleName`` values.
@@ -60,8 +63,8 @@ class SplitGC_Parser:
             A tuple ``(fid_sequence, ms_sequence)``.
 
         Raises:
-            FileNotFoundError: If the ``.rslt`` folder, the ``AIA/``
-                subdirectory or the ``.acaml`` file are missing.
+            FileNotFoundError: If the ``.rslt`` folder or the ``AIA/``
+                subdirectory are missing.
         """
         rslt_path = Path(rslt_directory)
         if not rslt_path.exists():
