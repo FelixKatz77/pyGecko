@@ -29,8 +29,6 @@ class RI_Calibration:
 
     def __init__(self, injection:FID_Injection|MS_Injection, c_count:int, rt:float, **pick_peaks_kwargs):
         self.calibration = injection
-        print(f'DEBUG RI_Calibration: detector={injection.detector}, kwargs={pick_peaks_kwargs}')  # ← ADD THIS
-
         self.calibration.pick_peaks(**pick_peaks_kwargs)
         self.__identify_alkanes(c_count, rt)
         self.alkanes = self.__construct_alkanes_array()

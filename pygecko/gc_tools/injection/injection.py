@@ -175,6 +175,56 @@ class Injection:
         else:
             return None
 
+    def match_rt(self, rt:float, func=None, tolerance:float=1/60, analyte:str|None=None,
+                 return_candidates:bool=False, exclude_standard:bool=True) -> Peak|dict|None:
+
+        '''
+        Returns the peak with the closest retention time to the (optionally transformed) target retention time
+        within the tolerance. Returns None if no peak was found within the tolerance.
+
+        This is the retention-time analogue of ``match_ri`` for split-GC data, where the FID and MS traces
+        originate from a single injection and therefore share a retention-time axis (up to a small, near-constant
+        splitter dead-volume offset). Instead of converting retention times to retention indices, the expected
+        retention time in this injection's trace is obtained by applying ``func`` to the source (e.g. MS)
+        retention time. ``func`` defaults to the identity ``y = x`` (assume identical retention times); a drift
+        model (e.g. ``lambda x: a*x + b``) can be supplied later without changing the matching logic.
+
+        Args:
+            rt (float): Source retention time to match (e.g. the MS peak's retention time), in minutes.
+            func (callable|None): Mapping from the source retention time to the expected retention time in this
+                injection's trace. Defaults to the identity function ``lambda x: x``.
+            tolerance (float): Half-width of the retention-time matching window, in minutes. Defaults to 1/60
+                (one second).
+            analyte (str|None): Analyte object to assign to the matched peak. Default is None.
+            return_candidates (bool): If True, returns the full {deviation: Peak} candidate dict instead of the
+                single closest match. Default is False.
+            exclude_standard (bool): If True, peaks flagged as the internal standard are never returned as a
+                match. Default is True.
+
+        Returns:
+            Peak|dict|None: The peak with the closest retention time to the target, the candidate dict if
+            return_candidates is True, or None if no peak was found within the tolerance.
+        '''
+
+        if func is None:
+            func = lambda x: x
+        target = func(rt)
+        candidates = {}
+        for peak in self.peaks.values():
+            if exclude_standard and 'standard' in peak.flags:
+                continue
+            if Utilities.check_interval(peak.rt, target, tolerance):
+                deviation = abs(peak.rt - target)
+                candidates[deviation] = peak
+        if not candidates:
+            return None
+        if return_candidates:
+            return candidates
+        peak = candidates[min(candidates)]
+        if analyte:
+            peak.analyte = analyte
+        return peak
+
     def get_plate_position(self):
 
         '''
