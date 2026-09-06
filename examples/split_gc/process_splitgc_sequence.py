@@ -37,6 +37,12 @@ IS_RT_FID: float = 5.916  # minutes, in the FID trace
 IS_RT_MS: float = 5.906   # minutes, in the MS trace
 IS_RT_TOLERANCE: float = 0.05  # minutes; passed to set_internal_standard
 
+# MS analyte-detection thresholds. pyGecko defaults are deliberately strict (max_isotopic_diff=0.055,
+# min_mz_fraction=2/3); this sequence was tuned against looser values, opted into explicitly here so
+# the library defaults stay strict for everyone else. They raise the false-positive rate.
+MAX_ISOTOPIC_DIFF: float = 0.15
+MIN_MZ_FRACTION: float = 1 / 3
+
 # CONFIG: RI calibration anchor.
 # ``RI_Calibration.__identify_alkanes`` walks the alkane series outward from
 # this anchor, naming peaks as Cn, C(n+1), C(n-1), ... in retention-time
@@ -172,7 +178,8 @@ def quantify_one_sample(
     }
 
     # Step 1: MS parent-ion match.
-    ms_match: Optional[MS_Peak] = ms_injection.match_mol(analyte_smiles)
+    ms_match: Optional[MS_Peak] = ms_injection.match_mol(
+        analyte_smiles, max_isotopic_diff=MAX_ISOTOPIC_DIFF, min_mz_fraction=MIN_MZ_FRACTION)
     if ms_match is None:
         result['Status'] = 'no_ms_match'
         return result

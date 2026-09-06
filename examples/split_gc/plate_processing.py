@@ -55,6 +55,13 @@ RT_FUNC = Analysis.constant_offset(0.010)
 RT_FUNC = Analysis.linear_drift(0.9979, +0.0232)
 RT_TOLERANCE: float = 1 / 60  # half-window of the RT match, in minutes (one second)
 
+# MS analyte-detection thresholds. pyGecko defaults are deliberately strict (max_isotopic_diff=0.055,
+# min_mz_fraction=2/3). This split-GC sequence was tuned against looser values, so they are opted into
+# explicitly here rather than being relaxed library-wide - they raise the rate of false-positive
+# assignments and should be re-checked against known standards for any new sequence.
+MAX_ISOTOPIC_DIFF: float = 0.15
+MIN_MZ_FRACTION: float = 1 / 3
+
 OUTPUT_CSV: Path = Path(__file__).with_name('FBS-FB-021-ALL_yields_rt.csv')
 OUTPUT_PLATE_PNG: Path = Path(__file__).with_name('FBS-FB-021-ALL_plate_rt.png')
 
@@ -102,6 +109,8 @@ def main():
         matching='rt',
         rt_func=RT_FUNC,
         rt_tolerance=RT_TOLERANCE,
+        max_isotopic_diff=MAX_ISOTOPIC_DIFF,
+        min_mz_fraction=MIN_MZ_FRACTION,
     )
 
     # Plate heatmap (labels match the 11x3 / A-K x 1-3 layout).

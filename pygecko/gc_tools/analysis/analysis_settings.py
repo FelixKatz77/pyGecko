@@ -21,6 +21,8 @@ class Analysis_Settings:
         boarder_window (int): Window size for boarder detection.
         max_isotopic_diff (float): Max deviation of isotopic peak intensity for analyte assignment.
         min_rel_intensity (float): Minimum relative intensity for m/z trace to be considered for analyte assignment.
+        min_mz_fraction (float): Minimum fraction of a spectrum's maximum m/z that the parent ion must exceed to
+        be considered for analyte assignment.
         scan_rate (float): Scan rate of chromatogram.
     '''
 
@@ -38,11 +40,12 @@ class Analysis_Settings:
     boarder_window: int|None
     max_isotopic_diff: float|None
     min_rel_intensity: float|None
+    min_mz_fraction: float|None
     scan_rate: float
 
 
     __slots__ = 'sn', 'time_range', 'indices_range', 'width', 'prominence_ms', 'prominence_fid', 'trace_prominence', 'height', \
-                'savgol_window', 'max_half_window', 'boarder_threshold', 'boarder_window', 'max_isotopic_diff', 'min_rel_intensity', 'scan_rate'
+                'savgol_window', 'max_half_window', 'boarder_threshold', 'boarder_window', 'max_isotopic_diff', 'min_rel_intensity', 'min_mz_fraction', 'scan_rate'
 
     def __init__(self, chromatogram:np.ndarray):
         self.sn = 5
@@ -59,6 +62,7 @@ class Analysis_Settings:
         self.boarder_window = None
         self.max_isotopic_diff = None
         self.min_rel_intensity = None
+        self.min_mz_fraction = None
         self.scan_rate = chromatogram[0, 2] - chromatogram[0, 1]
 
     def __str__(self) -> str:
@@ -111,7 +115,8 @@ class Analysis_Settings:
 
         options = {'sn': int, 'time_range': tuple, 'width': (int, float), 'prominence_ms': (int, float), 'prominence_fid': int,
                    'trace_prominence': int, 'height': int, 'savgol_window': int, 'max_half_window': int,
-                   'boarder_threshold': int, 'boarder_window': int, 'max_isotopic_diff': float, 'min_rel_intensity': float}
+                   'boarder_threshold': int, 'boarder_window': int, 'max_isotopic_diff': float, 'min_rel_intensity': float,
+                   'min_mz_fraction': float}
         if setting in options.keys():
             if isinstance(value, options[setting]):
                 return True
