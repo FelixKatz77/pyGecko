@@ -47,7 +47,7 @@ class MS_Base_Parser:
                 continue  # Skip FID or TIC-only CDF files
             injection = MS_Base_Parser.load_injection(raw_file, pos=pos)
             if allowed_names is not None and injection.sample_name not in allowed_names:
-                continue  # ← new filter
+                continue
             injections[injection.sample_name] = injection
         print(f'Sequence loaded with {len(injections)} injections.')
         return MS_Sequence({}, injections)
@@ -134,7 +134,6 @@ class MS_Base_Parser:
                 raise FileNotFoundError(error)
         elif raw_path.suffix.lower() == '.cdf':
             try:
-                # Import the new function at the top of the file: from pygecko.parsers.file_readers import extract_scans_from_cdf
                 scans_df, sample_name = extract_scans_from_cdf(raw_path)
                 return scans_df, sample_name
             except Exception as error:

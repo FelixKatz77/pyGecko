@@ -23,10 +23,10 @@ class SplitGC_Parser:
     DEFAULT_FID_SOURCE: str = 'cdf'
     """Default ``file_source`` strategy for SuperGC data.
 
-    Set to ``'aia_cdf'`` because OpenLab CDS always exports the FID
+    Set to ``'cdf'`` because OpenLab CDS always exports the FID
     chromatogram as an ANDI-Chromatography file in ``<rslt>/AIA/`` for
     SuperGC sequences. Override with ``'csv'`` to use the .CSV exports in
-    the result root, or ``'auto'`` to let ``Agilent_FID_Parser`` decide.
+    the result root.
     """
 
     @classmethod
@@ -55,7 +55,7 @@ class SplitGC_Parser:
                 sequences.
             file_source: FID ingestion strategy passed through to
                 ``Agilent_FID_Parser.load_sequence``. Defaults to
-                ``'aia_cdf'``.
+                ``'cdf'``.
             pos: Indicates whether the sample names encode plate positions.
                 Forwarded to both parsers. Defaults to False.
 
@@ -112,7 +112,7 @@ class SplitGC_Parser:
                 trace, in minutes.
             solvent_delay_ms: Retention time of the solvent peak in the MS
                 trace, in minutes.
-            file_source: FID ingestion strategy. Defaults to ``'aia_cdf'``.
+            file_source: FID ingestion strategy. Defaults to ``'cdf'``.
             pos: Indicates whether the sample name encodes a plate position.
                 Defaults to False.
 
@@ -174,7 +174,7 @@ class SplitGC_Parser:
                 trace, in minutes.
             solvent_delay_ms: Retention time of the solvent peak in the MS
                 trace, in minutes.
-            file_source: FID ingestion strategy. Defaults to ``'aia_cdf'``.
+            file_source: FID ingestion strategy. Defaults to ``'cdf'``.
             pos: Forwarded to ``load_injection``. Defaults to False.
             fid_pick_peaks_kwargs: Optional kwargs forwarded to the FID
                 calibration injection's pick_peaks call. Use to override

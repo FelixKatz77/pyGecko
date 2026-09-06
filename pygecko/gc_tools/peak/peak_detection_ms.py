@@ -124,7 +124,7 @@ class Peak_Detection_MS:
         for i, rt in enumerate(peak_rts):
             rt_min = round(rt, 3)
             intensities = list(mass_spectra[rt].values())
-            if not intensities:  # ← NEW: 2 lines added
+            if not intensities:  # Peaks with an empty mass spectrum carry no information.
                 continue
             rel_intensities = np.divide(intensities, np.max(intensities)) * 100
             l = [(i, j, k) for i, j, k in zip(mass_spectra[rt].keys(), intensities, rel_intensities)]
