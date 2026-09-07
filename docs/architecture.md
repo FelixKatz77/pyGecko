@@ -51,6 +51,11 @@ to `Visualization` — [`Injection.view_chromatogram`](../pygecko/gc_tools/injec
 `MS_Peak.view_mass_spectrum`. These are thin one-line delegations kept for interactive/notebook use.
 Treat them as a closed set, not a licence to pull more output code into the domain model.
 
+The edge exists at **call** time only: both methods import `Visualization` inside the method body, not
+at module scope. That is what keeps it from being a true cycle — `visualization` imports `gc_tools`
+downward at module scope, so a module-level import back would make `pygecko.visualization`
+unimportable on its own. Keep it deferred; see §11.17.
+
 ---
 
 ## 3. Domain model
@@ -536,7 +541,7 @@ elsewhere — internal consistency is worth more here than conformance to an ext
   `sphinx.ext.napoleon` renders them into the API docs, so every public method needs one.
 - **Modern typing**: built-in generics and `X|None` unions, no `typing.Optional`. These are
   evaluated at runtime in class bodies and dataclass field annotations, so they set the package's
-  hard Python 3.10 floor — see §11.17.
+  hard Python 3.10 floor — see §11.16.
 - **Spelling is frozen where it is public.** `boarders` (sic — borders) is the attribute name on
   `Peak` and runs through all peak-detection code; the module is `msconvert_wraper.py`. Renaming them
   would break every saved `.pkl` and every downstream script for no functional gain. Match the existing
@@ -575,7 +580,7 @@ See §11.1 for the gap between these rules and the current suite.
 
 ## 11. Known deviations and open issues
 
-Recorded so they are tracked rather than rediscovered. Items 1–6 are **open**: each is a statement
+Recorded so they are tracked rather than rediscovered. Items 1–5 are **open**: each is a statement
 about the code as it stands. The subsection that follows records deviations that have since been
 **resolved**, kept because the reasoning behind the fix — and, in one case, a correction to what the
 defect actually did — is worth not rediscovering either.
@@ -605,53 +610,42 @@ defect actually did — is worth not rediscovering either.
 3. **`flag_peak` still keys candidates by deviation.**
    [`injection.py:110`](../pygecko/gc_tools/injection/injection.py#L110) builds
    `candidates[abs(rt - peak.rt)] = peak`, so two peaks equidistant from the target collide on one
-   key. Unlike `match_ri`/`match_rt` (fixed — see §11.7 below) `flag_peak` has no `return_candidates`
+   key. Unlike `match_ri`/`match_rt` (fixed — see §11.6 below) `flag_peak` has no `return_candidates`
    mode and always returns a single peak, so the collision only changes *which* of two equally-close
    peaks is chosen, never how many survive. Left as-is deliberately.
-4. **`pygecko.visualization` cannot be the first pyGecko import.**
-   [`ms_peak.py:5`](../pygecko/gc_tools/peak/ms_peak.py#L5) and
-   [`injection.py:6`](../pygecko/gc_tools/injection/injection.py#L6) do
-   `from pygecko.visualization import Visualization`, while
-   [`visuals.py:13`](../pygecko/visualization/visuals.py#L13) imports back into `pygecko.gc_tools`.
-   A bare `import pygecko.visualization` in a fresh interpreter therefore raises `ImportError:
-   cannot import name 'Visualization' from partially initialized module`. It is masked because every
-   test, example and notebook imports `pygecko.gc_tools` first. Verified identical on the old exact
-   pins and on the current unpinned stack, so it is not a consequence of the dependency work.
-   Untouched because breaking the cycle means moving `Visualization` out of the peak/injection
-   modules' import path — a layering change, not a packaging one.
-5. **`visuals.py` mutates global rcParams at import time.**
+4. **`visuals.py` mutates global rcParams at import time.**
    [`visuals.py:187-190`](../pygecko/visualization/visuals.py#L187-L190) sets `font.family` to Arial
    process-wide when the module is imported, which affects any other plotting in the same
    interpreter and emits `findfont` warnings wherever Arial is absent — every Linux runner. The same
    module imports `pyplot` at module scope, which is why CI sets `MPLBACKEND=Agg`.
-6. **`docs/source/pygecko.reaction.rst:42` autodocuments a module that no longer exists.**
+5. **`docs/source/pygecko.reaction.rst:42` autodocuments a module that no longer exists.**
    `pygecko.reaction.well_plate` was removed, but the `automodule` directive was not, so every docs
    build logs an `autodoc: failed to import` warning. Pre-existing and harmless; left for whoever
    next regenerates the `sphinx-apidoc` stubs.
 
 ### Resolved
 
-7. Candidate collections in `match_ri` and `match_rt` were dictionaries keyed by absolute deviation,
+6. Candidate collections in `match_ri` and `match_rt` were dictionaries keyed by absolute deviation,
    so two peaks equidistant from the target collided and one was dropped before
    `__find_best_ri_match` could weigh them by height ratio. `return_candidates=True` now returns a
    `list[Peak]` and the closest match is selected with `min(..., key=...)`;
    `__find_best_ri_match` consumes the list directly. Covered by `tests/unit/test_match_ri.py` and
    `tests/unit/test_match_rt.py`.
-8. `__isotopic_ratio_check` guarded with `if not i or not j` on the index arrays returned by
+7. `__isotopic_ratio_check` guarded with `if not i or not j` on the index arrays returned by
    `np.where`, so a parent ion at index 0 (`array([0])`, which is falsy) made the isotope check
    report no match. It now tests `.size`. This was silently suppressing valid analyte assignments
    and was the most consequential item on this list.
-9. `SplitGC_Parser.load_sequence` now warns when the FID and MS sample-name sets do not intersect.
+8. `SplitGC_Parser.load_sequence` now warns when the FID and MS sample-name sets do not intersect.
    The two detectors still derive identity by different routes — MS from the `.cdf` filename
    (`name.split('_')[0]`), FID from the acaml `SampleName` — and that is inherent to the formats, but
    a divergence no longer surfaces as a silently empty plate. A partial overlap is legitimate (one
    detector's subset of wells) and is not reported.
-10. `Analysis.quantify_plate` now takes an optional `layout` argument, deriving the grid from
-    `layout.design` exactly as the MS+FID path does (§6.E). Without a layout it keeps the legacy 8×12
-    grid. Note the pre-fix symptom was a `ValueError` during array assembly, not the silent
-    well-dropping previously recorded here: pandas `.loc` enlargement added the out-of-grid rows and
-    left the unused columns ragged.
-11. `Utilities.find_empty_ranges` computed `np.isnan(signal) | np.any(signal == 0)`; `np.any`
+9. `Analysis.quantify_plate` now takes an optional `layout` argument, deriving the grid from
+   `layout.design` exactly as the MS+FID path does (§6.E). Without a layout it keeps the legacy 8×12
+   grid. Note the pre-fix symptom was a `ValueError` during array assembly, not the silent
+   well-dropping previously recorded here: pandas `.loc` enlargement added the out-of-grid rows and
+   left the unused columns ragged.
+10. `Utilities.find_empty_ranges` computed `np.isnan(signal) | np.any(signal == 0)`; `np.any`
     collapses to a scalar, so a single zero marked the entire chromatogram as empty. It now uses
     `np.isnan(signal) | (signal <= threshold)`, which also makes the documented but previously
     ignored `threshold` parameter effective. Diagnostic-only — it feeds
@@ -660,20 +654,20 @@ defect actually did — is worth not rediscovering either.
     injection (count, dead time, longest gap) instead of itemising every range, which would have
     put ~1700 lines on the console for a 33-well plate. Call `Utilities.find_empty_ranges` directly
     to inspect the individual gaps.
-12. The dead `from xarray.util.generate_ops import inplace` in `peak_detection_ms.py` is gone, as is
+11. The dead `from xarray.util.generate_ops import inplace` in `peak_detection_ms.py` is gone, as is
     the `results='yield'` argument that `reports.py` passed to `Visualization.visualize_plate`, which
     has no such parameter.
-13. Integration fixture paths were relative literals that only resolved when pytest ran from inside
+12. Integration fixture paths were relative literals that only resolved when pytest ran from inside
     `tests/integration/`. They are now anchored on `__file__` via
     [`tests/integration/conftest.py`](../tests/integration/conftest.py), so a repo-root run — what
     `testpaths = ["tests"]` implies — behaves identically.
-14. `examples/spectral_matching/spectral_matching.py` imported from the top-level package, which
+13. `examples/spectral_matching/spectral_matching.py` imported from the top-level package, which
     exports nothing, and raised `ImportError`; it now imports from `pygecko.parsers` like every other
     example. The top-level package deliberately still exports nothing — see §7.
-15. `examples/split_gc/plate_processing.py` no longer hard-codes a personal Windows path (it reads
+14. `examples/split_gc/plate_processing.py` no longer hard-codes a personal Windows path (it reads
     `PYGECKO_SPLITGC_RSLT` and exits with a message naming the variable) and no longer assigns
     `RT_FUNC` twice. `docs/build/` and `tests/integration/.pytest_cache/` are no longer tracked.
-16. **Unused and mis-declared dependencies.** `numba` was declared in
+15. **Unused and mis-declared dependencies.** `numba` was declared in
     [`pyproject.toml`](../pyproject.toml) but imported nowhere — and not even installed in the
     working venv — so it is gone. `lxml` was likewise never imported by pyGecko (both Agilent
     parsers use stdlib `xml.etree.ElementTree`), but it *is* a hard runtime import of
@@ -697,10 +691,10 @@ defect actually did — is worth not rediscovering either.
     [`tests/unit/test_reaction_imports.py`](../tests/unit/test_reaction_imports.py), which probes in
     a subprocess because `sys.modules` is polluted the moment any other test imports `ord_schema`.
     `netCDF4` is genuinely used, by both `.cdf` readers.
-17. **Dependencies are pinned to exact versions.** All 19 runtime dependencies carried `==` pins and
+16. **Dependencies are pinned to exact versions.** All 19 runtime dependencies carried `==` pins and
     `requires-python` was `">=3.10, <3.13"`. Exact pins in a library's `install_requires` make the
     package uninstallable alongside almost anything else, and they were already fiction in practice
-    — see the protobuf case in §11.16. Floors are now the previously-pinned versions, which is the
+    — see the protobuf case in §11.15. Floors are now the previously-pinned versions, which is the
     honest claim: those are the oldest versions validated, and the ones the published work used.
     There are no upper bounds, because an upper bound in a library is a promise about software that
     does not exist yet; discovering breakage is CI's job, not the metadata's. The residual risk this
@@ -726,3 +720,31 @@ defect actually did — is worth not rediscovering either.
     belongs on: [`uv.lock`](../uv.lock) pins a known-good environment for developers and CI, while
     `pip install -e .` resolves normally. The lock is a record going forward, not a retroactive one
     — the environment behind the publication lives in git history.
+17. **`pygecko.visualization` could not be the first pyGecko import.**
+    [`visuals.py:4`](../pygecko/visualization/visuals.py#L4) imports `Utilities` from
+    `pygecko.gc_tools.utilities`, and importing that submodule runs the whole 20-module
+    `gc_tools/__init__.py` first, which reaches `peak/ms_peak.py` — which imported `Visualization`
+    back from `pygecko.visualization`, still only partway through its own first line. Hence
+    `ImportError: cannot import name 'Visualization' from partially initialized module`.
+    `import pygecko.gc_tools` worked only because `gc_tools.utilities` was already in `sys.modules`
+    by the time `visuals.py` ran. **Six of eleven entry points failed**, two of them documented
+    public API: `pygecko.data_handling` was a second, initially unrecorded break point, because
+    [`reports.py:7`](../pygecko/data_handling/reports.py#L7) imports `visualization.visuals` before
+    anything else, so `from pygecko.data_handling import PDF_Report` was unusable as a first import.
+    [`analysis/analysis.py`](../pygecko/analysis/analysis.py) was also one edit away from breaking:
+    it imports `gc_tools` on line 7 and `visualization.utilities` on line 12 and worked *only* in
+    that order — swapping the two lines, exactly what an editor's "organize imports" does, broke
+    `import pygecko.analysis`. Both verified, before and after.
+    The fix keeps the two delegations §2 describes and defers them to call time: the
+    `from pygecko.visualization import Visualization` in
+    [`ms_peak.py`](../pygecko/gc_tools/peak/ms_peak.py) and
+    [`injection.py`](../pygecko/gc_tools/injection/injection.py) moved inside `view_mass_spectrum`
+    and `view_chromatogram`, the only places either file uses the name. Each carries a comment
+    saying why, because hoisting it back to module scope silently restores the cycle. `visuals.py:4`
+    deliberately stays at module scope: `visualization → gc_tools` is the correct downward direction
+    per §2, and deferring *that* would have put the workaround on the layer that is supposed to
+    depend downward while leaving the inverted edge in place.
+    Guarded by [`tests/unit/test_import_graph.py`](../tests/unit/test_import_graph.py), which checks
+    every entry point in a subprocess — in-process checks pass vacuously once `sys.modules` is warm
+    — and asserts that importing `gc_tools` does not pull in `visualization`. The change is
+    behaviourally neutral: both methods render byte-identical output to before.

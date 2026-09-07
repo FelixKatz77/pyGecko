@@ -1,3 +1,6 @@
+import subprocess
+import sys
+
 import numpy as np
 import pytest
 
@@ -52,3 +55,19 @@ def ms_peak_factory():
                        make_mass_spectrum(mz_to_intensity))
 
     return _factory
+
+
+@pytest.fixture
+def import_probe():
+    '''Returns a callable running Python source in a clean interpreter, returning its stdout.
+
+    Import behaviour can only be tested out-of-process: once any test in this session has
+    imported pygecko, sys.modules is warm and an in-process check passes vacuously.
+    '''
+
+    def _probe(source):
+        result = subprocess.run([sys.executable, '-c', source], capture_output=True, text=True)
+        assert result.returncode == 0, f'`{source}` failed:\n{result.stderr}'
+        return result.stdout.strip()
+
+    return _probe
