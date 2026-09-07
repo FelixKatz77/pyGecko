@@ -74,7 +74,7 @@ Do not write implementation code before a failing test exists for it.
 ### Requirements
 
 - pytest only. Use `pytest.raises` for exceptions, fixtures for setup/teardown, `@pytest.mark.parametrize` for input variation.
-- Minimum 80% coverage overall; 100% on critical paths. Verify with `pytest --cov=pyGecko --cov-report=term-missing`.
+- Minimum 80% coverage overall; 100% on critical paths. Verify with `pytest --cov=pygecko --cov-report=term-missing`.
 - Mock external dependencies (network, database, filesystem). Tests must run offline and be independent of execution order.
 - Mark slow and integration tests so `pytest -m "not slow"` stays fast.
 - Test behavior, not implementation details.

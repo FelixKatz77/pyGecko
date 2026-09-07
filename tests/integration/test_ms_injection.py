@@ -1,6 +1,10 @@
 import numpy as np
+import pytest
 from pygecko.parsers import MS_Base_Parser
 from .conftest import fixture_path
+
+# Loads an Agilent .D directory, which only msConvert can turn into mzML.
+pytestmark = pytest.mark.msconvert
 
 def test_fid_base_parser():
 
