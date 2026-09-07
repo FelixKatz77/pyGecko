@@ -24,13 +24,24 @@ Paper: https://doi.org/10.1039/D4DD00347K
 > To read vendor files you need to install the msConvert tool from ProteoWizard. You can download it from [here](http://proteowizard.sourceforge.net/download.html).
 > You need to specify the path to the msConvert.exe before the first run of pyGecko.
 
-pyGecko can be installed via pip:
+pyGecko requires Python 3.10 or newer and can be installed via pip:
 
 ```bash 
 git clone https://github.com/FelixKatz77/pyGecko.git
 cd pyGecko
-pip install -e ./
+pip install -e .
 ```
+
+Optional extras: `pip install -e ".[ord]"` adds Open Reaction Database export
+(`Reaction_Parser`), `".[test]"` the test dependencies and `".[docs]"` the documentation build.
+
+To install the exact, pinned set of dependency versions instead of the newest compatible ones,
+use [uv](https://docs.astral.sh/uv/) with the committed lock file:
+
+```bash
+uv sync
+```
+
 Afterward the path to the msConvert.exe needs to be specified. This can be done by running the following command:
 
 ```bash
@@ -47,6 +58,16 @@ After that pyGecko is ready to use.
 
 ## Documentation
 The documentation for pyGecko can be found [here](https://pygecko.readthedocs.io/en/latest/).
+
+## Running the tests
+
+```bash
+pip install -e ".[test,ord]"
+pytest
+```
+
+Two integration tests load Agilent `.D` directories and therefore need a configured msConvert
+executable; they fail without one. To skip them, run `pytest -m "not msconvert"`.
 
 ## Usage
 For non-automated workflows pyGecko is best used with jupyter notebooks. The notebooks folder of the repository contains
