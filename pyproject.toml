@@ -28,7 +28,6 @@ dependencies = [
     "matplotlib==3.6.2",
     "numba==0.58.1",
     "numpy==1.26.3",
-    "ord_schema==0.3.37",
     "pandas==2.0.3",
     "pybaselines==1.0.0",
     "pymzml==2.5.2",
@@ -39,11 +38,11 @@ dependencies = [
     "statsmodels==0.14.0",
     "xarray==2023.6.0",
     "scikit-learn==1.7.2",
-    "psycopg2-binary",
     "netCDF4<=1.6.5"
 ]
 
 [project.optional-dependencies]
+ord = ["ord-schema>=0.5.9"]
 test = ["pytest>=8", "pytest-cov>=5"]
 docs = ["sphinx-rtd-theme==2.0.0"]
 
