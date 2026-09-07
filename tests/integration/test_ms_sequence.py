@@ -1,10 +1,11 @@
 import numpy as np
 from pygecko.parsers import Agilent_MS_Parser
 from datetime import datetime
+from .conftest import fixture_path
 
 def test_agilent_fid_parser():
 
-    sequence_directory = 'fixtures/test_sequences/FKB-FA-059-II'
+    sequence_directory = fixture_path('test_sequences/FKB-FA-059-II')
     sequence = Agilent_MS_Parser.load_sequence(sequence_directory)
     injection = sequence.injections['FKB-FA-059-II-C12']
     assert sequence is not None

@@ -1,9 +1,10 @@
 import numpy as np
 from pygecko.parsers import FID_Base_Parser
+from .conftest import fixture_path
 
 def test_fid_base_parser():
 
-    test_path = 'fixtures/test_injections/FBS-FA-033-A1.dx_FID1A.CSV'
+    test_path = fixture_path('test_injections/FBS-FA-033-A1.dx_FID1A.CSV')
     injection = FID_Base_Parser.load_injection(test_path, 3.06)
     assert injection is not None
     assert injection.sample_name == 'FBS-FA-033-A1'

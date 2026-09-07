@@ -1,4 +1,4 @@
-from pygecko import Agilent_MS_Parser
+from pygecko.parsers import Agilent_MS_Parser
 from pygecko.gc_tools import Spectral_Match
 from pygecko.visualization import Visualization
 

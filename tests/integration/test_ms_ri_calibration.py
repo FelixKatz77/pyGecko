@@ -1,9 +1,10 @@
 import numpy as np
 from pygecko.parsers import MS_Base_Parser
+from .conftest import fixture_path
 
 def test_ms_ri_calibration():
-    ms_inject_path = 'fixtures/test_ri_calibration/FKB-FA-060-A1.mzML'
-    ms_ri_path = 'fixtures/test_ri_calibration/FKB-FA-060-RI.mzML'
+    ms_inject_path = fixture_path('test_ri_calibration/FKB-FA-060-A1.mzML')
+    ms_ri_path = fixture_path('test_ri_calibration/FKB-FA-060-RI.mzML')
 
     ms_inject = MS_Base_Parser.load_injection(ms_inject_path, pos=True)
     ri_conf_ms = MS_Base_Parser.load_ri_calibration(ms_ri_path,12, rt=2.255)

@@ -29,7 +29,6 @@ class Visualization:
 
         Args:
             data (np.ndarray): A numpy array containing the yields of the reactions.
-            results (str, optional): The type results to visualize. Defaults to 'hit'.
             path (str|None, optional): Path to save the figure to. Defaults to None.
             cbar_label (str, optional): Label for the colorbar. Defaults to 'Yield [%]'; pass e.g.
                 'Conversion [%]' when plotting conversion data.

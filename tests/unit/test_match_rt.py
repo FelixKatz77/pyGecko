@@ -35,23 +35,16 @@ class TestMatchRt:
         assert injection.match_rt(5.00, tolerance=0.05) is None
         assert injection.match_rt(5.00, tolerance=0.05, exclude_standard=False).rt == 5.00
 
-    def test_return_candidates_gives_deviation_keyed_dict(self):
+    def test_return_candidates_gives_list_of_peaks(self):
         injection = make_injection([make_peak(5.00), make_peak(5.02)])
         candidates = injection.match_rt(5.005, tolerance=0.05, return_candidates=True)
-        assert isinstance(candidates, dict)
-        assert sorted(peak.rt for peak in candidates.values()) == [5.00, 5.02]
-        assert all(dev == pytest.approx(abs(peak.rt - 5.005))
-                   for dev, peak in candidates.items())
+        assert isinstance(candidates, list)
+        assert sorted(peak.rt for peak in candidates) == [5.00, 5.02]
 
-    @pytest.mark.xfail(strict=True, reason=(
-        'Known defect inherited from match_ri: candidates are keyed by absolute deviation, '
-        'so two peaks equidistant from the target collide and one is silently dropped before '
-        'Analysis.__find_best_ri_match gets to choose between them.'
-    ))
     def test_equidistant_candidates_are_both_returned(self):
         injection = make_injection([make_peak(5.00), make_peak(5.01)])
         candidates = injection.match_rt(5.005, tolerance=0.05, return_candidates=True)
-        assert sorted(peak.rt for peak in candidates.values()) == [5.00, 5.01]
+        assert sorted(peak.rt for peak in candidates) == [5.00, 5.01]
 
     def test_assigns_analyte_to_match(self):
         injection = make_injection([make_peak(5.00)])

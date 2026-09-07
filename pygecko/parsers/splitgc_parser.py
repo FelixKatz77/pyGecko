@@ -1,3 +1,4 @@
+import warnings
 from pathlib import Path
 from typing import Iterable, Optional
 
@@ -65,6 +66,11 @@ class SplitGC_Parser:
         Raises:
             FileNotFoundError: If the ``.rslt`` folder or the ``AIA/``
                 subdirectory are missing.
+
+        Warns:
+            UserWarning: If the FID and MS sample names share no entry, which
+                means no well can be paired downstream. Both name sets are
+                listed in the message.
         """
         rslt_path = Path(rslt_directory)
         if not rslt_path.exists():
@@ -88,6 +94,24 @@ class SplitGC_Parser:
         ms_sequence = MS_Base_Parser.load_sequence(
             str(aia_path), pos=pos, sample_filter=sample_filter,
         )
+
+        # The two detectors derive sample identity by different routes: the MS side from the .cdf
+        # filename, the FID side from the acaml SampleName. They agree only when OpenLab names the
+        # AIA exports after the sample. When they do not, Analysis can pair nothing and the plate
+        # comes out empty, so report the divergence here rather than letting it surface as a plate
+        # of NaNs. A partial overlap is legitimate (one detector's subset of wells) and is not
+        # reported.
+        fid_names = set(fid_sequence.injections)
+        ms_names = set(ms_sequence.injections)
+        if not fid_names & ms_names:
+            warnings.warn(
+                f'FID and MS sample names do not overlap, so no well can be paired. '
+                f'FID: {sorted(fid_names)}. MS: {sorted(ms_names)}. '
+                f'The MS names come from the AIA .cdf filenames and the FID names from the acaml '
+                f'SampleName; check sample_filter against both.',
+                UserWarning,
+                stacklevel=2,
+            )
 
         return fid_sequence, ms_sequence
 

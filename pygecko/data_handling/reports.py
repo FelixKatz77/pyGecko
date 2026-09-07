@@ -46,7 +46,7 @@ class PDF_Report(Report):
         self.metadata = self.__collect_meta_data()
         self.analysis_table = self.__create_analysis_table()
         heatmap_path = Path(__file__).resolve().parent.joinpath('tmp/heatmap.png')
-        Visualization.visualize_plate(yield_array, results='yield', path=heatmap_path)
+        Visualization.visualize_plate(yield_array, path=heatmap_path)
         self.heatmap = Image(heatmap_path, 11*cm, 6*cm)
         self.results_table = self.__create_results_table_quantification()
         self.molecules_table_rows, self.molecules_table_columns, self.common_molecules_img = self.__create_molecules_table()

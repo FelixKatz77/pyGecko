@@ -348,7 +348,8 @@ Results are returned as a **structured array**, not a bespoke result class — d
 well plate so it can be indexed positionally and passed straight to the heatmap. The shape is derived
 from `layout.design` in `__match_and_quantify_plate`, so non-8×12 plates (the split-GC A1–K3
 sequence is 11×3) work; legacy 8×12 layouts produce the same grid as before. The single-detector
-`Analysis.quantify_plate` still hard-codes 8×12 — see §11.13.
+`Analysis.quantify_plate` takes the same `layout` as an optional argument and falls back to 8×12
+without it.
 
 > **Rule.** Plate-level results are structured arrays with a `quantity` field and an integer `flags`
 > field. Optional CSV export is a `path` keyword argument on the same method, not a separate function.
@@ -430,7 +431,9 @@ The load path is a **coordinator parser** (§7): `SplitGC_Parser.load_sequence` 
 them per well.
 
 > **Caution.** The two detectors derive sample identity by different routes — the MS side from the
-> `.cdf` filename, the FID side from the acaml `SampleName`. See §11.12.
+> `.cdf` filename, the FID side from the acaml `SampleName`. They agree only when OpenLab names the
+> AIA exports after the sample. `SplitGC_Parser.load_sequence` warns when the two name sets do not
+> intersect, since `Analysis` can then pair no wells at all.
 
 ---
 
@@ -493,8 +496,10 @@ ones, or previously saved result arrays will be misread.
 ### Public API
 
 Exposure is by re-export in the subpackage `__init__.py`. A class not re-exported there is internal.
-Import from the subpackage (`from pygecko.parsers import Agilent_FID_Parser`), not from module paths —
-and see §11.1 regarding the top-level package.
+Import from the subpackage (`from pygecko.parsers import Agilent_FID_Parser`), not from module paths
+and not from the top-level package, which deliberately exports nothing: `pygecko/__init__.py` holds
+only metadata and the interactive msConvert configuration block, so `import pygecko` stays free of the
+rdkit / ord_schema / pymzml dependency tree.
 
 ---
 
@@ -559,78 +564,92 @@ an `Analysis_Settings` and return data, so they can be driven with synthetic chr
 mass spectra. New algorithmic code should be tested there, with an integration test only where vendor
 parsing is genuinely involved.
 
-Two known defects are pinned as `@pytest.mark.xfail(strict=True)` rather than left as prose (§11.10,
-§11.11). A strict xfail fails the suite if the bug is ever fixed, so the record cannot silently rot.
+Fixture paths in the integration half are anchored on `__file__` through
+[`tests/integration/conftest.py`](../tests/integration/conftest.py), so the suite runs identically from
+the repository root and from inside `tests/integration/`.
 
-See §11.2 for the gap between these rules and the current suite.
+See §11.1 for the gap between these rules and the current suite.
 
 ---
 
 ## 11. Known deviations and open issues
 
-Recorded so they are tracked rather than rediscovered. Nothing in this list has been fixed; each is a
-statement about the code as it stands.
+Recorded so they are tracked rather than rediscovered. Items 1–5 are **open**: each is a statement
+about the code as it stands. The subsection that follows records deviations that have since been
+**resolved**, kept because the reasoning behind the fix — and, in one case, a correction to what the
+defect actually did — is worth not rediscovering either.
 
-1. **The top-level package exports nothing.** [`pygecko/__init__.py`](../pygecko/__init__.py) contains
-   only metadata and the interactive msConvert configuration block, so
-   `from pygecko import Agilent_MS_Parser` — used at
-   [`examples/spectral_matching/spectral_matching.py:1`](../examples/spectral_matching/spectral_matching.py#L1)
-   — raises `ImportError`. Every other example imports from the subpackage and works.
-2. **Test suite does not meet the stated rules.** A unit suite now exists (§10), but there is still
-   no coverage configuration and no measurement against `CLAUDE.md`'s 80% requirement. The
-   integration fixture paths remain **relative** (`'fixtures/test_sequences/…'`), so those tests only
-   pass when pytest is invoked from inside `tests/integration/`, while
-   `[tool.pytest.ini_options] testpaths = ["tests"]` implies a repo-root run — a repo-root `pytest`
-   reports 7 failures that are purely an artefact of the working directory. Two further integration
-   tests fail wherever msConvert is absent (e.g. any Linux checkout).
-3. **Dead import.** [`peak_detection_ms.py:4`](../pygecko/gc_tools/peak/peak_detection_ms.py#L4):
-   `from xarray.util.generate_ops import inplace` is unused and reaches into an xarray private module.
-4. **`Utilities.find_empty_ranges` mask is degenerate.**
-   [`utilities.py:61`](../pygecko/gc_tools/utilities.py#L61) computes
-   `np.isnan(signal) | np.any(signal == 0)`. `np.any` collapses to a scalar, so the mask is
-   all-or-nothing instead of per-point: a single zero marks the entire chromatogram as an empty range.
-   The `threshold` parameter is also documented but never used. This affects the diagnostic printed by
-   `Injection._check_for_missing_signal`, not the analysis results.
-5. **Unsupported keyword in the PDF report.**
-   [`reports.py:49`](../pygecko/data_handling/reports.py#L49) calls
-   `Visualization.visualize_plate(yield_array, results='yield', path=heatmap_path)`, but
-   `visualize_plate` has no `results` parameter — it is absorbed by `**kwargs` and forwarded to
-   matplotlib.
-6. **Unused dependencies.** `psycopg2-binary` (the only unpinned entry, and no database code exists in
-   the package) and `numba` are declared in [`pyproject.toml`](../pyproject.toml) but never imported.
-   `lxml` is only a transitive requirement — both Agilent parsers use stdlib
-   `xml.etree.ElementTree`. `netCDF4` is genuinely used, by both `.cdf` readers.
-7. **`docs/build/` is committed** to the repository alongside `docs/source/`.
-8. **Dependencies are pinned to exact versions.** `requires-python` was widened to `">=3.10, <3.13"`
+1. **Test suite does not meet the stated coverage rules.** A unit suite now exists (§10) and a
+   repo-root `pytest` runs it cleanly, but there is still no coverage configuration and no
+   measurement against `CLAUDE.md`'s 80% requirement. Two integration tests
+   (`test_ms_injection.py`, `test_ms_sequence.py`) fail wherever msConvert is absent — e.g. any
+   Linux checkout — because their fixtures are Agilent `.D` directories that need conversion. This
+   is deliberate: the failure is an honest signal that the binary is unconfigured, not a bug.
+   `slow` / `integration` markers are also not registered, so `pytest -m "not slow"` selects
+   everything.
+2. **Unused and mis-declared dependencies.** `numba` is declared in
+   [`pyproject.toml`](../pyproject.toml) but never imported. `psycopg2-binary` is not imported by
+   pyGecko either, but it is **not** simply removable: `ord_schema` requires `psycopg2`, so dropping
+   the binary wheel makes a fresh install compile psycopg2 from source and fail without libpq
+   headers. `lxml` is likewise not imported by pyGecko — both Agilent parsers use stdlib
+   `xml.etree.ElementTree` — but it *is* a hard runtime import of `pyteomics.xml`, which
+   `parsers/file_readers.py` imports unconditionally, so removing it breaks `.mzXML` parsing.
+   `netCDF4` is genuinely used, by both `.cdf` readers.
+3. **Dependencies are pinned to exact versions.** `requires-python` was widened to `">=3.10, <3.13"`
    for the split-GC work, but the package is only exercised on 3.10 and every other dependency
    remains pinned to a single release.
-9. **This document is not part of the Sphinx build.** [`docs/source/conf.py`](source/conf.py) loads only
+4. **This document is not part of the Sphinx build.** [`docs/source/conf.py`](source/conf.py) loads only
    `autodoc`, `napoleon` and `sphinx_rtd_theme`, with no `myst_parser`, so Markdown cannot be included
-   in the `toctree`. Read it directly in the repository.
+   in the `toctree`. Read it directly in the repository. This is a deliberate choice: the document
+   addresses contributors reading the source, not readers of the rendered API docs.
+5. **`flag_peak` still keys candidates by deviation.**
+   [`injection.py:110`](../pygecko/gc_tools/injection/injection.py#L110) builds
+   `candidates[abs(rt - peak.rt)] = peak`, so two peaks equidistant from the target collide on one
+   key. Unlike `match_ri`/`match_rt` (fixed — see §11.6 below) `flag_peak` has no `return_candidates`
+   mode and always returns a single peak, so the collision only changes *which* of two equally-close
+   peaks is chosen, never how many survive. Left as-is deliberately.
 
-### Introduced or surfaced by the split-GC merge (`5be0cf0`)
+### Resolved
 
-10. **Candidate dictionaries are keyed by deviation, so ties are lost.** `match_ri` and `match_rt`
-    both build `candidates[abs(deviation)] = peak`. Two peaks equidistant from the target collide on
-    one key and one is silently dropped *before* `__find_best_ri_match` can weigh them by height
-    ratio. `__find_best_ri_match` repeats the pattern keyed on height-ratio difference. Pre-existing
-    in `match_ri`; `match_rt` inherited it. More reachable under RT matching, where the window is a
-    symmetric ±1 s. Pinned by a strict xfail in `tests/unit/test_match_rt.py`.
-11. **`__isotopic_ratio_check` tests array truthiness, not emptiness.**
-    [`ms_injection.py`](../pygecko/gc_tools/injection/ms_injection.py) guards with
-    `if not i or not j` on the index arrays returned by `np.where`. A parent ion at index 0 gives
-    `array([0])`, which is falsy, so the isotope check reports no match whenever the parent is the
-    first m/z in the spectrum. The guard should test `.size`. This silently suppresses valid analyte
-    assignments and is the most consequential item in this list. Strict xfail in
-    `tests/unit/test_ms_detection_defaults.py`.
-12. **Sample identity is derived two different ways.** `MS_Base_Parser` takes the sample name from
-    the `.cdf` filename (`name.split('_')[0]`); `Agilent_FID_Parser` takes it from the acaml
-    `SampleName`. They agree only when OpenLab names the AIA exports after the sample. When they
-    diverge — a timestamped export, say — `sample_filter` matches nothing and the result is an
-    **empty sequence rather than an error**.
-13. **`Analysis.quantify_plate` still hard-codes 8×12.**
-    [`analysis.py:447`](../pygecko/analysis/analysis.py#L447). The layout-derived shape was applied
-    only to the MS+FID path (§6.E), so the single-detector path silently drops wells outside A–H/1–12.
-14. **Split-GC example hygiene.** `examples/split_gc/plate_processing.py` hard-codes `RSLT_PATH` to a
-    personal Windows path, so the example cannot be run as checked out, and assigns `RT_FUNC` twice
-    (the first assignment is dead). `tests/integration/.pytest_cache/` is committed to the repository.
+6. Candidate collections in `match_ri` and `match_rt` were dictionaries keyed by absolute deviation,
+   so two peaks equidistant from the target collided and one was dropped before
+   `__find_best_ri_match` could weigh them by height ratio. `return_candidates=True` now returns a
+   `list[Peak]` and the closest match is selected with `min(..., key=...)`;
+   `__find_best_ri_match` consumes the list directly. Covered by `tests/unit/test_match_ri.py` and
+   `tests/unit/test_match_rt.py`.
+7. `__isotopic_ratio_check` guarded with `if not i or not j` on the index arrays returned by
+   `np.where`, so a parent ion at index 0 (`array([0])`, which is falsy) made the isotope check
+   report no match. It now tests `.size`. This was silently suppressing valid analyte assignments
+   and was the most consequential item on this list.
+8. `SplitGC_Parser.load_sequence` now warns when the FID and MS sample-name sets do not intersect.
+   The two detectors still derive identity by different routes — MS from the `.cdf` filename
+   (`name.split('_')[0]`), FID from the acaml `SampleName` — and that is inherent to the formats, but
+   a divergence no longer surfaces as a silently empty plate. A partial overlap is legitimate (one
+   detector's subset of wells) and is not reported.
+9. `Analysis.quantify_plate` now takes an optional `layout` argument, deriving the grid from
+   `layout.design` exactly as the MS+FID path does (§6.E). Without a layout it keeps the legacy 8×12
+   grid. Note the pre-fix symptom was a `ValueError` during array assembly, not the silent
+   well-dropping previously recorded here: pandas `.loc` enlargement added the out-of-grid rows and
+   left the unused columns ragged.
+10. `Utilities.find_empty_ranges` computed `np.isnan(signal) | np.any(signal == 0)`; `np.any`
+    collapses to a scalar, so a single zero marked the entire chromatogram as empty. It now uses
+    `np.isnan(signal) | (signal <= threshold)`, which also makes the documented but previously
+    ignored `threshold` parameter effective. Diagnostic-only — it feeds
+    `Injection._check_for_missing_signal`, not the analysis results. Because a real MS TIC carries
+    30–80 genuine short dropouts per injection, that method now prints a **one-line summary** per
+    injection (count, dead time, longest gap) instead of itemising every range, which would have
+    put ~1700 lines on the console for a 33-well plate. Call `Utilities.find_empty_ranges` directly
+    to inspect the individual gaps.
+11. The dead `from xarray.util.generate_ops import inplace` in `peak_detection_ms.py` is gone, as is
+    the `results='yield'` argument that `reports.py` passed to `Visualization.visualize_plate`, which
+    has no such parameter.
+12. Integration fixture paths were relative literals that only resolved when pytest ran from inside
+    `tests/integration/`. They are now anchored on `__file__` via
+    [`tests/integration/conftest.py`](../tests/integration/conftest.py), so a repo-root run — what
+    `testpaths = ["tests"]` implies — behaves identically.
+13. `examples/spectral_matching/spectral_matching.py` imported from the top-level package, which
+    exports nothing, and raised `ImportError`; it now imports from `pygecko.parsers` like every other
+    example. The top-level package deliberately still exports nothing — see §7.
+14. `examples/split_gc/plate_processing.py` no longer hard-codes a personal Windows path (it reads
+    `PYGECKO_SPLITGC_RSLT` and exits with a message naming the variable) and no longer assigns
+    `RT_FUNC` twice. `docs/build/` and `tests/integration/.pytest_cache/` are no longer tracked.

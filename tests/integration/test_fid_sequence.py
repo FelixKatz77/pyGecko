@@ -1,10 +1,11 @@
 import numpy as np
 from pygecko.parsers import Agilent_FID_Parser
 from datetime import datetime
+from .conftest import fixture_path
 
 def test_agilent_fid_parser_xy():
 
-    sequence_directory = 'fixtures/test_sequences/FKB-FA-060-RI'
+    sequence_directory = fixture_path('test_sequences/FKB-FA-060-RI')
     sequence = Agilent_FID_Parser.load_sequence(sequence_directory, 2.4)
     injection = sequence.injections['FKB-FA-060-RI']
     assert sequence is not None
@@ -27,7 +28,7 @@ def test_agilent_fid_parser_xy():
     assert injection.peaks is None
 
 def test_agilent_fid_parser_csv():
-    sequence_directory = 'fixtures/test_sequences/FBS-FA-034-RI-FID'
+    sequence_directory = fixture_path('test_sequences/FBS-FA-034-RI-FID')
     sequence = Agilent_FID_Parser.load_sequence(sequence_directory, 2.7)
     injection = sequence.injections['FBS-FA-034-RI_Std']
     assert sequence is not None

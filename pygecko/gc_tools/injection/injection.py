@@ -1,7 +1,5 @@
 import _pickle as cPickle
 
-import numpy as np
-
 from pygecko.gc_tools.peak import Peak
 from pygecko.gc_tools.analyte import Analyte
 from pygecko.gc_tools.utilities import Utilities
@@ -137,7 +135,8 @@ class Injection:
         else:
             return None
 
-    def match_ri(self, ri:float, tolerance:int=20, analyte:str|None=None, return_candidates:bool=False) -> Peak|None:
+    def match_ri(self, ri:float, tolerance:int=20, analyte:str|None=None,
+                 return_candidates:bool=False) -> Peak|list[Peak]|None:
 
         '''
         Returns the peak with the closest retention index to the given retention index within the tolerance. Returns
@@ -147,28 +146,27 @@ class Injection:
             ri (float): Retention index to match.
             tolerance(int): Tolerance for the retention index matching. Default is 20.
             analyte(str|None): Analyte object to be assigned to the peak. Default is None.
+            return_candidates (bool): If True, returns every peak inside the tolerance window as a list
+                instead of the single closest match, leaving the choice to the caller (Analysis
+                disambiguates them by height ratio). Peaks flagged as the internal standard are kept in
+                that list; they are only dropped from the single-match result. Default is False.
 
         Returns:
-            Peak|None: The peak with the closest retention index to the given retention index or None if
-             no peak was found within the tolerance.
+            Peak|list[Peak]|None: The peak with the closest retention index to the given retention index,
+             the list of candidate peaks if return_candidates is True, or None if no peak was found within
+             the tolerance.
         '''
 
 
-        candidates = {}
-        for peak in self.peaks.values():
-            if peak.ri:
-                if Utilities.check_interval(peak.ri, ri, tolerance):
-                    deviation = abs(ri-peak.ri)
-                    candidates[deviation] = peak
+        candidates = [peak for peak in self.peaks.values()
+                      if peak.ri and Utilities.check_interval(peak.ri, ri, tolerance)]
         if candidates:
             if return_candidates:
                 return candidates
             else:
                 if len(candidates) > 1:
-                    for key in list(candidates.keys()):
-                        if 'standard' in candidates[key].flags:
-                            del candidates[key]
-                peak = candidates[min(candidates)]
+                    candidates = [peak for peak in candidates if 'standard' not in peak.flags]
+                peak = min(candidates, key=lambda candidate: abs(ri - candidate.ri))
                 if analyte:
                     peak.analyte = analyte
                 return peak
@@ -176,7 +174,7 @@ class Injection:
             return None
 
     def match_rt(self, rt:float, func=None, tolerance:float=1/60, analyte:str|None=None,
-                 return_candidates:bool=False, exclude_standard:bool=True) -> Peak|dict|None:
+                 return_candidates:bool=False, exclude_standard:bool=True) -> Peak|list[Peak]|None:
 
         '''
         Returns the peak with the closest retention time to the (optionally transformed) target retention time
@@ -196,31 +194,28 @@ class Injection:
             tolerance (float): Half-width of the retention-time matching window, in minutes. Defaults to 1/60
                 (one second).
             analyte (str|None): Analyte object to assign to the matched peak. Default is None.
-            return_candidates (bool): If True, returns the full {deviation: Peak} candidate dict instead of the
-                single closest match. Default is False.
+            return_candidates (bool): If True, returns every peak inside the tolerance window as a list
+                instead of the single closest match, leaving the choice to the caller (Analysis
+                disambiguates them by height ratio). Default is False.
             exclude_standard (bool): If True, peaks flagged as the internal standard are never returned as a
                 match. Default is True.
 
         Returns:
-            Peak|dict|None: The peak with the closest retention time to the target, the candidate dict if
-            return_candidates is True, or None if no peak was found within the tolerance.
+            Peak|list[Peak]|None: The peak with the closest retention time to the target, the list of
+            candidate peaks if return_candidates is True, or None if no peak was found within the tolerance.
         '''
 
         if func is None:
             func = lambda x: x
         target = func(rt)
-        candidates = {}
-        for peak in self.peaks.values():
-            if exclude_standard and 'standard' in peak.flags:
-                continue
-            if Utilities.check_interval(peak.rt, target, tolerance):
-                deviation = abs(peak.rt - target)
-                candidates[deviation] = peak
+        candidates = [peak for peak in self.peaks.values()
+                      if not (exclude_standard and 'standard' in peak.flags)
+                      and Utilities.check_interval(peak.rt, target, tolerance)]
         if not candidates:
             return None
         if return_candidates:
             return candidates
-        peak = candidates[min(candidates)]
+        peak = min(candidates, key=lambda candidate: abs(candidate.rt - target))
         if analyte:
             peak.analyte = analyte
         return peak
@@ -284,13 +279,21 @@ class Injection:
 
     def _check_for_missing_signal(self):
 
-        '''Check if there is any part of the chromatogram with no signal and print the time ranges with no signal'''
+        '''Check the chromatogram for stretches with no signal and print a one-line summary.
 
-        if np.any(self.chromatogram[1] == 0):
-            print('No signal in the following time ranges:')
-            ranges = Utilities.find_empty_ranges(self.chromatogram)
-            for i, (start, end) in enumerate(Utilities.find_empty_ranges(self.chromatogram)):
-                print(f'Range {i}: {start} - {end}')
+        A real MS TIC carries dozens of short dropouts per injection, so the ranges are summarised
+        rather than listed: itemising them buries every other message a plate run prints. Use
+        Utilities.find_empty_ranges directly to inspect the individual gaps.
+        '''
+
+        ranges = Utilities.find_empty_ranges(self.chromatogram)
+        if not ranges:
+            return
+        dead_time = sum(end - start for start, end in ranges)
+        run_time = self.chromatogram[0][-1] - self.chromatogram[0][0]
+        start, end = max(ranges, key=lambda r: r[1] - r[0])
+        print(f'{self.sample_name}: {len(ranges)} empty ranges, {dead_time:.2f} min dead of '
+              f'{run_time:.2f} min, longest {end - start:.3f} min at {start:.2f}-{end:.2f}')
 
 
 def load_injection(filename) -> Injection:

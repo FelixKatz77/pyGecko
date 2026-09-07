@@ -1,10 +1,11 @@
 import numpy as np
 from pygecko.parsers import FID_Base_Parser, Agilent_FID_Parser
+from .conftest import fixture_path
 
 
 def test_fid_ri_calibration():
-    fid_inject_path = 'fixtures/test_injections/FBS-FA-033-A1.dx_FID1A.CSV'
-    fid_ri_path = 'fixtures/test_ri_calibration/FID'
+    fid_inject_path = fixture_path('test_injections/FBS-FA-033-A1.dx_FID1A.CSV')
+    fid_ri_path = fixture_path('test_ri_calibration/FID')
 
     fid_inject = FID_Base_Parser.load_injection(fid_inject_path, 3.0, pos=True)
     ri_conf_fid = Agilent_FID_Parser.load_ri_calibration(fid_ri_path, 2.4, 12, rt=4.570)

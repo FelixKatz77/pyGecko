@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 from scipy.signal import find_peaks
-from xarray.util.generate_ops import inplace
 
 
 from pygecko.gc_tools.analysis.analysis_settings import Analysis_Settings

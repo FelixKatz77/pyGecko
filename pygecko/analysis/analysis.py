@@ -331,13 +331,13 @@ class Analysis:
         return yield_dict
 
     @staticmethod
-    def __find_best_ri_match(match_candidates:dict[float:FID_Peak], fid_injection:FID_Injection, ms_height_ratio:float, analyte:str|None=None) -> FID_Peak:
+    def __find_best_ri_match(match_candidates:list[FID_Peak], fid_injection:FID_Injection, ms_height_ratio:float, analyte:str|None=None) -> FID_Peak:
 
         '''
         Returns the best retention index match based on the height ratios of the peaks.
 
         Args:
-            ri_match (FID_Peak): FID_Peak object to match.
+            match_candidates (list[FID_Peak]): Candidate peaks returned by match_ri/match_rt.
             fid_injection (FID_Injection): FID_Injection object to match the peak to.
             ms_height_ratio (float): Height ratio of the MS peak.
             analyte(str|None): Analyte object to be assigned to the peak. Default is None.
@@ -346,12 +346,9 @@ class Analysis:
             FID_Peak: FID_Peak object with the best match based on the height ratios.
         '''
 
-        ratio_candidates = {}
-        for ri_diff, peak in match_candidates.items():
-            fid_height_ratio = peak.height / fid_injection[fid_injection.internal_standard.rt].height
-            height_ratio_diff = abs(fid_height_ratio  - ms_height_ratio)
-            ratio_candidates[height_ratio_diff] = peak
-        best_match = ratio_candidates[min(ratio_candidates)]
+        standard_height = fid_injection[fid_injection.internal_standard.rt].height
+        best_match = min(match_candidates,
+                         key=lambda peak: abs(peak.height / standard_height - ms_height_ratio))
         if analyte:
             best_match.analyte = analyte
         return best_match
@@ -406,7 +403,8 @@ class Analysis:
         return slope, b
 
     @staticmethod
-    def quantify_plate(fid_sequence:FID_Sequence, rt_analyte:float, analyte:Analyte|None=None, method='polyarc', path: str|None = None, **kwargs) -> np.ndarray:
+    def quantify_plate(fid_sequence:FID_Sequence, rt_analyte:float, analyte:Analyte|None=None, method='polyarc',
+                       path: str|None = None, layout:Reaction_Array|None=None, **kwargs) -> np.ndarray:
         '''
         Returns the yields of Analytes at a given retention time in the FID sequence of a plate.
 
@@ -416,6 +414,9 @@ class Analysis:
             analyte (Analyte): Analyte to quantify.
             method (str): Method to use for quantification. Defaults to 'polyarc' can be set to calibration to use calibration curve.
             path (str|None): Path to write the results to. Defaults to None.
+            layout (Reaction_Array|None): Reaction_Array or Product_Array whose design fixes the plate
+                shape. Pass it for any plate that is not 8x12 (e.g. the split-GC A1-K3 sequence), which
+                would otherwise fail to assemble. Defaults to None (legacy A-H / 1-12 grid).
 
         Returns:
             np.ndarray: Array containing the yields of the Analytes in the FID sequence.
@@ -444,8 +445,15 @@ class Analysis:
             else:
                 yield_dict[injection.sample_name] = [yield_, rt, flags, analyte_name]
 
-        results_df = pd.DataFrame(columns=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-                                  index=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
+        # Plate shape is taken from the layout when one is given, mirroring __match_and_quantify_plate, so
+        # non-8x12 plates are handled. Without a layout the legacy A-H / 1-12 grid is kept.
+        if layout is not None:
+            row_labels = [str(x) for x in layout.design.x.values]
+            col_labels = [str(y) for y in layout.design.y.values]
+        else:
+            row_labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+            col_labels = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+        results_df = pd.DataFrame(columns=col_labels, index=row_labels)
 
         for key, value in yield_dict.items():
             results_df.loc[key[0], key[1:]] = value

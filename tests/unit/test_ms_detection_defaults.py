@@ -61,12 +61,6 @@ class TestIsotopeRatioTolerance:
             [ms_peak_factory(5.0, {51.0: 100.0, BENZENE_MZ: 1000.0, 79.0: m_plus_one})])
         assert injection.match_mol(BENZENE) is not None
 
-    @pytest.mark.xfail(strict=True, reason=(
-        'Known defect: __isotopic_ratio_check guards with "if not i or not j" on the index '
-        'arrays from np.where. A parent ion at index 0 yields array([0]), which is falsy, so '
-        'the isotope check reports no match whenever the parent is the first m/z in the '
-        'spectrum. The guard should test array size, not truthiness.'
-    ))
     def test_parent_ion_at_index_zero_passes_isotope_check(self, ms_peak_factory):
         m_plus_one = 1000.0 * (BENZENE_THEO_RATIO + 0.01)
         injection = make_ms_injection(

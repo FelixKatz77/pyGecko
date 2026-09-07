@@ -14,6 +14,7 @@ Contrast with the legacy/RI example (``process_splitgc_sequence.py``): there is 
 step. The whole RI block disappears; only an RT-matching function and tolerance remain.
 """
 
+import os
 from pathlib import Path
 
 from pygecko.parsers import SplitGC_Parser
@@ -25,9 +26,10 @@ from pygecko.visualization.visuals import Visualization
 # === CONFIG (edit per-experiment) ===
 
 # Path to the OpenLab SuperGC result folder holding BOTH detector traces (same data as the RI example).
-RSLT_PATH: Path = Path(
-    r'C:\Users\hoelt\Downloads\FBS-FB-021-ALL.rslt'
-)
+# The raw data is not part of the repository, so point the PYGECKO_SPLITGC_RSLT environment variable at
+# your own copy, e.g.:
+#   export PYGECKO_SPLITGC_RSLT=/path/to/FBS-FB-021-ALL.rslt
+RSLT_PATH_ENV: str = 'PYGECKO_SPLITGC_RSLT'
 
 # Per-well expected product SMILES as an 11x3 grid keyed A1..K3 (one analyte per row, repeated per column).
 LAYOUT_CSV: Path = Path(__file__).with_name('splitgc_layout.csv')
@@ -44,14 +46,12 @@ IS_RT_TOLERANCE: float = 0.05
 
 # --- Nearest-RT matching parameters -------------------------------------------------------------------
 # RT_FUNC maps an MS retention time to the EXPECTED FID retention time. Because both detectors see one
-# shared column, the FID and MS retention times differ only by the small, near-constant splitter
-# dead-volume offset. Measured on this FBS-FB-021-ALL dataset across 27 wells the FID elutes a mean of
-# +0.0094 min (median +0.010 min, range +0.002..+0.015) after the MS, so a constant +0.010 min offset is
-# applied: it centres the match window (cutting the worst-case residual from ~0.015 to ~0.007 min) and
-# recovers two wells (B3, F1) whose FID peak sat just outside the +-1 s window at offset 0. If the offset
-# is ever found to drift across the chromatogram, use Analysis.linear_drift(a, b) instead
-# (t_fid = a * t_ms + b), e.g. Analysis.linear_drift(1.0008, 0.004).
-RT_FUNC = Analysis.constant_offset(0.010)
+# shared column, the FID and MS retention times differ only by the small splitter dead-volume offset.
+# Measured on this FBS-FB-021-ALL dataset across 27 wells the FID elutes a mean of +0.0094 min (median
+# +0.010 min, range +0.002..+0.015) after the MS. A constant Analysis.constant_offset(0.010) already
+# centres the match window and recovers two wells (B3, F1) whose FID peak sat just outside the +-1 s
+# window at offset 0, but the offset drifts across the chromatogram, so the linear model is used instead
+# (t_fid = a * t_ms + b).
 RT_FUNC = Analysis.linear_drift(0.9979, +0.0232)
 RT_TOLERANCE: float = 1 / 60  # half-window of the RT match, in minutes (one second)
 
@@ -77,7 +77,17 @@ def main():
 
     Returns:
         np.ndarray: Structured plate array with fields 'quantity', 'rt_ms', 'rt_fid' and 'flags'.
+
+    Raises:
+        SystemExit: If the PYGECKO_SPLITGC_RSLT environment variable is not set.
     '''
+
+    rslt_path = os.environ.get(RSLT_PATH_ENV)
+    if not rslt_path:
+        raise SystemExit(
+            f'Set {RSLT_PATH_ENV} to the OpenLab SuperGC .rslt folder holding both detector traces, '
+            f'e.g. export {RSLT_PATH_ENV}=/path/to/FBS-FB-021-ALL.rslt'
+        )
 
     # Layout: per-well expected product SMILES (no reaction transformation / metadata needed).
     layout = Product_Array(LAYOUT_CSV)
@@ -86,7 +96,7 @@ def main():
     # position is derived from its sample name (e.g. 'A1'); Analysis uses that to pair MS<->FID per well.
     sample_filter = {f'{row}{col}' for row in 'ABCDEFGHIJK' for col in '123'}
     fid_sequence, ms_sequence = SplitGC_Parser.load_sequence(
-        str(RSLT_PATH),
+        rslt_path,
         solvent_delay_fid=SOLVENT_DELAY_FID,
         sample_filter=sample_filter,
         pos=True,

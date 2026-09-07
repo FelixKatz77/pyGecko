@@ -222,7 +222,7 @@ class MS_Injection(Injection):
         mol = Chem.AddHs(mol)
         i = np.where(peak.mass_spectrum['mz'] == mz)[0]
         j = np.where(peak.mass_spectrum['mz'] == mz+diff)[0]
-        if not i or not j:
+        if i.size == 0 or j.size == 0:
             return False
         ratio = peak.mass_spectrum['rel_intensity'][j][0]/peak.mass_spectrum['rel_intensity'][i][0]
         mol_formula = self.__get_mol_formula_dict(mol)

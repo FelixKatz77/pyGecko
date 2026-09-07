@@ -58,7 +58,7 @@ class Utilities:
             return []
 
         # Empty where NaN or <= threshold
-        empty_mask = np.isnan(signal) | np.any(signal == 0)
+        empty_mask = np.isnan(signal) | (signal <= threshold)
 
         ranges: list[tuple[float, float]] = []
         if not np.any(empty_mask):
