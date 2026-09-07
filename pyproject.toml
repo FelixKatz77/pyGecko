@@ -5,12 +5,13 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pyGecko"
 version = "0.1.0"
-description = "An open-source Python libary for the parsing, processing and analysis of GC/MS and GC/FID raw data"
+description = "An open-source Python library for the parsing, processing and analysis of GC/MS and GC/FID raw data"
 readme = "README.md"
-requires-python = ">=3.10, <3.11"
+requires-python = ">=3.10, <3.13"
 license = {text = "MIT License"}
 authors = [
-    {name = "Felix Katzenburg", email = "felix.katzenburg@uni-muenster.de"}
+    {name = "Felix Katzenburg", email = "felix.katzenburg@uni-muenster.de"},
+    {name = "Florian Boser", email = "florian.boser@uni-muenster.de"}
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -38,7 +39,8 @@ dependencies = [
     "statsmodels==0.14.0",
     "xarray==2023.6.0",
     "scikit-learn==1.7.2",
-    "psycopg2-binary"
+    "psycopg2-binary",
+    "netCDF4<=1.6.5"
 ]
 
 [project.optional-dependencies]

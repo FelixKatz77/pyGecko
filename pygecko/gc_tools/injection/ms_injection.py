@@ -117,13 +117,13 @@ class MS_Injection(Injection):
         '''
 
         min_rel_int = self.analysis_settings.pop('min_rel_intensity', 4)
+        min_mz_fraction = self.analysis_settings.pop('min_mz_fraction', 2 / 3)
 
         candidates = {}
         for rt, peak in self.peaks.items():
             if mz in peak.mass_spectrum['mz']:
                 index = np.where(peak.mass_spectrum['mz'] == mz)[0]
-                if peak.mass_spectrum['rel_intensity'][index][0] > min_rel_int and mz > peak.mass_spectrum['mz'].max() * (
-                        2 / 3):  # TODO: Check if this is a good decision.
+                if peak.mass_spectrum['rel_intensity'][index][0] > min_rel_int and mz > peak.mass_spectrum['mz'].max() * min_mz_fraction:
                     if check_iso:
                         isotope_error = self.__isotope_check(smiles, peak, mz)
                         if isotope_error and return_canidates:

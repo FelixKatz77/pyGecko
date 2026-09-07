@@ -1,39 +1,39 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
 
-pygecko/gc_tools/peak/__pycache__/
+# Virtual environments
+.venv/
+venv/
+env/
 
-pygecko/gc_tools/sequence/__pycache__/
+# Poetry / pip local config
+poetry.toml
 
-pygecko/gc_tools/analysis/__pycache__/
-
-pygecko/gc_tools/injection/__pycache__/
-
-pygecko/gc_tools/__pycache__/
-
+# IDEs
 .idea/
+.vscode/
+*.swp
 
-pygecko/visualization/__pycache__/
+# Testing / caches
+.pytest_cache/
+.coverage
+htmlcov/
 
-pygecko/parsers/__pycache__/
+# Build / dist artifacts
+build/
+dist/
+*.egg-info/
 
-tests/__pycache__/
-
-tests/integration/__pycache__/
-
+# pyGecko-specific generated outputs
+pygecko/outputs/
+pygecko/data_handling/tmp/
+*_yields.csv
+plateopt/
 jobs/
 
-pygecko/outputs/
-
-tests/integration/.pytest_cache/
-
-pygecko/__pycache__/
-
-pygecko/analysis/__pycache__/
-
-pygecko/data_handling/__pycache__/
-
-pygecko/reaction/__pycache__/
-
-plateopt/
-
-pygecko/data_handling/tmp/
-
+# OS files
+.DS_Store
+Thumbs.db

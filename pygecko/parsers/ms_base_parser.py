@@ -6,33 +6,48 @@ import pandas as pd
 
 from pygecko.gc_tools import MS_Injection, RI_Calibration, MS_Sequence
 from pygecko.parsers.msconvert_wraper import msconvert
-from pygecko.parsers.file_readers import extract_scans_from_mzxml, extract_scans_from_mzml
+from pygecko.parsers.file_readers import extract_scans_from_mzxml, extract_scans_from_mzml, extract_scans_from_cdf
+from typing import Iterable, Optional
 
 
 class MS_Base_Parser:
 
     @staticmethod
-    def load_sequence(raw_directory: Path | str, pos: bool = False) -> MS_Sequence:
-
-        '''
-        Returns an MS_Sequence object.
+    def load_sequence(
+            raw_directory: Path | str,
+            pos: bool = False,
+            sample_filter: Optional[Iterable[str]] = None,
+    ) -> MS_Sequence:
+        """Returns an MS_Sequence object.
 
         Args:
-            raw_directory (Path|str): Path to a directory containing raw data.
+            raw_directory: Path to a directory containing raw data.
+            pos: Indicates if plate position is given in the injection names.
+            sample_filter: Optional iterable of allowed sample names. Injections
+                whose ``sample_name`` is not in this set are silently dropped.
+                Useful to exclude cleaning/conditioning runs that may otherwise
+                be ingested as real injections. Defaults to None (keep all).
 
         Returns:
-            MS_Sequence: An MS_Sequence object.
-        '''
+            An MS_Sequence object.
+        """
 
         print('Loading GC-MS sequence...')
         raw_directory = Path(raw_directory)
-        supported_formats = ['.D', '.mzML', '.mzXML']
+        supported_formats = ['.D', '.mzML', '.mzXML', 'cdf', '.CDF']
         raw_files = []
         for file_format in supported_formats:
             raw_files.extend(raw_directory.glob(f'*{file_format}'))
+
+        allowed_names = set(sample_filter) if sample_filter is not None else None
+
         injections = {}
         for raw_file in raw_files:
+            if raw_file.suffix.lower() == '.cdf' and '_spectra' not in raw_file.name:
+                continue  # Skip FID or TIC-only CDF files
             injection = MS_Base_Parser.load_injection(raw_file, pos=pos)
+            if allowed_names is not None and injection.sample_name not in allowed_names:
+                continue
             injections[injection.sample_name] = injection
         print(f'Sequence loaded with {len(injections)} injections.')
         return MS_Sequence({}, injections)
@@ -117,6 +132,13 @@ class MS_Base_Parser:
                 raise KeyError(f'Cannot extract scans from {raw_path.name}: {error}')
             except FileNotFoundError as error:
                 raise FileNotFoundError(error)
+        elif raw_path.suffix.lower() == '.cdf':
+            try:
+                scans_df, sample_name = extract_scans_from_cdf(raw_path)
+                return scans_df, sample_name
+            except Exception as error:
+                print(f'Cannot extract scans from {raw_path.name}: {error}')
+                raise RuntimeError(f'Cannot extract scans from {raw_path.name}: {error}')
         else:
             if not temp_dir:
                 temp_dir = tempfile.TemporaryDirectory()

@@ -27,9 +27,9 @@ class RI_Calibration:
 
     __slots__ = 'calibration', 'alkanes', 'gradient', 'intercept'
 
-    def __init__(self, injection:FID_Injection|MS_Injection, c_count:int, rt:float):
+    def __init__(self, injection:FID_Injection|MS_Injection, c_count:int, rt:float, **pick_peaks_kwargs):
         self.calibration = injection
-        self.calibration.pick_peaks()
+        self.calibration.pick_peaks(**pick_peaks_kwargs)
         self.__identify_alkanes(c_count, rt)
         self.alkanes = self.__construct_alkanes_array()
         self.gradient, self.intercept = self.__fit_ri_calibration()
