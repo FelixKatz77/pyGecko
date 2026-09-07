@@ -9,9 +9,6 @@ __pycache__/
 venv/
 env/
 
-# Poetry / pip local config
-poetry.toml
-
 # IDEs
 .idea/
 .vscode/
