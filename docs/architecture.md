@@ -205,6 +205,15 @@ prominence = analysis_settings.pop('prominence_ms', 1)
 Settings persist on the injection, so a parameter set in `baseline_correction` is still in effect in
 a later `pick_peaks`.
 
+This persistence makes it a **correctness requirement**, not a stylistic one, that a method calling
+`update(**kwargs)` actually reads the settings it accepts. A method that stores a parameter and then
+filters with a hard-coded value gives the caller no effect where the argument was passed *and* a
+delayed effect on the next method that does read it. `MS_Injection.match_mz` had exactly this shape
+until it was changed to read `min_rel_intensity` and `min_mz_fraction`.
+
+> **Rule.** If a method calls `analysis_settings.update(**kwargs)`, every threshold it then applies
+> must come from `settings.pop(...)`. Never mix stored settings and literals in one predicate.
+
 > **Rule.** A new tunable parameter needs five edits in `Analysis_Settings`: the class docstring's
 > attribute list, the annotation block, `__slots__`, `__init__` (initialised to `None`), and the
 > `options` dict — without the last one, `update` will reject it. Put the default at the `pop` call
@@ -339,7 +348,7 @@ Results are returned as a **structured array**, not a bespoke result class — d
 well plate so it can be indexed positionally and passed straight to the heatmap. The shape is derived
 from `layout.design` in `__match_and_quantify_plate`, so non-8×12 plates (the split-GC A1–K3
 sequence is 11×3) work; legacy 8×12 layouts produce the same grid as before. The single-detector
-`Analysis.quantify_plate` still hard-codes 8×12 — see §11.14.
+`Analysis.quantify_plate` still hard-codes 8×12 — see §11.13.
 
 > **Rule.** Plate-level results are structured arrays with a `quantity` field and an integer `flags`
 > field. Optional CSV export is a `path` keyword argument on the same method, not a separate function.
@@ -619,13 +628,9 @@ statement about the code as it stands.
     `SampleName`. They agree only when OpenLab names the AIA exports after the sample. When they
     diverge — a timestamped export, say — `sample_filter` matches nothing and the result is an
     **empty sequence rather than an error**.
-13. **`match_mz` retains a hard-coded m/z floor.**
-    [`ms_injection.py:70`](../pygecko/gc_tools/injection/ms_injection.py#L70) still uses a literal
-    `2/3` where the sibling `__match_mz_mol` now reads the `min_mz_fraction` setting, so the two
-    m/z-floor paths can disagree once the setting is changed.
-14. **`Analysis.quantify_plate` still hard-codes 8×12.**
+13. **`Analysis.quantify_plate` still hard-codes 8×12.**
     [`analysis.py:447`](../pygecko/analysis/analysis.py#L447). The layout-derived shape was applied
     only to the MS+FID path (§6.E), so the single-detector path silently drops wells outside A–H/1–12.
-15. **Split-GC example hygiene.** `examples/split_gc/plate_processing.py` hard-codes `RSLT_PATH` to a
+14. **Split-GC example hygiene.** `examples/split_gc/plate_processing.py` hard-codes `RSLT_PATH` to a
     personal Windows path, so the example cannot be run as checked out, and assigns `RT_FUNC` twice
     (the first assignment is dead). `tests/integration/.pytest_cache/` is committed to the repository.

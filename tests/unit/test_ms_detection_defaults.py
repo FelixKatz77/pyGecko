@@ -72,3 +72,44 @@ class TestIsotopeRatioTolerance:
         injection = make_ms_injection(
             [ms_peak_factory(5.0, {BENZENE_MZ: 1000.0, 79.0: m_plus_one})])
         assert injection.match_mol(BENZENE) is not None
+
+
+class TestMatchMzHonoursSettings:
+    '''match_mz applies the same parent-ion filter as match_mol and must read the same settings.
+
+    match_mz calls analysis_settings.update(**kwargs), so a caller passing min_mz_fraction or
+    min_rel_intensity has them validated and stored on the injection. If the filter then ignores them
+    and uses hardcoded values, the kwarg silently does nothing where it was passed while still taking
+    effect on a later match_mol against the same injection, because settings persist.
+    '''
+
+    def test_default_mz_floor_rejects_low_parent_ion(self, ms_peak_factory):
+        # m/z 78 is 39% of the maximum m/z (200): above a 1/3 floor, below the default 2/3 floor.
+        injection = make_ms_injection(
+            [ms_peak_factory(5.0, {51.0: 100.0, BENZENE_MZ: 1000.0, 200.0: 50.0})])
+        assert injection.match_mz(BENZENE_MZ) is None
+
+    def test_min_mz_fraction_is_honoured(self, ms_peak_factory):
+        injection = make_ms_injection(
+            [ms_peak_factory(5.0, {51.0: 100.0, BENZENE_MZ: 1000.0, 200.0: 50.0})])
+        match = injection.match_mz(BENZENE_MZ, min_mz_fraction=1 / 3)
+        assert match is not None
+        assert match.rt == 5.0
+
+    def test_default_relative_intensity_floor_rejects_weak_ion(self, ms_peak_factory):
+        # m/z 78 sits at 3% relative intensity, below the default min_rel_intensity of 4.
+        injection = make_ms_injection(
+            [ms_peak_factory(5.0, {51.0: 1000.0, BENZENE_MZ: 30.0})])
+        assert injection.match_mz(BENZENE_MZ) is None
+
+    def test_min_rel_intensity_is_honoured(self, ms_peak_factory):
+        injection = make_ms_injection(
+            [ms_peak_factory(5.0, {51.0: 1000.0, BENZENE_MZ: 30.0})])
+        match = injection.match_mz(BENZENE_MZ, min_rel_intensity=2.0)
+        assert match is not None
+        assert match.rt == 5.0
+
+    def test_strong_high_mass_ion_matches_under_defaults(self, ms_peak_factory):
+        injection = make_ms_injection(
+            [ms_peak_factory(5.0, {51.0: 100.0, BENZENE_MZ: 1000.0})])
+        assert injection.match_mz(BENZENE_MZ) is not None

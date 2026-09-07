@@ -63,11 +63,14 @@ class MS_Injection(Injection):
 
         self.analysis_settings.update(**kwargs)
 
+        min_rel_int = self.analysis_settings.pop('min_rel_intensity', 4)
+        min_mz_fraction = self.analysis_settings.pop('min_mz_fraction', 2 / 3)
+
         candidates = []
         for rt, peak in self.peaks.items():
             if mz in peak.mass_spectrum['mz']:
                 index = np.where(peak.mass_spectrum['mz'] == mz)[0]
-                if peak.mass_spectrum['rel_intensity'][index][0] > 4 and mz > peak.mass_spectrum['mz'].max()*(2/3):
+                if peak.mass_spectrum['rel_intensity'][index][0] > min_rel_int and mz > peak.mass_spectrum['mz'].max() * min_mz_fraction:
                     candidates.append(peak)
         if candidates:
             if len(candidates) > 1:
