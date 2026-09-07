@@ -1,0 +1,64 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Weekly, so upstream drift in the unpinned ranges surfaces without PR noise.
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  latest:
+    # Installs with pip, exactly as README tells users to, and resolves the newest
+    # versions the specifiers allow. This is what makes the unpinned ranges honest.
+    name: ${{ matrix.os }} py${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      # visuals.py imports pyplot at module scope, so the backend must be headless.
+      MPLBACKEND: Agg
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+        include:
+          - os: windows-latest
+            python-version: '3.12'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: python -m pip install --upgrade pip
+      - run: pip install -e ".[test,ord]"
+      - name: Import smoke test
+        # numpy ABI mismatches surface at C-extension import, which pytest may never
+        # reach: visualization/ and data_handling/ have no tests of their own.
+        run: python -c "import pygecko.parsers, pygecko.analysis, pygecko.visualization, pygecko.data_handling, pygecko.gc_tools, pygecko.reaction"
+      - name: Tests
+        # The msconvert-marked tests need a vendor binary that no runner has.
+        run: pytest -m "not msconvert" --cov=pygecko --cov-report=term-missing
+
+  locked:
+    # Proves the pinned environment in uv.lock still works.
+    name: locked (uv.lock)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MPLBACKEND: Agg
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --locked --extra test --extra ord
+      - run: uv run python -c "import pygecko.parsers, pygecko.analysis, pygecko.visualization, pygecko.data_handling, pygecko.gc_tools, pygecko.reaction"
+      - run: uv run pytest -m "not msconvert"
