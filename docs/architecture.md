@@ -1,0 +1,631 @@
+# pyGecko Architecture
+
+## 1. Purpose and scope
+
+This document records the architecture of pyGecko: how the package is layered, which design choices
+were made, and why. Per `CLAUDE.md` it is the place where architecture is planned and design
+decisions are documented, and it is updated *after* changes land so it reflects the current design.
+
+It has two audiences:
+
+- **Readers**, who need to understand how raw GC data becomes a quantified reaction array.
+- **Contributors**, for whom the conventions in §4, §5, §9 and the extension recipes in §7 are
+  **binding**. The goal of the project is a modular library that is easy to extend and maintain, and
+  that only holds if new code follows the same patterns as existing code.
+
+This document is descriptive of the design as it stands. It is not a proposal for a redesign. Where
+the current design has known problems, they are recorded in §11 rather than silently corrected here.
+
+---
+
+## 2. Layering
+
+The package is a one-directional pipeline. Each layer depends only on the layers to its left.
+
+```
+  parsers/          gc_tools/          analysis/         reaction/
+  ────────          ─────────          ─────────         visualization/
+  vendor IO    →    domain model  →    cross-detector →  data_handling/
+  + conversion      + algorithms       workflows         ─────────────
+                                                         output & export
+```
+
+| Package | Responsibility |
+|---|---|
+| [`pygecko/parsers/`](../pygecko/parsers) | Read vendor raw data, convert it, build domain objects. The only layer that touches the filesystem or a subprocess. |
+| [`pygecko/gc_tools/`](../pygecko/gc_tools) | The domain model (injections, sequences, peaks, analytes) plus all single-injection signal processing and identification. |
+| [`pygecko/analysis/`](../pygecko/analysis) | Cross-detector, plate-level workflows. |
+| [`pygecko/reaction/`](../pygecko/reaction) | Chemistry-side plate description: layouts, reaction SMARTS, ORD export. |
+| [`pygecko/visualization/`](../pygecko/visualization), [`pygecko/data_handling/`](../pygecko/data_handling) | Rendering and reporting. |
+
+**Rules**
+
+- `gc_tools/` must never import from `parsers/`. Parsers construct domain objects and hand them over;
+  the domain model knows nothing about file formats.
+- `analysis/analysis.py` is the *only* place where an MS sequence and an FID sequence meet. Neither
+  `MS_Injection` nor `FID_Injection` may reference the other detector.
+- `reaction/` is chemistry-only. It does not import `gc_tools/`; `analysis/` joins the two.
+
+There is one deliberate upward edge: domain objects expose plotting convenience methods that delegate
+to `Visualization` — [`Injection.view_chromatogram`](../pygecko/gc_tools/injection/injection.py#L197),
+`MS_Peak.view_mass_spectrum`. These are thin one-line delegations kept for interactive/notebook use.
+Treat them as a closed set, not a licence to pull more output code into the domain model.
+
+---
+
+## 3. Domain model
+
+Three parallel hierarchies, each split by detector:
+
+| Base | FID | MS |
+|---|---|---|
+| [`Injection`](../pygecko/gc_tools/injection/injection.py#L13) | [`FID_Injection`](../pygecko/gc_tools/injection/fid_injection.py#L13) | [`MS_Injection`](../pygecko/gc_tools/injection/ms_injection.py#L16) |
+| [`GC_Sequence`](../pygecko/gc_tools/sequence/gc_sequence.py#L8) | `FID_Sequence` | `MS_Sequence` |
+| [`Peak`](../pygecko/gc_tools/peak/peak.py#L6) | [`FID_Peak`](../pygecko/gc_tools/peak/fid_peak.py#L6) | [`MS_Peak`](../pygecko/gc_tools/peak/ms_peak.py#L8) |
+
+A `GC_Sequence` holds `dict[str, Injection]` keyed by sample name; an `Injection` holds
+`dict[float, Peak]` keyed by retention time. Chemical identity lives in a separate
+[`Analyte`](../pygecko/gc_tools/analyte.py#L4) object attached to a peak.
+
+### 3.1 Detector split by subclass, shared behaviour on the base
+
+`Injection` carries everything that does not depend on the detector: peak lookup, `flag_peak`,
+`match_ri`, `match_rt`, plate position, `save`. Subclasses add the detector's data representation and
+its `pick_peaks` implementation.
+
+This is what makes cross-detector work possible at all: `Analysis` identifies a compound on the MS
+trace and transfers it to the FID trace through base-class methods alone. There are two
+detector-independent transfer coordinates, and which one applies is a property of the *instrument*,
+not of the code path:
+
+| Coordinate | Method | Applies when | Cost |
+|---|---|---|---|
+| Retention index | [`match_ri`](../pygecko/gc_tools/injection/injection.py#L140) | Two separate instruments, each with its own retention-time axis | Needs an alkane ladder on both detectors |
+| Retention time | [`match_rt`](../pygecko/gc_tools/injection/injection.py#L178) | One injection split post-column to both detectors (§6.H) | None — the traces already share a time axis |
+
+> **Rule.** New behaviour that is meaningful for both detectors goes on the base class. Do not
+> implement it twice in `FID_Injection` and `MS_Injection`.
+
+### 3.2 `__slots__` on every domain class
+
+Every domain class declares class-level type annotations *and* a matching `__slots__` tuple. A
+sequence holds hundreds of injections, each carrying a full scan matrix; `__slots__` removes the
+per-instance `__dict__` and prevents typo-assignment of attributes that would silently do nothing.
+
+> **Rule.** A new attribute must be added in three places: the annotation block, `__slots__`, and
+> `__init__`. Subclasses list only their *own* additional slots — see
+> [`ms_injection.py:37`](../pygecko/gc_tools/injection/ms_injection.py#L37).
+
+### 3.3 Container protocols carry the ergonomics
+
+Sequences and injections are containers, and the API leans on that:
+
+```python
+injection = sequence['FBS-FA-033-A1']   # GC_Sequence.__getitem__ by sample name
+peak      = injection[4.593]            # Injection.__getitem__ by retention time
+for injection in sequence: ...          # iterates injections
+len(sequence); 'sample' in sequence     # __len__, __contains__
+```
+
+See [`gc_sequence.py:35-81`](../pygecko/gc_tools/sequence/gc_sequence.py#L35-L81). Plate-oriented
+access is a named method rather than an operator: `GC_Sequence.get_injection_by_pos('A1')`.
+
+> **Rule.** Keep the dunder surface to container semantics. Anything with an argument that is not a
+> key belongs in a named method.
+
+### 3.4 Data representation and units
+
+- **Chromatogram** — `np.ndarray` of shape `(2, N)`: row 0 is time in **minutes**, row 1 is
+  intensity. Both detectors use this shape, which is why `Visualization` and `Analysis_Settings` can
+  treat them uniformly (`scan_rate` is derived as `chromatogram[0,2] - chromatogram[0,1]`).
+- **Scan matrix** — `MS_Injection.scans` is a `pd.DataFrame` indexed by retention time in
+  **milliseconds**, with integer m/z columns and zero-filled gaps. The MS TIC is derived from it:
+  `np.array([scans.index / 60000, scans.sum(axis=1)])`.
+- **Heterogeneous records** are NumPy **structured arrays**, not classes:
+  `MS_Peak.mass_spectrum` with fields `('mz', 'intensity', 'rel_intensity')`, `RI_Calibration.alkanes`
+  with `('smiles', 'c_count', 'rt')`, and the plate result array with
+  `('quantity', 'rt_ms', 'rt_fid', 'flags')`.
+
+The mixed time units (minutes on chromatograms, milliseconds on the scans index) are a real trap.
+
+> **Rule.** Preserve the convention rather than converting ad hoc, and state the unit in the
+> docstring of every new signature that takes a time.
+
+### 3.5 Peaks are keyed by rounded retention time
+
+Peak dictionaries are keyed by `round(rt, 3)`. Float keys mean lookups can never rely on equality, so
+all matching goes through tolerance helpers — `Utilities.check_interval(value, midpoint, tolerance)`
+— and returns the closest candidate within the window (`flag_peak`, `match_ri`).
+
+> **Rule.** Never look a peak up by computed equality. Use `flag_peak`/`match_ri`, or
+> `Utilities.check_interval` if you need something new.
+
+---
+
+## 4. Stateless classes as algorithm namespaces
+
+The dominant pattern in the codebase: algorithms live in classes that hold **no instance state** and
+consist entirely of `@staticmethod`s (occasionally `@classmethod`s). They are namespaces, not
+objects — they are never instantiated.
+
+`Peak_Detection_FID`, `Peak_Detection_MS`, `Quantification`, `Utilities`, `Visualization`,
+`Analysis`, `Reaction_Parser`, and all four parsers follow this shape.
+
+The division of labour is consistent: **domain objects hold data and delegate; namespace classes hold
+algorithms and take plain data.**
+
+```python
+# FID_Injection.pick_peaks — fid_injection.py:75
+self.analysis_settings.update(**kwargs)
+if not isinstance(self.processed_chromatogram, np.ndarray):
+    self.baseline_correction()
+peaks = Peak_Detection_FID.pick_peaks(self.processed_chromatogram, self.analysis_settings)
+```
+
+`Peak_Detection_FID.pick_peaks` receives an array and a settings object — never the `Injection`. That
+keeps the algorithms independently testable and prevents cycles between the peak and injection
+subpackages.
+
+Within a namespace class, the public entry point is the only non-mangled method; its internal steps
+are `__private` statics (`Peak_Detection_MS.pick_peaks` → `__detect_peaks_scipy`,
+`__extract_mass_spectrum`, `__initialize_peaks`).
+
+> **Rule.** A new algorithm is a static method on the relevant namespace class. It takes arrays plus
+> an `Analysis_Settings`, not an `Injection`. Its sub-steps are name-mangled statics. Prefer adding to
+> an existing namespace class over creating a new one.
+
+---
+
+## 5. Parameter handling: `Analysis_Settings`
+
+[`Analysis_Settings`](../pygecko/gc_tools/analysis/analysis_settings.py#L4) is the single carrier for
+every processing parameter. One instance is created per injection, in the injection's constructor,
+from the chromatogram — it derives `scan_rate` and thereby the scan-index range corresponding to a
+requested time window.
+
+Parameters thread through the code in exactly one way:
+
+1. **Public method takes `**kwargs`** and forwards them: `self.analysis_settings.update(**kwargs)`.
+   `update` validates each key and type against the hard-coded `options` dict in `__check_settings`,
+   raising `KeyError` for an unknown setting and `TypeError` for a wrong type. A typo in a keyword
+   argument is therefore an error, not a silently ignored kwarg.
+2. **The algorithm reads each parameter** via `settings.pop('name', computed_default)`.
+
+Note that `Analysis_Settings.pop` does **not** remove anything ([`analysis_settings.py:88`](../pygecko/gc_tools/analysis/analysis_settings.py#L88)).
+It means *"the configured value if one is set, otherwise this default"*. The name is misleading; the
+behaviour is deliberate, and it is what allows defaults to be **derived from the data at the call
+site** rather than fixed in the constructor:
+
+```python
+# peak_detection_ms.py:58 — default height depends on the chromatogram's own noise floor
+min_height = analysis_settings.pop('height', np.min(intensities[intensities != 0]) * 50)
+prominence = analysis_settings.pop('prominence_ms', 1)
+```
+
+Settings persist on the injection, so a parameter set in `baseline_correction` is still in effect in
+a later `pick_peaks`.
+
+> **Rule.** A new tunable parameter needs five edits in `Analysis_Settings`: the class docstring's
+> attribute list, the annotation block, `__slots__`, `__init__` (initialised to `None`), and the
+> `options` dict — without the last one, `update` will reject it. Put the default at the `pop` call
+> site, ideally derived from the signal, not in `__init__`. `min_mz_fraction` (added for split-GC) is
+> the worked example to copy.
+
+---
+
+## 6. The pipeline
+
+### A. IO and conversion — `parsers/`
+
+Format dispatch happens in exactly one place,
+[`MS_Base_Parser.extract_scans_from_raw_data`](../pygecko/parsers/ms_base_parser.py#L94):
+
+- `.mzML` → [`extract_scans_from_mzml`](../pygecko/parsers/file_readers.py) (pymzml)
+- `.mzXML` → `extract_scans_from_mzxml` (pyteomics)
+- `.cdf` → `extract_scans_from_cdf` (netCDF4) — ANDI/AIA open format, the second native path that
+  needs no external binary. Nominal-mass binned, keeping the maximum intensity per bin.
+- anything else (`.D`, `.RAW`) → [`msconvert()`](../pygecko/parsers/msconvert_wraper.py#L16) into a
+  `tempfile.TemporaryDirectory`, then read back as `.mzML`
+
+`msconvert()` is a `subprocess.run` wrapper around the external ProteoWizard executable. Its path is
+read **at import time** from `pygecko/config.ini` via `configparser`
+([`msconvert_wraper.py:7-10`](../pygecko/parsers/msconvert_wraper.py#L7-L10)) and is populated
+interactively by running `python pygecko/__init__.py`. The path may legitimately be empty: conversion
+is then unavailable, but open formats still work. This is the package's only external-binary
+dependency, and it is deliberately isolated behind one function.
+
+FID data is simpler: `FID_Base_Parser.read_xy_array` reads tab-delimited `.xy` or comma-delimited
+`.CSV` with `np.loadtxt`. `Agilent_FID_Parser` additionally reads ANDI/AIA `.cdf`, reconstructing the
+time axis from `actual_sampling_interval` (plus optional `actual_delay_time`) and converting to
+minutes so the `(2, N)` shape of §3.4 is preserved. Which of the two it uses is chosen by the
+`file_source` argument (`'csv'` for the legacy layout, `'cdf'` for split-GC exports).
+
+Vendor parsers add **only metadata extraction** and delegate signal reading to the base parsers:
+`Agilent_MS_Parser` parses `sequence.xml` inside `.D` directories, `Agilent_FID_Parser` parses Agilent
+`.acaml`, both with stdlib `xml.etree.ElementTree`.
+
+Two loading concerns are handled at this layer rather than downstream:
+
+- **`sample_filter`** (both `Agilent_FID_Parser.load_sequence` and `MS_Base_Parser.load_sequence`) —
+  an allow-list of sample names. OpenLab tags conditioning and cleaning runs as `SampleType='Sample'`,
+  so they would otherwise be ingested as real injections; filtering at load keeps that vendor quirk
+  out of the domain model.
+- **Missing `.acaml`** — an incomplete export has no sequence-level metadata. Rather than failing,
+  `Agilent_FID_Parser` enumerates injections directly from `AIA/*_FID1A.cdf`, deriving each sample
+  name from the filename and synthesising metadata with `None` fields.
+
+### B. Signal processing — `gc_tools/peak/`
+
+**FID** ([`peak_detection_fid.py`](../pygecko/gc_tools/peak/peak_detection_fid.py)): Savitzky–Golay
+smoothing, with the window auto-tuned by a Durbin–Watson statistic (`statsmodels`), then SNIP
+baseline subtraction (`pybaselines`) → `scipy.signal.find_peaks` → border detection by first-derivative
+threshold → overlap resolution via `gaussian_filter1d` + `argrelmin`, which sets the `"overlap"` flag
+→ Simpson integration for areas.
+
+**MS** ([`peak_detection_ms.py`](../pygecko/gc_tools/peak/peak_detection_ms.py)): `find_peaks` on the
+TIC gives candidate retention times; then every m/z trace is peak-picked independently, and a trace
+peak within ±5 scans of a TIC peak contributes its intensity to that peak's mass spectrum. Relative
+intensities are normalised to the base peak when the `MS_Peak` is built. MS peaks carry no baseline
+correction and no area — MS is used for *identification*, FID for *quantification*.
+
+### C. Identification — `gc_tools/analysis/`
+
+- [`RI_Calibration`](../pygecko/gc_tools/analysis/retention_indices.py#L11) — picks peaks on an alkane
+  ladder injection, seeds one known alkane by `(c_count, rt)`, walks outward assigning the rest, and
+  fits `scipy.stats.linregress`. `assign_ris` accepts *either* an `Injection` or a `GC_Sequence` and
+  dispatches on type. Per peak, `calculate_ri` interpolates between bracketing alkanes and falls back
+  to the linear fit outside the ladder's range. `alignment=True` corrects for RT drift using the
+  internal standard.
+- `MS_Injection.match_mol(smiles)` — computes the molecular ion m/z with RDKit, finds candidate peaks
+  containing it, and confirms with an isotope-pattern check against `brainpy.isotopic_variants`.
+- `Injection.match_ri(ri, tolerance)` — the **MS → FID transfer** for two-instrument data. Retention
+  index is the detector-independent coordinate that lets an MS identification be located on the FID
+  trace.
+- `Injection.match_rt(rt, func, tolerance)` — the **MS → FID transfer** for split-GC data (§6.H).
+  `func` maps the source retention time onto the expected one in this injection's trace, absorbing
+  the splitter dead-volume offset; `Analysis.constant_offset(b)` and `Analysis.linear_drift(a, b)`
+  build it, and the identity mapping is used when it is omitted. Unlike `match_ri` it takes an
+  `exclude_standard` flag, since the internal standard is a legitimate peak on both traces.
+- [`Spectral_Match`](../pygecko/gc_tools/analysis/spectral_matching.py#L12) — library-free matching of
+  two mass spectra by weighted cosine similarity (`mz**1.1 * rel_intensity**0.5`) plus an RT window.
+
+### D. Quantification — `gc_tools/analysis/quantification.py`
+
+All quantification is relative to the internal standard.
+`quantify_polyarc` is the calibration-free default: it normalises areas by carbon count, exploiting
+the FID's near-uniform per-carbon response. `quantify_calibration` uses a fitted slope/intercept.
+Selection is by a `method` string in
+[`FID_Injection.quantify`](../pygecko/gc_tools/injection/fid_injection.py#L111).
+
+### E. Orchestration — `analysis/analysis.py`
+
+[`Analysis`](../pygecko/analysis/analysis.py#L15) is the only component that sees both detectors. Per
+well, `__match_and_quantify` runs:
+
+```
+plate position → expected analyte SMILES  (layout.get_product / get_substrate)
+              → ms_injection.match_mol(smiles)              # identify on MS
+              → matching='ri': fid_injection.match_ri(ms_peak.ri, ...)   # two instruments
+                matching='rt': fid_injection.match_rt(ms_peak.rt, ...)   # split GC (§6.H)
+              → __find_best_ri_match(...)                   # disambiguate candidates by
+                                                            #   MS/FID height ratio to the standard
+              → fid_injection.quantify(rt)                  # quantify on FID
+```
+
+The `matching` keyword selects the transfer coordinate and defaults to `'ri'`, so existing callers
+are unaffected. Only the middle step differs; identification and quantification are shared.
+
+Three quantities share this machinery, selected by an internal `mode`:
+
+| Entry point | mode | Quantity |
+|---|---|---|
+| `calc_plate_yield` | `'yield'` | Product, against the internal standard |
+| `calc_plate_conv` | `'conv'` | Conversion, `100 - remaining/equivalents`, floored at 0 |
+| `calc_plate_rsm` | `'rsm'` | Remaining starting material, as measured and never clamped |
+
+`equivalents` exists because the `100 % = no conversion` baseline only holds when the substrate was
+charged at the same carbon-normalised amount as the standard; without it a substrate charged in
+excess reads as a negative conversion. `'rsm'` is deliberately *not* clamped, so a 1.5-equiv loading
+legitimately reads ~150 %.
+
+`__find_best_ri_match` is the heart of the method: when several FID peaks fall inside the RI
+tolerance, the one whose height ratio to the internal standard best matches the MS height ratio wins.
+
+`__find_best_ri_match` is now a misnomer: it disambiguates RT candidates too. The name is kept
+because renaming a name-mangled static has no functional gain (§9).
+
+Results are returned as a **structured array**, not a bespoke result class — dtype
+`[('quantity', float), ('rt_ms', float), ('rt_fid', float), ('flags', int)]`, matching the physical
+well plate so it can be indexed positionally and passed straight to the heatmap. The shape is derived
+from `layout.design` in `__match_and_quantify_plate`, so non-8×12 plates (the split-GC A1–K3
+sequence is 11×3) work; legacy 8×12 layouts produce the same grid as before. The single-detector
+`Analysis.quantify_plate` still hard-codes 8×12 — see §11.14.
+
+> **Rule.** Plate-level results are structured arrays with a `quantity` field and an integer `flags`
+> field. Optional CSV export is a `path` keyword argument on the same method, not a separate function.
+
+### F. Output
+
+- [`Visualization`](../pygecko/visualization/visuals.py#L22) — `visualize_plate` (well-plate heatmap
+  with optional flag markers), `view_chromatogram`, `view_mass_spectrum`, `stack_chromatograms`,
+  `compare_mass_spectra` (head-to-tail). Every method takes `path=None`: it shows the figure when
+  `path` is omitted and writes it when given. `visualize_plate` takes `row_labels`/`col_labels` for
+  non-8×12 plates and `cbar_label` so a conversion or RSM plate is not mislabelled "Yield [%]".
+- `Reaction_Parser.build_dataset` — exports to the Open Reaction Database schema (`ord_schema`
+  protobufs), validated with `validations.validate_message`.
+- `PDF_Report` — ReportLab document combining the heatmap, results tables, and Indigo-rendered
+  structures.
+
+### G. Reference usage
+
+[`examples/buchwald_hartwig/plate_processing.py`](../examples/buchwald_hartwig/plate_processing.py) is
+the canonical end-to-end script and the best single description of the intended API:
+
+```python
+rxn    = Transformation('[C,c:1][Nh1,Nh2,nh1:2].[Br,Cl:3][C,c:4]>>[C,c:1][N,n:2][C,c:4]')
+layout = Reaction_Array(layout_path, rxn, meta_data_file=meta_data_path)
+
+fid_sequence = Agilent_FID_Parser.load_sequence(fid_path, 2.7, pos=True)
+ms_sequence  = MS_Base_Parser.load_sequence(ms_path, pos=True)
+
+fid_sequence.pick_peaks()
+ms_sequence.pick_peaks(prominence_ms=125)
+fid_sequence.set_internal_standard(4.593, name='Dodecane', smiles='CCCCCCCCCCCC')
+ms_sequence.set_internal_standard(3.324, name='Dodecane', smiles='CCCCCCCCCCCC')
+
+ri_conf_ms.assign_ris(ms_sequence)
+ri_conf_fid.assign_ris(fid_sequence, alignment=True)
+
+yield_array = Analysis.calc_plate_yield(ms_sequence, fid_sequence, layout)
+```
+
+[`examples/split_gc/plate_processing.py`](../examples/split_gc/plate_processing.py) is the split-GC
+counterpart. The shape is the same minus the RI calibration step, which the shared time axis makes
+unnecessary:
+
+```python
+layout = Product_Array(LAYOUT_CSV)
+
+fid_sequence, ms_sequence = SplitGC_Parser.load_sequence(
+    rslt_path, solvent_delay_fid=3.00, sample_filter=wells, pos=True)
+
+fid_sequence.pick_peaks()
+ms_sequence.pick_peaks(trace_prominence=100)
+fid_sequence.set_internal_standard(5.916, name='Trimethoxybenzene', smiles=IS_SMILES)
+ms_sequence.set_internal_standard(5.906, name='Trimethoxybenzene', smiles=IS_SMILES)
+
+yield_array = Analysis.calc_plate_yield(
+    ms_sequence, fid_sequence, layout,
+    matching='rt', rt_func=Analysis.linear_drift(0.9979, 0.0232), rt_tolerance=1/60)
+```
+
+> **Rule.** New workflow features must be expressible in this style: load → pick → annotate →
+> analyse, with parameters passed as keyword arguments at the step where they apply.
+
+### H. Split-GC topology
+
+A split GC is one injection on one column, split post-column to an MS and a Polyarc-FID. Both traces
+therefore originate from the same physical separation and share a retention-time axis, differing only
+by a small, near-constant splitter dead-volume offset (measured at roughly +0.01 min on the reference
+dataset).
+
+This is the fact the whole `matching='rt'` path rests on. When two *separate* instruments are used,
+retention times are not comparable and retention index is the only sound bridge — hence `match_ri`
+and the alkane ladder. When one injection feeds both detectors, retention time is already a shared
+coordinate, so the ladder is redundant and matching can be direct. The offset is absorbed by
+`rt_func`; `constant_offset` suffices where it is flat, `linear_drift` where it varies across the
+chromatogram.
+
+The load path is a **coordinator parser** (§7): `SplitGC_Parser.load_sequence` reads one OpenLab
+`.rslt` folder and returns *both* sequences, keyed by the same sample names so `Analysis` can pair
+them per well.
+
+> **Caution.** The two detectors derive sample identity by different routes — the MS side from the
+> `.cdf` filename, the FID side from the acaml `SampleName`. See §11.12.
+
+---
+
+## 7. Extension points
+
+### Adding a vendor format
+
+Every parser satisfies the same three-method contract:
+
+| Method | Returns |
+|---|---|
+| `load_sequence(directory, …)` | `MS_Sequence` / `FID_Sequence` |
+| `load_injection(path, …)` | `MS_Injection` / `FID_Injection` |
+| `load_ri_calibration(path, …, c_count, rt)` | `RI_Calibration` |
+
+**This contract is duck-typed and unenforced.** There is no ABC, no `Protocol`, and no registry —
+`Analysis` and the examples simply call these three names. Honour it by hand.
+
+**Coordinator parsers are a recognised variant.**
+[`SplitGC_Parser`](../pygecko/parsers/splitgc_parser.py) keeps the three method *names* but returns a
+`(fid_sequence, ms_sequence)` tuple instead of a single sequence, because one `.rslt` folder holds
+both detectors' data. It reads no files itself: it validates the folder layout, then delegates to
+`Agilent_FID_Parser` and `MS_Base_Parser` and hands back their results. Compose existing parsers this
+way rather than teaching one parser about two detectors — the single-detector parsers stay unaware of
+each other, and §2's rule that only `analysis/` sees both detectors is preserved for the *domain*
+objects even though a parser now loads both.
+
+To add a vendor:
+
+1. Write a namespace class (`<Vendor>_<Detector>_Parser`) exposing the three methods. Base parsers use
+   `@staticmethod`; the Agilent parsers use `@classmethod` — either is acceptable, follow the closest
+   existing parser.
+2. Implement **only** the vendor's metadata extraction. Delegate signal/scan reading to
+   `MS_Base_Parser.initialize_injection` or `FID_Base_Parser.read_xy_array` rather than reimplementing
+   it — this is what `Agilent_FID_Parser` and `Agilent_MS_Parser` do.
+3. If the format is a new *open* format rather than a vendor wrapper, add it to the dispatch in
+   `MS_Base_Parser.extract_scans_from_raw_data` and to `supported_formats` in `load_sequence`.
+4. Export it from [`pygecko/parsers/__init__.py`](../pygecko/parsers/__init__.py).
+
+### Adding a detector
+
+Subclass `Injection`, `GC_Sequence`, and `Peak`; set `self.detector` in the injection constructor; and
+implement `pick_peaks(inplace=True, **kwargs)`. `pick_peaks` is the de-facto abstract method —
+`GC_Sequence.pick_peaks` calls it polymorphically on every injection, but the base `Injection` does not
+declare it. Add the peak-detection algorithm as a new `Peak_Detection_<X>` namespace class.
+
+### Adding a quantification method
+
+Add a static method to `Quantification` taking `FID_Peak` objects, and a branch in
+`FID_Injection.quantify` keyed on the `method` string.
+
+### Adding a peak flag
+
+`Peak.flags` is a plain `list[str]`; any flag string can be appended via `flag_peak`. A flag only needs
+an entry in the [`Flags`](../pygecko/visualization/utilities.py#L5) enum if it must survive into a
+plate result array — `Flags.return_flags_value` packs a flag list into the integer `flags` field that
+`visualize_plate` renders. Enum values are positional, so append new members; never renumber existing
+ones, or previously saved result arrays will be misread.
+
+### Public API
+
+Exposure is by re-export in the subpackage `__init__.py`. A class not re-exported there is internal.
+Import from the subpackage (`from pygecko.parsers import Agilent_FID_Parser`), not from module paths —
+and see §11.1 regarding the top-level package.
+
+---
+
+## 8. Persistence
+
+Injections and sequences are persisted with `pickle` / `_pickle`: `Injection.save`, `GC_Sequence.save`,
+and the module-level `load_sequence` / `save_sequence`. This was chosen because a processed sequence is
+a deep object graph — chromatograms, scan matrices, peaks, analytes with RDKit molecules — and pickle
+round-trips it with no schema work, which suits the notebook-driven workflow the library targets.
+
+Two consequences follow, and both are real constraints on how the code may change:
+
+- **`.pkl` files are coupled to the class layout.** Renaming an attribute, reordering or removing a
+  `__slots__` entry, or moving a class between modules breaks every previously saved sequence. This is
+  the main reason the misspellings in §9 are kept.
+- **Pickle executes code on load.** `.pkl` files must only be loaded from trusted sources; they are not
+  an interchange format. For sharing data, use the CSV/ORD/PDF exports in §6.F.
+
+---
+
+## 9. Conventions
+
+These are the house style. Match them in new code even where they differ from what you would write
+elsewhere — internal consistency is worth more here than conformance to an external guide.
+
+- **`Pascal_Snake_Case` class names** — `MS_Injection`, `Peak_Detection_FID`, `RI_Calibration`,
+  `Analysis_Settings`. Not PEP 8, but universal in this codebase and readable for names built from
+  domain acronyms. New classes match it.
+- **Stateless namespace classes** for algorithms rather than bare module-level functions (§4). The
+  exceptions are the pickle helpers `load_sequence` / `save_sequence` / `load_injection`, which are
+  module-level by design so they can be imported without the class.
+- **`__slots__` plus class-level annotations** on all domain classes (§3.2).
+- **Google-style docstrings** with `Args:` / `Returns:` sections, in `'''` triple single quotes.
+  `sphinx.ext.napoleon` renders them into the API docs, so every public method needs one.
+- **Modern typing**: built-in generics and `X|None` unions, no `typing.Optional`. The package pins
+  Python 3.10.
+- **Spelling is frozen where it is public.** `boarders` (sic — borders) is the attribute name on
+  `Peak` and runs through all peak-detection code; the module is `msconvert_wraper.py`. Renaming them
+  would break every saved `.pkl` and every downstream script for no functional gain. Match the existing
+  spelling rather than mixing both. Note the one inconsistency already present:
+  [`Peak.__init__`](../pygecko/gc_tools/peak/peak.py#L32) takes the parameter as `borders` but stores it
+  as `self.boarders`; subclasses pass it positionally.
+
+---
+
+## 10. Testing
+
+`CLAUDE.md` sets the rules: pytest only, strict TDD (RED → GREEN → REFACTOR), ≥80% coverage overall and
+100% on critical paths, external dependencies mocked, slow tests marked so `pytest -m "not slow"` stays
+fast. Use the `python-testing-patterns` skill for all test work.
+
+The suite has two halves:
+
+- [`tests/integration/`](../tests/integration) — six modules exercising real Agilent `.D`, `.acaml`
+  and `.xy` fixtures end-to-end through the parsers.
+- [`tests/unit/`](../tests/unit) — five modules plus a `conftest.py` of builders (`make_peak`,
+  `make_injection`, `make_ms_injection`, `ms_peak_factory`) that assemble domain objects from plain
+  arrays. These need no fixture files and no msConvert binary.
+
+The unit half is exactly the seam the layering predicts: the namespace classes of §4 take arrays and
+an `Analysis_Settings` and return data, so they can be driven with synthetic chromatograms and hand-built
+mass spectra. New algorithmic code should be tested there, with an integration test only where vendor
+parsing is genuinely involved.
+
+Two known defects are pinned as `@pytest.mark.xfail(strict=True)` rather than left as prose (§11.10,
+§11.11). A strict xfail fails the suite if the bug is ever fixed, so the record cannot silently rot.
+
+See §11.2 for the gap between these rules and the current suite.
+
+---
+
+## 11. Known deviations and open issues
+
+Recorded so they are tracked rather than rediscovered. Nothing in this list has been fixed; each is a
+statement about the code as it stands.
+
+1. **The top-level package exports nothing.** [`pygecko/__init__.py`](../pygecko/__init__.py) contains
+   only metadata and the interactive msConvert configuration block, so
+   `from pygecko import Agilent_MS_Parser` — used at
+   [`examples/spectral_matching/spectral_matching.py:1`](../examples/spectral_matching/spectral_matching.py#L1)
+   — raises `ImportError`. Every other example imports from the subpackage and works.
+2. **Test suite does not meet the stated rules.** A unit suite now exists (§10), but there is still
+   no coverage configuration and no measurement against `CLAUDE.md`'s 80% requirement. The
+   integration fixture paths remain **relative** (`'fixtures/test_sequences/…'`), so those tests only
+   pass when pytest is invoked from inside `tests/integration/`, while
+   `[tool.pytest.ini_options] testpaths = ["tests"]` implies a repo-root run — a repo-root `pytest`
+   reports 7 failures that are purely an artefact of the working directory. Two further integration
+   tests fail wherever msConvert is absent (e.g. any Linux checkout).
+3. **Dead import.** [`peak_detection_ms.py:4`](../pygecko/gc_tools/peak/peak_detection_ms.py#L4):
+   `from xarray.util.generate_ops import inplace` is unused and reaches into an xarray private module.
+4. **`Utilities.find_empty_ranges` mask is degenerate.**
+   [`utilities.py:61`](../pygecko/gc_tools/utilities.py#L61) computes
+   `np.isnan(signal) | np.any(signal == 0)`. `np.any` collapses to a scalar, so the mask is
+   all-or-nothing instead of per-point: a single zero marks the entire chromatogram as an empty range.
+   The `threshold` parameter is also documented but never used. This affects the diagnostic printed by
+   `Injection._check_for_missing_signal`, not the analysis results.
+5. **Unsupported keyword in the PDF report.**
+   [`reports.py:49`](../pygecko/data_handling/reports.py#L49) calls
+   `Visualization.visualize_plate(yield_array, results='yield', path=heatmap_path)`, but
+   `visualize_plate` has no `results` parameter — it is absorbed by `**kwargs` and forwarded to
+   matplotlib.
+6. **Unused dependencies.** `psycopg2-binary` (the only unpinned entry, and no database code exists in
+   the package) and `numba` are declared in [`pyproject.toml`](../pyproject.toml) but never imported.
+   `lxml` is only a transitive requirement — both Agilent parsers use stdlib
+   `xml.etree.ElementTree`. `netCDF4` is genuinely used, by both `.cdf` readers.
+7. **`docs/build/` is committed** to the repository alongside `docs/source/`.
+8. **Dependencies are pinned to exact versions.** `requires-python` was widened to `">=3.10, <3.13"`
+   for the split-GC work, but the package is only exercised on 3.10 and every other dependency
+   remains pinned to a single release.
+9. **This document is not part of the Sphinx build.** [`docs/source/conf.py`](source/conf.py) loads only
+   `autodoc`, `napoleon` and `sphinx_rtd_theme`, with no `myst_parser`, so Markdown cannot be included
+   in the `toctree`. Read it directly in the repository.
+
+### Introduced or surfaced by the split-GC merge (`5be0cf0`)
+
+10. **Candidate dictionaries are keyed by deviation, so ties are lost.** `match_ri` and `match_rt`
+    both build `candidates[abs(deviation)] = peak`. Two peaks equidistant from the target collide on
+    one key and one is silently dropped *before* `__find_best_ri_match` can weigh them by height
+    ratio. `__find_best_ri_match` repeats the pattern keyed on height-ratio difference. Pre-existing
+    in `match_ri`; `match_rt` inherited it. More reachable under RT matching, where the window is a
+    symmetric ±1 s. Pinned by a strict xfail in `tests/unit/test_match_rt.py`.
+11. **`__isotopic_ratio_check` tests array truthiness, not emptiness.**
+    [`ms_injection.py`](../pygecko/gc_tools/injection/ms_injection.py) guards with
+    `if not i or not j` on the index arrays returned by `np.where`. A parent ion at index 0 gives
+    `array([0])`, which is falsy, so the isotope check reports no match whenever the parent is the
+    first m/z in the spectrum. The guard should test `.size`. This silently suppresses valid analyte
+    assignments and is the most consequential item in this list. Strict xfail in
+    `tests/unit/test_ms_detection_defaults.py`.
+12. **Sample identity is derived two different ways.** `MS_Base_Parser` takes the sample name from
+    the `.cdf` filename (`name.split('_')[0]`); `Agilent_FID_Parser` takes it from the acaml
+    `SampleName`. They agree only when OpenLab names the AIA exports after the sample. When they
+    diverge — a timestamped export, say — `sample_filter` matches nothing and the result is an
+    **empty sequence rather than an error**.
+13. **`match_mz` retains a hard-coded m/z floor.**
+    [`ms_injection.py:70`](../pygecko/gc_tools/injection/ms_injection.py#L70) still uses a literal
+    `2/3` where the sibling `__match_mz_mol` now reads the `min_mz_fraction` setting, so the two
+    m/z-floor paths can disagree once the setting is changed.
+14. **`Analysis.quantify_plate` still hard-codes 8×12.**
+    [`analysis.py:447`](../pygecko/analysis/analysis.py#L447). The layout-derived shape was applied
+    only to the MS+FID path (§6.E), so the single-detector path silently drops wells outside A–H/1–12.
+15. **Split-GC example hygiene.** `examples/split_gc/plate_processing.py` hard-codes `RSLT_PATH` to a
+    personal Windows path, so the example cannot be run as checked out, and assigns `RT_FUNC` twice
+    (the first assignment is dead). `tests/integration/.pytest_cache/` is committed to the repository.
