@@ -1,7 +1,10 @@
 '''Tests for the import cost of pygecko.reaction: ORD export must stay opt-in.'''
 
+import importlib.util
 import subprocess
 import sys
+
+import pytest
 
 
 def imports_ord_schema(statement):
@@ -25,5 +28,8 @@ class TestReactionPackageImports:
         '''test_product_array and test_quantify_plate only need reaction.array.'''
         assert not imports_ord_schema('from pygecko.reaction.array import Product_Array')
 
+    @pytest.mark.skipif(importlib.util.find_spec('ord_schema') is None,
+                        reason='ORD export is opt-in: pip install pyGecko[ord]')
     def test_reaction_parser_is_still_importable_from_the_package(self):
+        '''The lazy attribute must still resolve where the extra is installed.'''
         assert imports_ord_schema('from pygecko.reaction import Reaction_Parser')
