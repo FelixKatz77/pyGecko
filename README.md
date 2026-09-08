@@ -33,7 +33,8 @@ pip install -e .
 ```
 
 Optional extras: `pip install -e ".[ord]"` adds Open Reaction Database export
-(`Reaction_Parser`), `".[test]"` the test dependencies and `".[docs]"` the documentation build.
+(`Reaction_Parser`), `".[mzml]"` adds mzML export, `".[test]"` the test dependencies and
+`".[docs]"` the documentation build.
 
 To install the exact, pinned set of dependency versions instead of the newest compatible ones,
 use [uv](https://docs.astral.sh/uv/) with the committed lock file:
@@ -62,12 +63,13 @@ The documentation for pyGecko can be found [here](https://pygecko.readthedocs.io
 ## Running the tests
 
 ```bash
-pip install -e ".[test,ord]"
+pip install -e ".[test,ord,mzml]"
 pytest
 ```
 
 Two integration tests load Agilent `.D` directories and therefore need a configured msConvert
-executable; they fail without one. To skip them, run `pytest -m "not msconvert"`.
+executable; they fail without one. To skip them, run `pytest -m "not msconvert"`. The mzML export
+tests need the `mzml` extra; skip them with `pytest -m "not mzml"`.
 
 ## Usage
 For non-automated workflows pyGecko is best used with jupyter notebooks. The notebooks folder of the repository contains
@@ -114,6 +116,37 @@ pyGecko supports the following file formats:
 
 > [!NOTE]
 > To achieve the best performance, we recommend using the .mzML file format for GC-MS data.
+
+## Exporting Data
+
+Processed injections and sequences can be written back out to open formats. MS data goes to mzML,
+FID data to ANDI/AIA netCDF:
+
+```python
+from pygecko.parsers import (write_injection_to_mzml, write_sequence_to_mzml,
+                             write_injection_to_cdf, write_sequence_to_cdf)
+
+write_injection_to_mzml(ms_injection, 'FKB-FA-060-A1.mzML')
+write_sequence_to_mzml(ms_sequence, 'exported/')       # one file per injection
+
+write_injection_to_cdf(fid_injection, 'FBS-FA-033-A1.cdf')
+write_sequence_to_cdf(fid_sequence, 'exported/')
+```
+
+mzML export needs the `mzml` extra (`pip install -e ".[mzml]"`), which pulls in
+[psims](https://github.com/mobiusklein/psims). netCDF export needs nothing extra.
+
+> [!IMPORTANT]
+> An export is a record of the injection **as pyGecko holds it**, not a copy of the original
+> vendor file. pyGecko's readers round m/z to nominal integer mass and keep no polarity,
+> instrument or acquisition metadata, so the MS1/centroid/positive terms in the written mzML are
+> the writer's defaults rather than values from the source. Data written by pyGecko reads back
+> through pyGecko's own readers unchanged; it is not a faithful round-trip of the raw file.
+
+FID data is written as netCDF rather than mzML deliberately. The PSI-MS controlled vocabulary has
+no term for a flame ionization detector, and none of its chromatogram types describes one, so an
+mzML export of FID data would be schema-valid but semantically wrong. ANDI/AIA (ASTM E1947/E1948)
+is the chromatography standard for a detector trace, and pyGecko already reads it.
 
 ## How to Cite
 

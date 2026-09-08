@@ -36,6 +36,14 @@ pygecko.parsers.file\_readers module
    :undoc-members:
    :show-inheritance:
 
+pygecko.parsers.file\_writers module
+------------------------------------
+
+.. automodule:: pygecko.parsers.file_writers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 pygecko.parsers.ms\_base\_parser module
 ---------------------------------------
 

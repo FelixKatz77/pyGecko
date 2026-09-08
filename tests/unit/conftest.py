@@ -2,6 +2,7 @@ import subprocess
 import sys
 
 import numpy as np
+import pandas as pd
 import pytest
 
 from pygecko.gc_tools.injection.fid_injection import FID_Injection
@@ -50,14 +51,33 @@ def make_mass_spectrum(mz_to_intensity):
     )
 
 
-def make_ms_injection(peaks, sample_name='SMP-A1'):
+def make_scans(rt_ms, rows):
+    '''Builds a scans DataFrame in the layout the parsers produce.
+
+    Args:
+        rt_ms (list[float]): Retention times in milliseconds, one per scan.
+        rows (list[dict[int, float]]): One {nominal m/z: absolute intensity} mapping per scan.
+            m/z absent from a scan are zero-filled, matching the readers.
+
+    Returns:
+        pd.DataFrame: Float millisecond index named 'retention_time', ascending integer m/z
+            columns, no NaN -- the layout extract_scans_from_mzml returns.
+    '''
+
+    index = pd.Index(np.asarray(rt_ms, dtype=float), name='retention_time')
+    df = pd.DataFrame(rows, index=index)
+    df = df.fillna(0.0).astype(float)
+    return df.reindex(sorted(df.columns), axis=1)
+
+
+def make_ms_injection(peaks, sample_name='SMP-A1', scans=None):
     '''Builds an MS_Injection with a minimal two-row chromatogram and the given MS peaks.'''
     chromatogram = np.array([[0.0, 0.1, 0.2, 0.3], [1.0, 1.0, 1.0, 1.0]])
     return MS_Injection(
         {'SampleName': sample_name},
         chromatogram,
         {p.rt: p for p in peaks},
-        scans=None,
+        scans=scans,
     )
 
 

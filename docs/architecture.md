@@ -313,6 +313,38 @@ Vendor parsers add **only metadata extraction** and delegate signal reading to t
 `Agilent_MS_Parser` parses `sequence.xml` inside `.D` directories, `Agilent_FID_Parser` parses Agilent
 `.acaml`, both with stdlib `xml.etree.ElementTree`.
 
+**Export is the mirror image**, in
+[`file_writers.py`](../pygecko/parsers/file_writers.py): `write_injection_to_mzml` /
+`write_sequence_to_mzml` and `write_injection_to_cdf` / `write_sequence_to_cdf`, module-level
+functions matching the shape of `file_readers.py`. They are the first true interchange export
+(§8 covers why pickle is not one). Three decisions are worth recording:
+
+- **mzML is written with [psims](https://github.com/mobiusklein/psims), not pyteomics.** pyteomics
+  is read-only for mzML — across the whole library only `fasta` and `mgf` define a `write`. psims is
+  the canonical writer and validates every CV term. It is an *optional* dependency behind the `mzml`
+  extra, so `_load_mzml_writer` defers the import to call time; a module-scope import would make
+  `pygecko.parsers` unimportable without the extra. The deferral buys no import *time*, because
+  `file_readers` imports pyteomics and pyteomics imports psims at module scope whenever it is
+  installed (~0.4 s of the ~1.3 s `import pygecko.parsers`).
+- **FID is written as ANDI/AIA netCDF, not mzML.** The PSI-MS CV holds no term for a flame
+  ionization detector, and none of the fifteen descendants of `MS:1000626` (chromatogram type)
+  describes one — they are all mass-spectrometric or instrument parameters. A chromatogram-only
+  mzML *is* schema-valid (`spectrumList` is `minOccurs="0"`), so FID could be forced into one, but
+  nothing in the file would identify the detector. ANDI/AIA (ASTM E1947/E1948) is the
+  chromatography standard for a detector trace, and it is a format pyGecko already reads, so the
+  export round-trips through `Agilent_FID_Parser.__read_cdf_file`. Because ANDI reconstructs the
+  time axis from a single `actual_sampling_interval`, the writer rejects a non-uniform axis rather
+  than silently distorting it.
+- **The export is lossy relative to the raw file, and says so.** All three MS readers round m/z to
+  nominal integer mass, and `MS_Base_Parser.initialize_injection` builds the injection from
+  `{'SampleName': …}` alone — polarity, MS level, instrument, scan windows and acquisition time are
+  never captured. The MS1/centroid/positive `cvParam`s are therefore writer defaults, not values
+  from the source. Round-trip fidelity is claimed only against pyGecko's own readers. Intensities
+  are written as float64 (the readers' own dtype) rather than the more compact float32, so a
+  written file can be slightly *larger* than the vendor mzML it came from; exactness is worth more
+  than the bytes. The zeros the readers insert to square off the scan matrix are dropped again on
+  write, which the reader's `fillna(0)` restores.
+
 Two loading concerns are handled at this layer rather than downstream:
 
 - **`sample_filter`** (both `Agilent_FID_Parser.load_sequence` and `MS_Base_Parser.load_sequence`) —
@@ -533,6 +565,31 @@ To add a vendor:
    `MS_Base_Parser.extract_scans_from_raw_data` and to `supported_formats` in `load_sequence`.
 4. Export it from [`pygecko/parsers/__init__.py`](../pygecko/parsers/__init__.py).
 
+### Adding an export format
+
+Exports are module-level functions in
+[`file_writers.py`](../pygecko/parsers/file_writers.py), not methods on the domain objects. A
+`MS_Injection.to_mzml()` convenience would need a deferred import to dodge §2's rule that
+`gc_tools/` never imports `parsers/`; the functions avoid the exception entirely.
+
+1. Add `write_injection_to_<format>(injection, path)` and, if a sequence maps onto one file per
+   injection, `write_sequence_to_<format>(sequence, directory)` as a thin loop over
+   `sequence.injections.values()`.
+2. **Write what a pyGecko reader can read back.** The success criterion for an export is a
+   round-trip through the matching `extract_scans_from_*` / `read_*` function, compared with
+   `pd.testing.assert_frame_equal` or `np.testing.assert_allclose` — not a hand-checked byte
+   layout. Mind §3.4's mixed units: `scans` is indexed in milliseconds, chromatograms are in
+   minutes, and mzML `scan start time` is written in **minutes** because that is what
+   `extract_scans_from_mzml` assumes.
+3. **Keep a heavy writer library optional.** Put it behind an extra in `pyproject.toml` (see
+   `mzml`), import it inside the function via a `_load_*` helper raising an `ImportError` that
+   names the extra, and register a pytest marker so the tests can be deselected.
+4. Do not overstate fidelity. If the domain model dropped information at read time, the docstring
+   and README must say the export is a record of the injection as pyGecko holds it, not a copy of
+   the source.
+5. Export it from [`pygecko/parsers/__init__.py`](../pygecko/parsers/__init__.py) and add an
+   `automodule` stub to `docs/source/pygecko.parsers.rst`.
+
 ### Adding a detector
 
 Subclass `Injection`, `GC_Sequence`, and `Peak`; set `self.detector` in the injection constructor; and
@@ -652,12 +709,17 @@ about the code as it stands. The subsection that follows records deviations that
 defect actually did — is worth not rediscovering either.
 
 1. **Test suite does not meet the stated coverage rules.** Coverage is now measurable and measured:
-   `pytest-cov` is declared, and `pytest --cov=pygecko` reports **56%** for the suite CI runs
+   `pytest-cov` is declared, and `pytest --cov=pygecko` reports **58%** for the suite CI runs
    against `CLAUDE.md`'s 80% requirement. The gap is concentrated in
-   [`parsers/file_readers.py`](../pygecko/parsers/file_readers.py),
+   [`parsers/file_readers.py`](../pygecko/parsers/file_readers.py) (39%),
    [`visualization/`](../pygecko/visualization) and
-   [`data_handling/reports.py`](../pygecko/data_handling/reports.py), none of which have direct
-   tests; CI covers them only with an import smoke test.
+   [`data_handling/reports.py`](../pygecko/data_handling/reports.py); the latter two have no direct
+   tests and CI covers them only with an import smoke test. `file_readers.py` is a partial case
+   since the export writers landed: the mzML reader is now exercised on every round-trip in
+   `tests/integration/test_file_writers.py`, but `extract_scans_from_mzxml` and
+   `extract_scans_from_cdf` remain untested because no `.mzXML` or `.cdf` fixture is checked in.
+   `write_injection_to_cdf` is a way to close the `.cdf` half of that without committing a binary
+   fixture.
    [`gc_tools/peak/peak_detection_fid.py`](../pygecko/gc_tools/peak/peak_detection_fid.py) left that
    list with §11.18 and is now at 94%. No `--cov-fail-under` gate is set, because
    one at 80% would keep CI permanently red — worse than no gate. Note the command in `CLAUDE.md`
