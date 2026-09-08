@@ -22,7 +22,7 @@ pyGecko can be installed via pip:
 
    git clone https://github.com/FelixKatz77/pyGecko.git
    cd pyGecko
-   pip install ./
+   pip install -e .
 
 Afterward the path to the msConvert.exe needs to be specified. This can be done by running the following command:
 

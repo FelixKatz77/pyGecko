@@ -1,0 +1,8 @@
+version: 2
+updates:
+  # Actions only. With floors-only dependency specifiers there is nothing for a bot
+  # to bump in pyproject.toml; the weekly schedule in tests.yml is the drift detector.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

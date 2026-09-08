@@ -534,8 +534,9 @@ elsewhere — internal consistency is worth more here than conformance to an ext
 - **`__slots__` plus class-level annotations** on all domain classes (§3.2).
 - **Google-style docstrings** with `Args:` / `Returns:` sections, in `'''` triple single quotes.
   `sphinx.ext.napoleon` renders them into the API docs, so every public method needs one.
-- **Modern typing**: built-in generics and `X|None` unions, no `typing.Optional`. The package pins
-  Python 3.10.
+- **Modern typing**: built-in generics and `X|None` unions, no `typing.Optional`. These are
+  evaluated at runtime in class bodies and dataclass field annotations, so they set the package's
+  hard Python 3.10 floor — see §11.17.
 - **Spelling is frozen where it is public.** `boarders` (sic — borders) is the attribute name on
   `Peak` and runs through all peak-detection code; the module is `msconvert_wraper.py`. Renaming them
   would break every saved `.pkl` and every downstream script for no functional gain. Match the existing
@@ -574,64 +575,83 @@ See §11.1 for the gap between these rules and the current suite.
 
 ## 11. Known deviations and open issues
 
-Recorded so they are tracked rather than rediscovered. Items 1–5 are **open**: each is a statement
+Recorded so they are tracked rather than rediscovered. Items 1–6 are **open**: each is a statement
 about the code as it stands. The subsection that follows records deviations that have since been
 **resolved**, kept because the reasoning behind the fix — and, in one case, a correction to what the
 defect actually did — is worth not rediscovering either.
 
-1. **Test suite does not meet the stated coverage rules.** A unit suite now exists (§10) and a
-   repo-root `pytest` runs it cleanly, but there is still no coverage configuration and no
-   measurement against `CLAUDE.md`'s 80% requirement. Two integration tests
-   (`test_ms_injection.py`, `test_ms_sequence.py`) fail wherever msConvert is absent — e.g. any
-   Linux checkout — because their fixtures are Agilent `.D` directories that need conversion. This
-   is deliberate: the failure is an honest signal that the binary is unconfigured, not a bug.
-   `slow` / `integration` markers are also not registered, so `pytest -m "not slow"` selects
-   everything.
-2. **Unused and mis-declared dependencies.** `numba` is declared in
-   [`pyproject.toml`](../pyproject.toml) but never imported. `psycopg2-binary` is not imported by
-   pyGecko either, but it is **not** simply removable: `ord_schema` requires `psycopg2`, so dropping
-   the binary wheel makes a fresh install compile psycopg2 from source and fail without libpq
-   headers. `lxml` is likewise not imported by pyGecko — both Agilent parsers use stdlib
-   `xml.etree.ElementTree` — but it *is* a hard runtime import of `pyteomics.xml`, which
-   `parsers/file_readers.py` imports unconditionally, so removing it breaks `.mzXML` parsing.
-   `netCDF4` is genuinely used, by both `.cdf` readers.
-3. **Dependencies are pinned to exact versions.** `requires-python` was widened to `">=3.10, <3.13"`
-   for the split-GC work, but the package is only exercised on 3.10 and every other dependency
-   remains pinned to a single release.
-4. **This document is not part of the Sphinx build.** [`docs/source/conf.py`](source/conf.py) loads only
+1. **Test suite does not meet the stated coverage rules.** Coverage is now measurable and measured:
+   `pytest-cov` is declared, and `pytest --cov=pygecko` reports **53%** for the suite CI runs
+   (41% for `tests/unit` alone) against `CLAUDE.md`'s 80% requirement. The gap is concentrated in
+   [`parsers/file_readers.py`](../pygecko/parsers/file_readers.py),
+   [`gc_tools/peak/peak_detection_fid.py`](../pygecko/gc_tools/peak/peak_detection_fid.py),
+   [`visualization/`](../pygecko/visualization) and
+   [`data_handling/reports.py`](../pygecko/data_handling/reports.py), none of which have direct
+   tests; CI covers them only with an import smoke test. No `--cov-fail-under` gate is set, because
+   one at 80% would keep CI permanently red — worse than no gate. Note the command in `CLAUDE.md`
+   previously read `--cov=pyGecko`, which silently measured nothing (`Module pyGecko was never
+   imported`); the package directory is lowercase. Two integration tests
+   (`test_ms_injection.py`, `test_ms_sequence.py`) still fail wherever msConvert is absent — e.g.
+   any Linux checkout — because their fixtures are Agilent `.D` directories that need conversion.
+   This is deliberate: the failure is an honest signal that the binary is unconfigured, not a bug.
+   They now carry a registered `msconvert` marker, so CI deselects them with
+   `pytest -m "not msconvert"` while a local `pytest` behaves exactly as before. `slow` and
+   `integration` markers were never actually applied to any test, so there was nothing to register;
+   `--strict-markers` now makes a typo in a marker name a collection error.
+2. **This document is not part of the Sphinx build.** [`docs/source/conf.py`](source/conf.py) loads only
    `autodoc`, `napoleon` and `sphinx_rtd_theme`, with no `myst_parser`, so Markdown cannot be included
    in the `toctree`. Read it directly in the repository. This is a deliberate choice: the document
    addresses contributors reading the source, not readers of the rendered API docs.
-5. **`flag_peak` still keys candidates by deviation.**
+3. **`flag_peak` still keys candidates by deviation.**
    [`injection.py:110`](../pygecko/gc_tools/injection/injection.py#L110) builds
    `candidates[abs(rt - peak.rt)] = peak`, so two peaks equidistant from the target collide on one
-   key. Unlike `match_ri`/`match_rt` (fixed — see §11.6 below) `flag_peak` has no `return_candidates`
+   key. Unlike `match_ri`/`match_rt` (fixed — see §11.7 below) `flag_peak` has no `return_candidates`
    mode and always returns a single peak, so the collision only changes *which* of two equally-close
    peaks is chosen, never how many survive. Left as-is deliberately.
+4. **`pygecko.visualization` cannot be the first pyGecko import.**
+   [`ms_peak.py:5`](../pygecko/gc_tools/peak/ms_peak.py#L5) and
+   [`injection.py:6`](../pygecko/gc_tools/injection/injection.py#L6) do
+   `from pygecko.visualization import Visualization`, while
+   [`visuals.py:13`](../pygecko/visualization/visuals.py#L13) imports back into `pygecko.gc_tools`.
+   A bare `import pygecko.visualization` in a fresh interpreter therefore raises `ImportError:
+   cannot import name 'Visualization' from partially initialized module`. It is masked because every
+   test, example and notebook imports `pygecko.gc_tools` first. Verified identical on the old exact
+   pins and on the current unpinned stack, so it is not a consequence of the dependency work.
+   Untouched because breaking the cycle means moving `Visualization` out of the peak/injection
+   modules' import path — a layering change, not a packaging one.
+5. **`visuals.py` mutates global rcParams at import time.**
+   [`visuals.py:187-190`](../pygecko/visualization/visuals.py#L187-L190) sets `font.family` to Arial
+   process-wide when the module is imported, which affects any other plotting in the same
+   interpreter and emits `findfont` warnings wherever Arial is absent — every Linux runner. The same
+   module imports `pyplot` at module scope, which is why CI sets `MPLBACKEND=Agg`.
+6. **`docs/source/pygecko.reaction.rst:42` autodocuments a module that no longer exists.**
+   `pygecko.reaction.well_plate` was removed, but the `automodule` directive was not, so every docs
+   build logs an `autodoc: failed to import` warning. Pre-existing and harmless; left for whoever
+   next regenerates the `sphinx-apidoc` stubs.
 
 ### Resolved
 
-6. Candidate collections in `match_ri` and `match_rt` were dictionaries keyed by absolute deviation,
+7. Candidate collections in `match_ri` and `match_rt` were dictionaries keyed by absolute deviation,
    so two peaks equidistant from the target collided and one was dropped before
    `__find_best_ri_match` could weigh them by height ratio. `return_candidates=True` now returns a
    `list[Peak]` and the closest match is selected with `min(..., key=...)`;
    `__find_best_ri_match` consumes the list directly. Covered by `tests/unit/test_match_ri.py` and
    `tests/unit/test_match_rt.py`.
-7. `__isotopic_ratio_check` guarded with `if not i or not j` on the index arrays returned by
+8. `__isotopic_ratio_check` guarded with `if not i or not j` on the index arrays returned by
    `np.where`, so a parent ion at index 0 (`array([0])`, which is falsy) made the isotope check
    report no match. It now tests `.size`. This was silently suppressing valid analyte assignments
    and was the most consequential item on this list.
-8. `SplitGC_Parser.load_sequence` now warns when the FID and MS sample-name sets do not intersect.
+9. `SplitGC_Parser.load_sequence` now warns when the FID and MS sample-name sets do not intersect.
    The two detectors still derive identity by different routes — MS from the `.cdf` filename
    (`name.split('_')[0]`), FID from the acaml `SampleName` — and that is inherent to the formats, but
    a divergence no longer surfaces as a silently empty plate. A partial overlap is legitimate (one
    detector's subset of wells) and is not reported.
-9. `Analysis.quantify_plate` now takes an optional `layout` argument, deriving the grid from
-   `layout.design` exactly as the MS+FID path does (§6.E). Without a layout it keeps the legacy 8×12
-   grid. Note the pre-fix symptom was a `ValueError` during array assembly, not the silent
-   well-dropping previously recorded here: pandas `.loc` enlargement added the out-of-grid rows and
-   left the unused columns ragged.
-10. `Utilities.find_empty_ranges` computed `np.isnan(signal) | np.any(signal == 0)`; `np.any`
+10. `Analysis.quantify_plate` now takes an optional `layout` argument, deriving the grid from
+    `layout.design` exactly as the MS+FID path does (§6.E). Without a layout it keeps the legacy 8×12
+    grid. Note the pre-fix symptom was a `ValueError` during array assembly, not the silent
+    well-dropping previously recorded here: pandas `.loc` enlargement added the out-of-grid rows and
+    left the unused columns ragged.
+11. `Utilities.find_empty_ranges` computed `np.isnan(signal) | np.any(signal == 0)`; `np.any`
     collapses to a scalar, so a single zero marked the entire chromatogram as empty. It now uses
     `np.isnan(signal) | (signal <= threshold)`, which also makes the documented but previously
     ignored `threshold` parameter effective. Diagnostic-only — it feeds
@@ -640,16 +660,69 @@ defect actually did — is worth not rediscovering either.
     injection (count, dead time, longest gap) instead of itemising every range, which would have
     put ~1700 lines on the console for a 33-well plate. Call `Utilities.find_empty_ranges` directly
     to inspect the individual gaps.
-11. The dead `from xarray.util.generate_ops import inplace` in `peak_detection_ms.py` is gone, as is
+12. The dead `from xarray.util.generate_ops import inplace` in `peak_detection_ms.py` is gone, as is
     the `results='yield'` argument that `reports.py` passed to `Visualization.visualize_plate`, which
     has no such parameter.
-12. Integration fixture paths were relative literals that only resolved when pytest ran from inside
+13. Integration fixture paths were relative literals that only resolved when pytest ran from inside
     `tests/integration/`. They are now anchored on `__file__` via
     [`tests/integration/conftest.py`](../tests/integration/conftest.py), so a repo-root run — what
     `testpaths = ["tests"]` implies — behaves identically.
-13. `examples/spectral_matching/spectral_matching.py` imported from the top-level package, which
+14. `examples/spectral_matching/spectral_matching.py` imported from the top-level package, which
     exports nothing, and raised `ImportError`; it now imports from `pygecko.parsers` like every other
     example. The top-level package deliberately still exports nothing — see §7.
-14. `examples/split_gc/plate_processing.py` no longer hard-codes a personal Windows path (it reads
+15. `examples/split_gc/plate_processing.py` no longer hard-codes a personal Windows path (it reads
     `PYGECKO_SPLITGC_RSLT` and exits with a message naming the variable) and no longer assigns
     `RT_FUNC` twice. `docs/build/` and `tests/integration/.pytest_cache/` are no longer tracked.
+16. **Unused and mis-declared dependencies.** `numba` was declared in
+    [`pyproject.toml`](../pyproject.toml) but imported nowhere — and not even installed in the
+    working venv — so it is gone. `lxml` was likewise never imported by pyGecko (both Agilent
+    parsers use stdlib `xml.etree.ElementTree`), but it *is* a hard runtime import of
+    `pyteomics.xml`, which `parsers/file_readers.py` imports unconditionally. Rather than drop it
+    and break `.mzXML` parsing, the requirement is now expressed as `pyteomics[xml]`: pyteomics
+    declares `lxml` under that extra rather than as a core dependency, so it is still installed —
+    now for the true reason, and version-resolved by the package that actually needs it.
+    `psycopg2-binary` was previously recorded here as **not** simply removable, because
+    `ord_schema` requires `psycopg2` and dropping the binary wheel makes a fresh install compile it
+    from source and fail without libpq headers. That held for `ord_schema==0.3.37`; releases from
+    0.5.9 depend on `psycopg[binary,pool]>=3` instead, which ships wheels. Verified by installing
+    0.5.9 in isolation: no source build, and every API surface
+    [`reaction_parser.py`](../pygecko/reaction/reaction_parser.py) uses still imports with
+    `UnitResolver()` instantiating. So `psycopg2-binary` is gone outright, and `ord_schema` moved to
+    an `[ord]` extra floored at `>=0.5.9` — the oldest release free of both the psycopg2 build and
+    the stale `protobuf<3.20` ceiling that the working venv was already violating with protobuf
+    7.36.1. `Reaction_Parser` became a PEP 562 lazy module attribute in
+    [`reaction/__init__.py`](../pygecko/reaction/__init__.py) so that importing anything from
+    `pygecko.reaction` no longer drags in the ORD tree; `from pygecko.reaction import
+    Reaction_Parser` still resolves, so the `examples/` callers were untouched. Guarded by
+    [`tests/unit/test_reaction_imports.py`](../tests/unit/test_reaction_imports.py), which probes in
+    a subprocess because `sys.modules` is polluted the moment any other test imports `ord_schema`.
+    `netCDF4` is genuinely used, by both `.cdf` readers.
+17. **Dependencies are pinned to exact versions.** All 19 runtime dependencies carried `==` pins and
+    `requires-python` was `">=3.10, <3.13"`. Exact pins in a library's `install_requires` make the
+    package uninstallable alongside almost anything else, and they were already fiction in practice
+    — see the protobuf case in §11.16. Floors are now the previously-pinned versions, which is the
+    honest claim: those are the oldest versions validated, and the ones the published work used.
+    There are no upper bounds, because an upper bound in a library is a promise about software that
+    does not exist yet; discovering breakage is CI's job, not the metadata's. The residual risk this
+    accepts: `matplotlib`, `rdkit`, `netCDF4` and `statsmodels` declare `numpy` without an upper
+    bound, so a resolve *forced* down to an old C-extension build alongside numpy ≥2 can still raise
+    an ABI error. A clean resolve never picks that combination, and the two CI legs bracket it.
+    `requires-python` lost its ceiling rather than gaining a `<3.14` one: it is resolver-visible, so
+    a cap makes pip refuse to install pyGecko at all on a newer interpreter, whereas without one a
+    failure is a legible missing-wheel error. Classifiers, not `requires-python`, are the "we test
+    this" signal. The `<3.13` cap never described a code limitation — it was a consequence of
+    `matplotlib==3.6.2` and `numba` having no cp312 wheels. The 3.10 floor stays, and is
+    code-mandated: runtime-evaluated PEP 604 unions in class bodies and dataclass field annotations
+    (§9). **No code changes were needed.** The whole modern stack was verified green before the pins
+    were loosened — py3.13 with numpy 2.5.3, pandas 3.0.5, matplotlib 3.11.1, scipy 1.18.1 and rdkit
+    2026.3.6 gives the same result as py3.10 on the old pins. Three breaks predicted from reading
+    the upgrade notes were each disproved by running the pattern on both stacks: `set_xticklabels([])`
+    after a `MultipleLocator` at [`visuals.py:262`](../pygecko/visualization/visuals.py#L262) renders
+    fine; the `fillna(0, inplace=True)` at
+    [`file_readers.py:35`](../pygecko/parsers/file_readers.py#L35) never sees an object column,
+    because the frame is built from all-numeric dicts; and the `.loc` enlargement at
+    [`analysis.py:185`](../pygecko/analysis/analysis.py#L185) indexes with a string label, not a
+    tuple, and yields an identical array under pandas 3. Reproducibility moved to the layer it
+    belongs on: [`uv.lock`](../uv.lock) pins a known-good environment for developers and CI, while
+    `pip install -e .` resolves normally. The lock is a record going forward, not a retroactive one
+    — the environment behind the publication lives in git history.

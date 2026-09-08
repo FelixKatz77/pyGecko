@@ -1,7 +1,11 @@
 import numpy as np
+import pytest
 from pygecko.parsers import Agilent_MS_Parser
 from datetime import datetime
 from .conftest import fixture_path
+
+# Loads an Agilent .D sequence, which only msConvert can turn into mzML.
+pytestmark = pytest.mark.msconvert
 
 def test_agilent_fid_parser():
 

@@ -13,12 +13,15 @@ sys.path.insert(0, os.path.abspath('../..'))
 project = 'pyGecko'
 copyright = '2023, Felix Katzenburg'
 author = 'Felix Katzenburg'
-release = '0.0.1'
+release = '0.1.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx_rtd_theme']
+
+# ord_schema is an optional extra, but pygecko.reaction.reaction_parser is autodocumented.
+autodoc_mock_imports = ['ord_schema']
 
 templates_path = ['_templates']
 exclude_patterns = []
