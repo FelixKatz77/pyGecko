@@ -1,5 +1,4 @@
 import numpy as np
-from pygecko.gc_tools.utilities import Utilities
 
 class Analysis_Settings:
 
@@ -9,7 +8,6 @@ class Analysis_Settings:
     Attributes:
         sn (int): Signal to noise ratio for peak detection.
         time_range (tuple): Time range for peak detection.
-        indices_range (list): Indices range for peak detection.
         width (int, float): Width for peak detection.
         prominence_ms (int): Prominence for peak detection via MS.
         prominence_fid (int): Prominence for peak detection via FID.
@@ -30,7 +28,6 @@ class Analysis_Settings:
 
     sn: int
     time_range: tuple|None
-    indices_range: list[int|None]
     width: int|float|None
     prominence_ms: int | None
     prominence_fid: int | None
@@ -47,13 +44,12 @@ class Analysis_Settings:
     _resolved: dict
 
 
-    __slots__ = 'sn', 'time_range', 'indices_range', 'width', 'prominence_ms', 'prominence_fid', 'trace_prominence', 'height', \
+    __slots__ = 'sn', 'time_range', 'width', 'prominence_ms', 'prominence_fid', 'trace_prominence', 'height', \
                 'savgol_window', 'max_half_window', 'boarder_threshold', 'boarder_window', 'max_isotopic_diff', 'min_rel_intensity', 'min_mz_fraction', 'scan_rate', '_resolved'
 
     def __init__(self, chromatogram:np.ndarray):
         self.sn = 5
         self.time_range = None
-        self.indices_range = self.__set_indices_range()
         self.width = None
         self.prominence_ms = None
         self.prominence_fid = None
@@ -91,7 +87,6 @@ class Analysis_Settings:
         for key, value in kwargs.items():
             if self.__check_settings(key, value):
                 setattr(self, key, value)
-        self.indices_range = self.__set_indices_range()
 
     def pop(self, key:str, default):
 
@@ -123,16 +118,23 @@ class Analysis_Settings:
 
         '''
         Restores Analysis_Settings from its pickled state, defaulting attributes added since the
-        file was written.
+        file was written and dropping ones removed since.
 
-        Settings pickled before pop recorded resolved values carry no _resolved entry, and every
-        pop on them would raise AttributeError without this. The settings object is nested inside a
-        pickled injection and restores itself, so Injection.__setstate__ cannot cover this case.
+        Settings pickled before pop recorded resolved values carry no _resolved entry, and every pop
+        on them would raise AttributeError without the default; ones pickled while indices_range was
+        still a slot carry a value for it, and setting it would raise AttributeError without the
+        skip. The settings object is nested inside a pickled injection and restores itself, so
+        Injection.__setstate__ cannot cover either case.
         '''
 
         _, slots = state
         for name, value in (slots or {}).items():
-            setattr(self, name, value)
+            # Skip attributes that are no longer slots: a .pkl is coupled to the class layout
+            # (architecture 8), and indices_range was removed once the window came to be derived
+            # from the chromatogram at the call site. hasattr on the type finds slot descriptors
+            # across the MRO, which self.__slots__ does not.
+            if hasattr(type(self), name):
+                setattr(self, name, value)
         if not hasattr(self, '_resolved'):
             self._resolved = {}
 
@@ -161,22 +163,3 @@ class Analysis_Settings:
                 raise TypeError(f'"{setting}" is expected to be {type(options[setting])} not {type(value)}.')
         else:
             raise KeyError(f'"{setting}" is not a valid setting.')
-
-    def __set_indices_range(self) -> list[int|None]:
-
-        '''
-        Returns indices range for peak detection.
-
-        Returns:
-            list: Indices range for peak detection.
-        '''
-
-        if not self.time_range:
-            indices_range = [None, None]
-        else:
-            indices_range = Utilities.convert_time_to_scan(self.time_range, self.scan_rate)
-        if indices_range[0] is None:
-            indices_range[0] = 0
-        if indices_range[1] is None:
-            indices_range[1] = None
-        return indices_range

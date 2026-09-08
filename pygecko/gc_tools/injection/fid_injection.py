@@ -48,10 +48,12 @@ class FID_Injection(Injection):
         self.sample_number = metadata.get('SampleOrderNumber')
         self.acq_time = metadata.get('InjectionAcqDateTime')
         self.analysis_settings = Analysis_Settings(chromatogram)
-        if solvent_delay: self.solvent_delay = solvent_delay
-        else: self.solvent_delay = self.__set_solvent_delay(chromatogram)
+        if solvent_delay is not None:
+            self.solvent_delay = solvent_delay
+        else:
+            self.solvent_delay = self.__set_solvent_delay(chromatogram)
         self.chromatogram = chromatogram[:,
-                            Utilities.convert_time_to_scan(solvent_delay, self.analysis_settings.scan_rate):]
+                            Utilities.convert_time_to_scan(self.solvent_delay, self.analysis_settings.scan_rate):]
         self._check_for_missing_signal()
         self.processed_chromatogram = None
         self.peaks = None
@@ -102,12 +104,24 @@ class FID_Injection(Injection):
     def integrate(self) -> None:
 
         '''
-        Integrates the area under the curve of the injection's peaks and sets the area as the peak's area attribute.
+        Integrates the area under the curve of the injection's peaks between their boarders and sets
+        the area as the peak's area attribute.
+
+        Integrates the baseline corrected chromatogram, applying the baseline correction first if it
+        has not been applied yet, so the areas agree with the ones pick_peaks already computed.
         '''
 
         if self.peaks:
+            if not isinstance(self.processed_chromatogram, np.ndarray):
+                self.baseline_correction()
             for peak in self.peaks.values():
-                area = integrate.simpson(self.chromatogram[1][round(peak.boarders[0]):round(peak.boarders[1])])
+                # Boarders are retention times in minutes, not scan indices, so they are looked up
+                # on the chromatogram's own time axis - exactly, because pick_peaks took them from
+                # that same axis. The signal is the baseline-corrected one pick_peaks integrated:
+                # quantification divides one area by another and a baseline offset does not cancel
+                # between peaks of different width.
+                start, end = np.searchsorted(self.processed_chromatogram[0], peak.boarders)
+                area = integrate.simpson(self.processed_chromatogram[1][start:end])
                 peak.area = area
         else:
             print('Peaks list is empty.')

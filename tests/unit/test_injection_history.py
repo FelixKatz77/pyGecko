@@ -106,10 +106,22 @@ class TestResolvedParametersAreCaptured:
         injection = make_fid_injection()
         injection.pick_peaks()
         resolved = injection.history[0].resolved
-        assert set(resolved) >= {'indices_range', 'prominence_fid', 'width', 'height',
+        assert set(resolved) >= {'time_range', 'prominence_fid', 'width', 'height',
                                  'boarder_threshold', 'boarder_window'}
         # Computed from the signal, never passed by the caller, and invisible without this capture.
         assert resolved['prominence_fid'] > 0
+
+    def test_resolved_records_the_window_that_was_applied(self):
+        # time_range replaced the derived indices_range once the window came to be converted
+        # against the chromatogram, so the history now records the caller's intent directly.
+        injection = make_fid_injection()
+        injection.pick_peaks(time_range=(5.0, 8.0))
+        assert injection.history[0].resolved['time_range'] == [5.0, 8.0]
+
+    def test_resolved_records_the_absence_of_a_window(self):
+        injection = make_fid_injection()
+        injection.pick_peaks()
+        assert injection.history[0].resolved['time_range'] is None
 
     def test_a_configured_setting_appears_in_resolved_instead_of_its_default(self):
         injection = make_fid_injection()

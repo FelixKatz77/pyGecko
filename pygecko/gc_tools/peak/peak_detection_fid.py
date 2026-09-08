@@ -30,9 +30,16 @@ class Peak_Detection_FID:
             np.ndarray: Baseline corrected chromatogram.
         '''
 
-        indices_range = analysis_settings.indices_range
-        chrom_smooth = Peak_Detection_FID.__savgol(chromatogram[:, indices_range[0]:indices_range[1]],
-                                                   analysis_settings)
+        # The window is converted here rather than on Analysis_Settings because this is where the
+        # axis it indexes is known. Converting it from absolute zero, as a derived indices_range
+        # did, shifted every window by the solvent delay the constructor already truncated away.
+        # searchsorted needs no scan_rate and clamps a window reaching past either end on its own.
+        time_range = analysis_settings.pop('time_range', None)
+        if time_range:
+            start, end = np.searchsorted(chromatogram[0], time_range)
+        else:
+            start, end = 0, None
+        chrom_smooth = Peak_Detection_FID.__savgol(chromatogram[:, start:end], analysis_settings)
         chrom_corr, baseline = Peak_Detection_FID.__baseline_filter(chrom_smooth, analysis_settings)
         return chrom_corr
 
@@ -72,7 +79,6 @@ class Peak_Detection_FID:
             boarders, areas and the indices of the peaks to flag for boarder overlap.
         '''
 
-        indices_range = analysis_settings.pop('indices_range', [None, None])
         prominence = analysis_settings.pop('prominence_fid', np.mean(chrom_corr[1]))
         width = analysis_settings.pop('width', 0)
         #TODO: Implement S/N.
@@ -86,8 +92,15 @@ class Peak_Detection_FID:
         peak_boarders, flag_peaks_list = Peak_Detection_FID.__resolve_boarder_overlap(peak_boarders, peak_indices, chrom_corr)
         peak_areas = Peak_Detection_FID.__calculate_areas(chrom_corr, peak_boarders)
         peak_widths = [((boarder[1] - boarder[0])*analysis_settings.scan_rate) for boarder in peak_boarders]
-        peak_indices = peak_indices + indices_range[0]
-        peak_boarders = ((peak_boarders+indices_range[0])*analysis_settings.scan_rate) + chrom_corr[0][0]
+        # Boarders and indices index chrom_corr, the already-sliced chromatogram
+        # baseline_correction returned, so their retention times are read straight off its own time
+        # axis. Scaling by scan_rate and adding chrom_corr[0][0] instead counted the window offset
+        # twice (chrom_corr[0][0] already carries it) and did not round-trip, which matters because
+        # FID_Injection.integrate looks the boarders back up to re-integrate: the reconstructed
+        # float lands about 1e-15 from the stored axis value, enough for searchsorted to pick the
+        # neighbouring scan. __find_right_boarder may return one past the last scan, a valid slice
+        # bound but not a valid time, so the right boarder is clamped to the last scan.
+        peak_boarders = chrom_corr[0][np.clip(peak_boarders, 0, chrom_corr.shape[1] - 1)]
         peak_rts = chrom_corr[0][peak_indices]
         return peak_rts, peak_widths, peak_heights, peak_boarders, peak_areas, flag_peaks_list
 
@@ -296,20 +309,6 @@ class Peak_Detection_FID:
             area = simpson(chromatogram[1][boarder[0]:boarder[1]])
             areas.append(area)
         return areas
-
-    @staticmethod
-    def __set_indices_range(analysis_settings: Analysis_Settings) -> list[float|None]:
-
-        '''
-        Takes a Analysis_Settings object and returns the indices range for peak detection.
-        '''
-
-        if not analysis_settings.time_range:
-            indices_range = [None, None]
-        else:
-            indices_range = [x / analysis_settings.scan_rate for x in analysis_settings.time_range]
-        return indices_range
-
     @staticmethod
     def __initialize_peaks(peak_rts: np.ndarray, peak_heights: np.ndarray, peak_widths: np.ndarray,
                            peak_boarders: np.ndarray, peak_areas: list[float], flag_peaks_list: list[int]|None) -> dict[float, FID_Peak]:
