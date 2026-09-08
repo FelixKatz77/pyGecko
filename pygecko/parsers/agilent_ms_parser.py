@@ -199,6 +199,7 @@ class Agilent_MS_Parser:
         scans = MS_Base_Parser.extract_scans_from_raw_data(path, temp_dir=temp_dir)[0]
         chromatogram = np.array([scans.index / 60000, scans.sum(axis=1)])
         injection = MS_Injection(metadata, chromatogram, None, scans, pos=pos)
+        injection.record_step('Agilent_MS_Parser.load_injection', {'raw_directory': str(path)})
         return injection
 
 

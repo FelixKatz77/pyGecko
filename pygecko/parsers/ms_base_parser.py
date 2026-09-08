@@ -102,6 +102,8 @@ class MS_Base_Parser:
         scans, sample_name = MS_Base_Parser.extract_scans_from_raw_data(path, temp_dir=temp_dir)
         chromatogram = np.array([scans.index / 60000, scans.sum(axis=1)])
         injection = MS_Injection({'SampleName':sample_name}, chromatogram, None, scans, pos=pos)
+        injection.record_step('MS_Base_Parser.load_injection',
+                              {'raw_data_path': str(path), 'pos': pos})
         return injection
 
 

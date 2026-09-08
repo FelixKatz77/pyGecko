@@ -145,6 +145,47 @@ all matching goes through tolerance helpers — `Utilities.check_interval(value,
 > **Rule.** Never look a peak up by computed equality. Use `flag_peak`/`match_ri`, or
 > `Utilities.check_interval` if you need something new.
 
+### 3.6 Every injection carries its processing history
+
+`Injection.history` is an ordered list of
+[`Processing_Step`](../pygecko/gc_tools/history.py) objects: the parser's load call, then every
+state-changing or state-deriving operation applied since. The point is traceability — a processed
+injection loaded from a `.pkl` can be traced back to the raw file and the parameters that produced
+it — and a record complete enough that the same state could be reached by re-loading the raw data
+and re-executing the steps. That is what makes a stored run readable as a workflow after the fact.
+
+A step records five things: `operation` (the qualified `Class.method` name, from `func.__qualname__`),
+`parameters` (the bound call arguments with defaults applied), `resolved` (see §5), `timestamp` and
+the pyGecko `version`. Values are encoded to JSON-serializable form *eagerly*, at record time: a step
+holding a live `Analyte` would be pickled with the injection and would silently change meaning when
+that object was mutated later. A value with no JSON representation — a callable above all, such as
+the `func` passed to `match_rt` — is recorded as an explicit `{'unserializable': …, 'repr': …}`
+marker rather than dropped, because a missing parameter is indistinguishable from one that was never
+passed. `Injection.history_to_json(path=None)` is the export.
+
+Recording happens two ways:
+
+- **`@records_processing`** decorates the injection methods that constitute processing:
+  `set_internal_standard`, `flag_peak`, `match_ri`, `match_rt` on the base; `baseline_correction`,
+  `pick_peaks`, `integrate`, `quantify` on `FID_Injection`; `pick_peaks`, `match_mz`, `match_mol` on
+  `MS_Injection`. Output and accessors (`view_chromatogram`, `report`, `save`) are not processing and
+  are not recorded. A call that raises records nothing.
+- **`Injection.record_step(operation, parameters)`** takes provenance as plain data, for steps no
+  injection method produces: the parser's load call (§6.A) and `RI_Calibration.assign_ris`, which
+  mutates an injection's peaks from outside it. Passing plain data is what keeps the layering rule of
+  §2 intact — `gc_tools` learns nothing about file formats or the calibration's internals.
+
+**Nested calls record once.** `pick_peaks` calls `baseline_correction` when no processed chromatogram
+exists, and `set_internal_standard` calls `flag_peak`. An `_recording` guard means only the outermost
+decorated call on an injection appends a step, so the history holds no step the caller never asked
+for and a replay would not execute the inner work twice. The guard suppresses *nesting*, not
+*repetition*: an explicit `baseline_correction()` followed by `pick_peaks()` still records two steps.
+
+> **Rule.** A new processing method on an injection gets `@records_processing`. A new construction
+> path in a parser calls `record_step` naming a *public* parser method with arguments that method
+> accepts — `tests/unit/test_injection_history.py::TestHistoryIsSufficientForReplay` binds every
+> recorded parameter set against its operation's real signature, and will fail otherwise.
+
 ---
 
 ## 4. Stateless classes as algorithm namespaces
@@ -218,6 +259,18 @@ until it was changed to read `min_rel_intensity` and `min_mz_fraction`.
 
 > **Rule.** If a method calls `analysis_settings.update(**kwargs)`, every threshold it then applies
 > must come from `settings.pop(...)`. Never mix stored settings and literals in one predicate.
+
+`pop` also records what it returns, into `Analysis_Settings._resolved`. This matters because most
+thresholds are never configured: the default at the `pop` call site is computed from the signal
+(`prominence_fid` from the mean corrected intensity, `savgol_window` by Durbin–Watson optimisation,
+`boarder_threshold` from the first difference), so the caller's kwargs are a poor record of what an
+algorithm actually used. The recording decorator (§3.6) clears `_resolved` at the outermost call and
+snapshots it afterwards, which is what puts real numbers in a step's `resolved` mapping. Clearing
+only at the outer call is load-bearing, not incidental: it is what lets a single `pick_peaks` step
+report both its own settings and those of the `baseline_correction` nested inside it.
+
+`_resolved` is in `__slots__` (there is no `__dict__`) but is not a setting: it is absent from the
+`options` dict, so `update` rejects it, and `pop` refuses any underscore-prefixed key.
 
 > **Rule.** A new tunable parameter needs five edits in `Analysis_Settings`: the class docstring's
 > attribute list, the annotation block, `__slots__`, `__init__` (initialised to `None`), and the
@@ -521,7 +574,15 @@ Two consequences follow, and both are real constraints on how the code may chang
   `__slots__` entry, or moving a class between modules breaks every previously saved sequence. This is
   the main reason the misspellings in §9 are kept.
 - **Pickle executes code on load.** `.pkl` files must only be loaded from trusted sources; they are not
-  an interchange format. For sharing data, use the CSV/ORD/PDF exports in §6.F.
+  an interchange format. For sharing data, use the CSV/ORD/PDF exports in §6.F. The processing history
+  (§3.6) is the one structured, JSON export of an injection's own state, via `history_to_json`.
+
+`Injection` and `Analysis_Settings` both define a `__setstate__` that fills any slot missing from the
+pickled state with its default. This is what lets files written before §3.6 still load: they carry no
+`history`, `_recording` or `_resolved` entry, and without the shims the first `pop` after loading such
+a file raises `AttributeError`. `Analysis_Settings` needs its own because it is nested inside a pickled
+injection and restores itself — `Injection.__setstate__` cannot reach it. Appending to `__slots__` is
+safe for existing files; reordering or inserting is not.
 
 ---
 
@@ -561,9 +622,12 @@ The suite has two halves:
 
 - [`tests/integration/`](../tests/integration) — six modules exercising real Agilent `.D`, `.acaml`
   and `.xy` fixtures end-to-end through the parsers.
-- [`tests/unit/`](../tests/unit) — five modules plus a `conftest.py` of builders (`make_peak`,
-  `make_injection`, `make_ms_injection`, `ms_peak_factory`) that assemble domain objects from plain
-  arrays. These need no fixture files and no msConvert binary.
+- [`tests/unit/`](../tests/unit) — one module per behaviour, plus a `conftest.py` of builders
+  (`make_peak`, `make_injection`, `make_ms_injection`, `make_fid_chromatogram`,
+  `make_fid_injection`, `ms_peak_factory`) that assemble domain objects from plain arrays. These
+  need no fixture files and no msConvert binary. Builders live in `conftest.py` as plain module-level
+  functions, imported relatively (`from .conftest import make_injection`), not as fixtures; only
+  genuinely parameterised or stateful helpers are `@pytest.fixture`.
 
 The unit half is exactly the seam the layering predicts: the namespace classes of §4 take arrays and
 an `Analysis_Settings` and return data, so they can be driven with synthetic chromatograms and hand-built
@@ -586,8 +650,8 @@ about the code as it stands. The subsection that follows records deviations that
 defect actually did — is worth not rediscovering either.
 
 1. **Test suite does not meet the stated coverage rules.** Coverage is now measurable and measured:
-   `pytest-cov` is declared, and `pytest --cov=pygecko` reports **53%** for the suite CI runs
-   (41% for `tests/unit` alone) against `CLAUDE.md`'s 80% requirement. The gap is concentrated in
+   `pytest-cov` is declared, and `pytest --cov=pygecko` reports **56%** for the suite CI runs
+   against `CLAUDE.md`'s 80% requirement. The gap is concentrated in
    [`parsers/file_readers.py`](../pygecko/parsers/file_readers.py),
    [`gc_tools/peak/peak_detection_fid.py`](../pygecko/gc_tools/peak/peak_detection_fid.py),
    [`visualization/`](../pygecko/visualization) and

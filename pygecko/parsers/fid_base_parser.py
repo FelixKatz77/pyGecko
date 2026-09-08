@@ -53,6 +53,8 @@ class FID_Base_Parser:
         xy_array = FID_Base_Parser.read_xy_array(xy_file)
         sample_name = xy_file.stem.split('.')[0]
         injection = FID_Injection({'SampleName': sample_name}, xy_array, solvent_delay)
+        injection.record_step('FID_Base_Parser.load_injection',
+                              {'xy_file': str(xy_file), 'solvent_delay': solvent_delay})
         return RI_Calibration(injection, c_count, rt)
 
     @staticmethod
@@ -72,6 +74,8 @@ class FID_Base_Parser:
         xy_array = FID_Base_Parser.read_xy_array(xy_file)
         sample_name = xy_file.stem.split('.')[0]
         injection = FID_Injection({'SampleName':sample_name}, xy_array, solvent_delay, pos=pos)
+        injection.record_step('FID_Base_Parser.load_injection',
+                              {'xy_file': str(xy_file), 'solvent_delay': solvent_delay, 'pos': pos})
         return injection
 
 

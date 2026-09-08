@@ -3,6 +3,7 @@ import pandas as pd
 from scipy import integrate
 from scipy.signal import find_peaks
 
+from pygecko.gc_tools.history import records_processing
 from pygecko.gc_tools.injection import Injection
 from pygecko.gc_tools.peak import FID_Peak, Peak_Detection_FID
 from pygecko.gc_tools.analysis import Analysis_Settings, Quantification
@@ -58,6 +59,7 @@ class FID_Injection(Injection):
 
 
 
+    @records_processing
     def baseline_correction(self, **kwargs:dict) -> None:
 
         '''
@@ -72,6 +74,7 @@ class FID_Injection(Injection):
         self.processed_chromatogram = Peak_Detection_FID.baseline_correction(self.chromatogram, self.analysis_settings)
 
 
+    @records_processing
     def pick_peaks(self, inplace: bool = True, **kwargs:dict) -> None|dict[float,FID_Peak]:
 
         '''
@@ -95,6 +98,7 @@ class FID_Injection(Injection):
         else:
             return peaks
 
+    @records_processing
     def integrate(self) -> None:
 
         '''
@@ -108,6 +112,7 @@ class FID_Injection(Injection):
         else:
             print('Peaks list is empty.')
 
+    @records_processing
     def quantify(self, rt:float, method:str='polyarc', **kwargs) -> int:
 
         '''
