@@ -61,6 +61,11 @@ class Agilent_FID_Parser:
                 file_source=file_source,
                 sample_filter=sample_filter,
             )
+        for injection in injections.values():
+            injection.record_step('Agilent_FID_Parser.load_sequence',
+                                  {'raw_directory': str(raw_directory), 'solvent_delay': solvent_delay,
+                                   'pos': pos, 'file_source': file_source,
+                                   'sample_filter': sample_filter})
         print(f'Sequence loaded with {len(injections)} injections.')
         return FID_Sequence(sequence_metadata, injections)
 
@@ -147,6 +152,9 @@ class Agilent_FID_Parser:
                 f'(file_source={resolved_source}).'
             )
         injection = FID_Injection(injection_metadata, xy_array, solvent_delay)
+        injection.record_step('Agilent_FID_Parser.load_injection',
+                              {'raw_directory': str(raw_directory), 'solvent_delay': solvent_delay,
+                               'file_source': file_source})
         return injection
 
 

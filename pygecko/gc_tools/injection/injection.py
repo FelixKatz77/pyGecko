@@ -1,5 +1,7 @@
 import _pickle as cPickle
+import json
 
+from pygecko.gc_tools.history import Processing_Step, records_processing
 from pygecko.gc_tools.peak import Peak
 from pygecko.gc_tools.analyte import Analyte
 from pygecko.gc_tools.utilities import Utilities
@@ -21,6 +23,10 @@ class Injection:
         vial_pos (int): Position of the sample's vial in the autosampler.
         internal_standard (Analyte): Internal standard of the sample.
         peaks (dict[float, Peak]): Peaks of the sample.
+        history (list[Processing_Step]): Ordered record of the processing applied to the injection,
+        starting with the parser's load call, so the state can be traced back to the raw data.
+        _recording (bool): True while a recorded operation runs, so a nested call does not append a
+        second step for work the caller never asked for.
     '''
 
     acq_method: str
@@ -35,9 +41,11 @@ class Injection:
     plate_pos: str | None
     analysis_settings: None
     chromatogram: None
+    history: list[Processing_Step]
+    _recording: bool
 
 
-    __slots__ = 'acq_method', 'instrument_name', 'sample_description', 'sample_name', 'sample_type', 'vial_pos', 'internal_standard', 'peaks', 'detector', 'plate_pos', 'analysis_settings', 'chromatogram'
+    __slots__ = 'acq_method', 'instrument_name', 'sample_description', 'sample_name', 'sample_type', 'vial_pos', 'internal_standard', 'peaks', 'detector', 'plate_pos', 'analysis_settings', 'chromatogram', 'history', '_recording'
 
     def __init__(self, metadata:dict, peaks:dict[float, Peak]|None=None, pos:bool=False):
         self.acq_method = metadata.get('AcqMethodName')
@@ -55,6 +63,8 @@ class Injection:
             self.plate_pos = None
         self.analysis_settings = None
         self.chromatogram = None
+        self.history = []
+        self._recording = False
 
     def __getitem__(self, rt:float) -> Peak:
 
@@ -85,6 +95,7 @@ class Injection:
         return f'{self.sample_name}: {peak_count} Peaks. {self.detector} Detection.'
 
 
+    @records_processing
     def set_internal_standard(self, rt:float|int, tolerance:float=0.05, name:str=None, smiles:str=None) -> None:
 
         '''
@@ -104,6 +115,7 @@ class Injection:
         self.internal_standard = Analyte(peak.rt, name=name, smiles=smiles)
         peak.analyte = self.internal_standard
 
+    @records_processing
     def flag_peak(self, rt: float, flag: str|None = None, tolerance: float = 0.05,
                   analyte: Analyte|None = None) -> None|Peak:
 
@@ -134,6 +146,7 @@ class Injection:
         else:
             return None
 
+    @records_processing
     def match_ri(self, ri:float, tolerance:int=20, analyte:str|None=None,
                  return_candidates:bool=False) -> Peak|list[Peak]|None:
 
@@ -172,6 +185,7 @@ class Injection:
         else:
             return None
 
+    @records_processing
     def match_rt(self, rt:float, func=None, tolerance:float=1/60, analyte:str|None=None,
                  return_candidates:bool=False, exclude_standard:bool=True) -> Peak|list[Peak]|None:
 
@@ -268,6 +282,64 @@ class Injection:
                     peak_assignment = True
             bool_list.append(peak_assignment)
         return bool_list
+
+    def record_step(self, operation:str, parameters:dict) -> None:
+
+        '''
+        Appends a processing step to the injection's history.
+
+        For provenance no decorated injection method produces: the parser's load call, which is the
+        first step and the point a replay would start from, and RI_Calibration.assign_ris, which
+        mutates the injection's peaks from outside the injection. The operation name and its
+        arguments arrive as plain data, so gc_tools still knows nothing about file formats or the
+        calibration's internals.
+
+        Args:
+            operation (str): Qualified name of the operation as Class.method.
+            parameters (dict): Arguments that reproduce the operation.
+        '''
+
+        self.history.append(Processing_Step(operation, parameters))
+
+    def history_to_json(self, path:str|None=None) -> str:
+
+        '''
+        Returns the injection's processing history as a JSON document, writing it to path when one
+        is given.
+
+        Args:
+            path (str|None): Path to write the document to. Default is None, which only returns it.
+
+        Returns:
+            str: The history as a JSON array of steps, each with its operation, parameters, resolved
+            settings, timestamp and version.
+        '''
+
+        document = json.dumps([step.to_dict() for step in self.history], indent=2)
+        if path:
+            with open(path, 'w') as outp:
+                outp.write(document)
+        return document
+
+    def __setstate__(self, state:tuple) -> None:
+
+        '''
+        Restores an Injection from its pickled state, defaulting attributes added since the file was
+        written.
+
+        Pickle files are coupled to the class layout, so injections saved before the processing
+        history existed carry no history or _recording entry. Both are defaulted rather than
+        reconstructed: the steps that produced those objects were never recorded, and an empty
+        history is the honest statement of that.
+        '''
+
+        _, slots = state
+        for name, value in (slots or {}).items():
+            setattr(self, name, value)
+        if not hasattr(self, 'history'):
+            self.history = []
+        if not hasattr(self, '_recording'):
+            self._recording = False
 
     def save(self, filename: str) -> None:
         '''

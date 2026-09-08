@@ -13,6 +13,8 @@ def test_fid_base_parser():
     assert injection.chromatogram.shape[0] == 2
     assert injection.detector == 'FID'
     assert injection.peaks is None
+    assert injection.history[0].operation == 'FID_Base_Parser.load_injection'
+    assert injection.history[0].parameters['solvent_delay'] == 3.06
 
 
 

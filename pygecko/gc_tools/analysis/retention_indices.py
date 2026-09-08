@@ -112,6 +112,11 @@ class RI_Calibration:
                 peak.ri = ri
             else:
                 warnings.warn(f'Could not assign RI for {injection.detector}-Peak at {rt} min in {injection.sample_name}. RT out of calibration range.')
+        # Recorded with the fitted ladder rather than just the flag: without it a replay would have
+        # to load and peak-pick a second raw file to rebuild the calibration.
+        injection.record_step('RI_Calibration.assign_ris',
+                              {'alignment': alignment, 'alkanes': self.alkanes,
+                               'gradient': self.gradient, 'intercept': self.intercept})
 
     def __assign_ris_sequence(self, sequence:GC_Sequence, alignment=False):
 

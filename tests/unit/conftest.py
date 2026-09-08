@@ -4,6 +4,7 @@ import sys
 import numpy as np
 import pytest
 
+from pygecko.gc_tools.injection.fid_injection import FID_Injection
 from pygecko.gc_tools.injection.injection import Injection
 from pygecko.gc_tools.injection.ms_injection import MS_Injection
 from pygecko.gc_tools.peak import MS_Peak
@@ -23,6 +24,20 @@ def make_peak(rt, height=100.0, flags=None):
 def make_injection(peaks, sample_name='SMP-A1'):
     '''Builds a bare Injection holding the given peaks, keyed by retention time.'''
     return Injection({'SampleName': sample_name}, {p.rt: p for p in peaks})
+
+
+def make_fid_chromatogram(peak_rts=(4.0, 6.0), points=4000, run_time=10.0):
+    '''Builds a two-row FID chromatogram with a Gaussian peak at each given retention time.'''
+    time = np.linspace(0.0, run_time, points)
+    intensity = np.full(points, 5.0)
+    for rt in peak_rts:
+        intensity = intensity + 1000.0 * np.exp(-0.5 * ((time - rt) / 0.03) ** 2)
+    return np.array([time, intensity])
+
+
+def make_fid_injection(sample_name='SMP-A1', solvent_delay=1.0, **kwargs):
+    '''Builds an FID_Injection over a synthetic chromatogram, ready for peak picking.'''
+    return FID_Injection({'SampleName': sample_name}, make_fid_chromatogram(**kwargs), solvent_delay)
 
 
 def make_mass_spectrum(mz_to_intensity):

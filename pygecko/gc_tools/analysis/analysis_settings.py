@@ -24,6 +24,8 @@ class Analysis_Settings:
         min_mz_fraction (float): Minimum fraction of a spectrum's maximum m/z that the parent ion must exceed to
         be considered for analyte assignment.
         scan_rate (float): Scan rate of chromatogram.
+        _resolved (dict): Values handed out by pop since the recording decorator last cleared it,
+        keyed by setting name. Not a setting itself: it is rejected by update and by pop.
     '''
 
     sn: int
@@ -42,10 +44,11 @@ class Analysis_Settings:
     min_rel_intensity: float|None
     min_mz_fraction: float|None
     scan_rate: float
+    _resolved: dict
 
 
     __slots__ = 'sn', 'time_range', 'indices_range', 'width', 'prominence_ms', 'prominence_fid', 'trace_prominence', 'height', \
-                'savgol_window', 'max_half_window', 'boarder_threshold', 'boarder_window', 'max_isotopic_diff', 'min_rel_intensity', 'min_mz_fraction', 'scan_rate'
+                'savgol_window', 'max_half_window', 'boarder_threshold', 'boarder_window', 'max_isotopic_diff', 'min_rel_intensity', 'min_mz_fraction', 'scan_rate', '_resolved'
 
     def __init__(self, chromatogram:np.ndarray):
         self.sn = 5
@@ -64,6 +67,7 @@ class Analysis_Settings:
         self.min_rel_intensity = None
         self.min_mz_fraction = None
         self.scan_rate = chromatogram[0, 2] - chromatogram[0, 1]
+        self._resolved = {}
 
     def __str__(self) -> str:
         return f'Analysis_Settings:\nSignal to Noise Ratio: {self.sn}\nTime Range: {self.time_range}\n' \
@@ -90,14 +94,47 @@ class Analysis_Settings:
         self.indices_range = self.__set_indices_range()
 
     def pop(self, key:str, default):
-        if key in self.__slots__:
-            value = getattr(self, key)
-            if value:
-                return value
-            else:
-                return default
-        else:
+
+        '''
+        Returns the configured value for a setting if one is set and the given default otherwise,
+        recording the returned value in _resolved.
+
+        Note this does not remove anything; the name is historic. Most thresholds in the library are
+        never configured and are computed from the signal at the call site, so the value returned
+        here is the only record of what an algorithm actually used.
+
+        Args:
+            key (str): Name of the setting.
+            default: Value to use when the setting is not configured.
+
+        Returns:
+            The value the caller will use for the setting.
+        '''
+
+        if key not in self.__slots__ or key.startswith('_'):
             raise KeyError(f'"{key}" is not a valid setting.')
+        value = getattr(self, key)
+        if not value:
+            value = default
+        self._resolved[key] = value
+        return value
+
+    def __setstate__(self, state:tuple) -> None:
+
+        '''
+        Restores Analysis_Settings from its pickled state, defaulting attributes added since the
+        file was written.
+
+        Settings pickled before pop recorded resolved values carry no _resolved entry, and every
+        pop on them would raise AttributeError without this. The settings object is nested inside a
+        pickled injection and restores itself, so Injection.__setstate__ cannot cover this case.
+        '''
+
+        _, slots = state
+        for name, value in (slots or {}).items():
+            setattr(self, name, value)
+        if not hasattr(self, '_resolved'):
+            self._resolved = {}
 
 
     def __check_settings(self, setting:str, value:int|float|tuple) -> bool:

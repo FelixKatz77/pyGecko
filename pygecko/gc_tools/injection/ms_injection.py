@@ -8,6 +8,7 @@ from rdkit.Chem import Descriptors
 
 from pygecko.gc_tools.analyte import Analyte
 from pygecko.gc_tools.analysis import Analysis_Settings
+from pygecko.gc_tools.history import records_processing
 from pygecko.gc_tools.injection import Injection
 from pygecko.gc_tools.peak import Peak_Detection_MS, MS_Peak
 
@@ -46,6 +47,7 @@ class MS_Injection(Injection):
         self.analysis_settings = Analysis_Settings(chromatogram)
         self.solvent_delay = chromatogram[0][0]
 
+    @records_processing
     def match_mz(self, mz:float, **kwargs) -> MS_Peak|list[MS_Peak]|None:
 
         '''
@@ -80,6 +82,7 @@ class MS_Injection(Injection):
                 return candidates[0]
         return None
 
+    @records_processing
     def match_mol(self, smiles:str, return_canidates=False, check_iso=True, **kwargs) -> MS_Peak|dict[float:MS_Peak]|None:
 
         '''
@@ -147,6 +150,7 @@ class MS_Injection(Injection):
                 return peak
         return None
 
+    @records_processing
     def pick_peaks(self, inplace: bool = True, **kwargs: dict) -> None|dict[float, MS_Peak]:
 
         '''
