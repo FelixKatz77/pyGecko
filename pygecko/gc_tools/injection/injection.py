@@ -3,7 +3,6 @@ import _pickle as cPickle
 from pygecko.gc_tools.peak import Peak
 from pygecko.gc_tools.analyte import Analyte
 from pygecko.gc_tools.utilities import Utilities
-from pygecko.visualization import Visualization
 
 
 
@@ -247,6 +246,10 @@ class Injection:
         Args:
             **kwargs: Keyword arguments for the visualization.
         '''
+
+        # Imported here, not at module scope: visualization imports gc_tools, so a
+        # module-level import makes pygecko.visualization unimportable on its own.
+        from pygecko.visualization import Visualization
 
         Visualization.view_chromatogram(self, path=path, **kwargs)
 

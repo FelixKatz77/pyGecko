@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 
 from pygecko.gc_tools.peak import Peak
-from pygecko.visualization import Visualization
 
 
 class MS_Peak(Peak):
@@ -38,6 +37,10 @@ class MS_Peak(Peak):
         Args:
             **kwargs: Keyword arguments for the visualization.
         '''
+
+        # Imported here, not at module scope: visualization imports gc_tools, so a
+        # module-level import makes pygecko.visualization unimportable on its own.
+        from pygecko.visualization import Visualization
 
         Visualization.view_mass_spectrum(self, path=path, **kwargs)
 
