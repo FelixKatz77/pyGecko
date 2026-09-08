@@ -58,6 +58,22 @@ class TestOldPicklesStillLoad:
         assert restored.analysis_settings.pop('height', 0) == 0
         assert restored.history == []
 
+    def test_settings_pickled_with_a_stale_indices_range_still_load(self):
+        # indices_range was a slot until the window came to be derived from the chromatogram at the
+        # call site. Every .pkl written before that carries a value for it, and __setstate__ has to
+        # drop names that are no longer slots rather than raise.
+        settings = Analysis_Settings(CHROMATOGRAM)
+        state = (None, {name: getattr(settings, name) for name in Analysis_Settings.__slots__})
+        state[1]['indices_range'] = [0, None]
+
+        restored = Analysis_Settings.__new__(Analysis_Settings)
+        restored.__setstate__(state)
+
+        assert not hasattr(restored, 'indices_range')
+        assert restored.pop('sn', 1) == 5
+        restored.update(time_range=(1.0, 2.0))
+        assert restored.time_range == (1.0, 2.0)
+
     def test_every_other_attribute_survives_the_round_trip(self):
         injection = make_injection([make_peak(5.0)], sample_name='SMP-B7')
         injection.flag_peak(5.0, flag='standard')

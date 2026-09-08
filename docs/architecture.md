@@ -226,8 +226,10 @@ are `__private` statics (`Peak_Detection_MS.pick_peaks` → `__detect_peaks_scip
 
 [`Analysis_Settings`](../pygecko/gc_tools/analysis/analysis_settings.py#L4) is the single carrier for
 every processing parameter. One instance is created per injection, in the injection's constructor,
-from the chromatogram — it derives `scan_rate` and thereby the scan-index range corresponding to a
-requested time window.
+from the chromatogram, from which it derives `scan_rate`. It carries `time_range` as a plain
+setting; the scan indices for that window are derived at the call site, by
+`Peak_Detection_FID.baseline_correction` against the chromatogram it is about to slice, because that
+is the only place the axis being indexed is known (§11.19).
 
 Parameters thread through the code in exactly one way:
 
@@ -644,7 +646,7 @@ See §11.1 for the gap between these rules and the current suite.
 
 ## 11. Known deviations and open issues
 
-Recorded so they are tracked rather than rediscovered. Items 1–5 are **open**: each is a statement
+Recorded so they are tracked rather than rediscovered. Items 1–7 are **open**: each is a statement
 about the code as it stands. The subsection that follows records deviations that have since been
 **resolved**, kept because the reasoning behind the fix — and, in one case, a correction to what the
 defect actually did — is worth not rediscovering either.
@@ -653,10 +655,11 @@ defect actually did — is worth not rediscovering either.
    `pytest-cov` is declared, and `pytest --cov=pygecko` reports **56%** for the suite CI runs
    against `CLAUDE.md`'s 80% requirement. The gap is concentrated in
    [`parsers/file_readers.py`](../pygecko/parsers/file_readers.py),
-   [`gc_tools/peak/peak_detection_fid.py`](../pygecko/gc_tools/peak/peak_detection_fid.py),
    [`visualization/`](../pygecko/visualization) and
    [`data_handling/reports.py`](../pygecko/data_handling/reports.py), none of which have direct
-   tests; CI covers them only with an import smoke test. No `--cov-fail-under` gate is set, because
+   tests; CI covers them only with an import smoke test.
+   [`gc_tools/peak/peak_detection_fid.py`](../pygecko/gc_tools/peak/peak_detection_fid.py) left that
+   list with §11.18 and is now at 94%. No `--cov-fail-under` gate is set, because
    one at 80% would keep CI permanently red — worse than no gate. Note the command in `CLAUDE.md`
    previously read `--cov=pyGecko`, which silently measured nothing (`Module pyGecko was never
    imported`); the package directory is lowercase. Two integration tests
@@ -686,6 +689,29 @@ defect actually did — is worth not rediscovering either.
    `pygecko.reaction.well_plate` was removed, but the `automodule` directive was not, so every docs
    build logs an `autodoc: failed to import` warning. Pre-existing and harmless; left for whoever
    next regenerates the `sphinx-apidoc` stubs.
+
+6. **`time_range` is silently a no-op on `MS_Injection`.** `Peak_Detection_MS` never slices by a
+   window: `pick_peaks` hands the whole chromatogram to `__detect_peaks_scipy`
+   ([`peak_detection_ms.py:32`](../pygecko/gc_tools/peak/peak_detection_ms.py#L32)). `time_range` is
+   still accepted, type-checked and stored by `Analysis_Settings`, so an MS caller gets no error and
+   no effect. Deliberately left alone when §11.19 was fixed: `__extract_mass_spectrum`
+   ([`peak_detection_ms.py:88`](../pygecko/gc_tools/peak/peak_detection_ms.py#L88)) indexes the full
+   `scans` frame with the same `peak_indices` that index the chromatogram, so slicing one without
+   the other desynchronises the two axes and yields a `KeyError` on `mass_spectra[rts[peak_index]]`
+   or, worse, a silently mismatched mass spectrum. Windowing MS wants its own change.
+7. **A cached `processed_chromatogram` makes a later `time_range` a no-op.**
+   `FID_Injection.pick_peaks` only calls `baseline_correction` when `processed_chromatogram` is not
+   yet an array ([`fid_injection.py:93`](../pygecko/gc_tools/injection/fid_injection.py#L93)), and
+   since §11.19 that method is the only place the window is applied. So `pick_peaks()` followed by
+   `pick_peaks(time_range=(5.0, 8.0))` re-picks over the *whole* chromatogram and ignores the
+   window; the same holds for `savgol_window` and `max_half_window`, which also determine the
+   baseline. Verified against the pre-§11.18 code, where the second call instead raised
+   `IndexError: index 30347 is out of bounds for axis 0 with size 30000` — the crash was the
+   double-counted offset, and removing it exposed the stale cache underneath. Not fixed with §11.19
+   because the honest fix is cache invalidation — deciding which settings dirty
+   `processed_chromatogram` and re-running the (expensive) baseline correction when they change —
+   which is a design question, not a one-line change. Workaround: call `baseline_correction(**kwargs)`
+   explicitly, or pick peaks on a freshly loaded injection.
 
 ### Resolved
 
@@ -812,3 +838,107 @@ defect actually did — is worth not rediscovering either.
     every entry point in a subprocess — in-process checks pass vacuously once `sys.modules` is warm
     — and asserts that importing `gc_tools` does not pull in `visualization`. The change is
     behaviourally neutral: both methods render byte-identical output to before.
+
+18. **Peak boarders were reported in minutes but re-integrated as scan indices, and the time-range
+    offset was counted twice.** Two defects a few lines apart in the FID detection path, both
+    invisible in the default configuration.
+
+    `Peak_Detection_FID.__detect_peaks` converted boarders from scan indices to minutes on its last
+    line, *after* `__calculate_areas` had already used them as indices (which is why the areas
+    `pick_peaks` sets were always right). Minutes is the intended contract:
+    `Injection._check_for_peak` compares `peak.boarders` against the time values the chromatogram
+    plot passes it. But [`FID_Injection.integrate`](../pygecko/gc_tools/injection/fid_injection.py)
+    then did `self.chromatogram[1][round(peak.boarders[0]):round(peak.boarders[1])]` — minute values
+    used as indices, so a peak at 4 min integrated `[4:4]`, an empty slice, and `simpson` raised
+    `IndexError` on any real chromatogram. The method had no callers anywhere in the repository,
+    examples included, which is why it had gone unnoticed. It now looks the boarders back up on the
+    chromatogram's own time axis with `np.searchsorted` and integrates the **baseline-corrected**
+    signal, the one `pick_peaks` integrated: all three `Quantification` methods divide one peak area
+    by another, and a baseline offset does not cancel between peaks of different width, so
+    integrating the raw signal would have silently shifted every yield.
+
+    The conversion itself read
+    `((peak_boarders + indices_range[0]) * scan_rate) + chrom_corr[0][0]`, and the line above it did
+    `peak_indices = peak_indices + indices_range[0]`. But `chrom_corr` is the chromatogram
+    `baseline_correction` already sliced by `indices_range`, so `chrom_corr[0][0]` *is* the window's
+    start time and adding the offset again double-counted it; the retention times, meanwhile,
+    indexed the sliced array with indices offset into the unsliced one. At the default
+    `indices_range[0] == 0` both terms vanish, which is why the suite — and the golden retention
+    indices in `test_fid_ri_calibration.py` — never saw it. With `time_range=(5.0, 8.0)` set, peak
+    picking raised `IndexError: index 2399 is out of bounds for axis 0 with size 1199`, and any
+    boarder that survived landed past the end of the run.
+
+    Both lines now read their values straight off `chrom_corr[0]`, the slice's own time axis, rather
+    than reconstructing them from `scan_rate`. That fixes the double count and makes the round trip
+    `integrate` depends on **exact**. The reason the arithmetic form was not exact is *not* uneven
+    sampling — the CSV fixture's 37500 points have a spacing standard deviation of `2.15e-14`, i.e.
+    uniform to floating point. It is that reconstructing a value as `index * scan_rate + t0` lands
+    about `3.6e-15` away from the value actually stored on the axis, which is enough for
+    `np.searchsorted` to return the neighbouring scan: measured over the truncated fixture, the
+    round trip was exact for only **22441 of 30000** indices, the other 7559 off by exactly +1 scan,
+    shifting the narrower of its 69 peaks by up to **2.8%**. Reading off the axis round-trips
+    30000/30000. It is pinned by an integration test on the real fixture (`rel=1e-12`) alongside the
+    structural unit test that every boarder is a value taken from the time axis. `__find_right_boarder` may return one past the last scan — a valid slice
+    bound but not a valid time — so the right boarder is clamped to the last scan.
+
+    `indices_range` is consequently no longer read in `__detect_peaks`; its `pop` moved to
+    `baseline_correction`, which is where the slice is actually taken, and where §5's recording of
+    resolved parameters now picks it up (it had been read directly, bypassing `pop`).
+    `Peak_Detection_MS` performs the same index-to-minute conversion arithmetically and correctly —
+    it has no `indices_range` term — and is left alone: MS peaks carry no area, so nothing converts
+    back. See §11.4 for the separate, still-open question of what `time_range` is relative to.
+
+19. **`time_range` was measured from absolute zero but applied to a chromatogram truncated at the
+    solvent delay.** `Analysis_Settings.__set_indices_range` converted the window with
+    `convert_time_to_scan(self.time_range, scan_rate)` — indices from time zero — and
+    `Peak_Detection_FID.baseline_correction` used them to slice `FID_Injection.chromatogram`, which
+    the constructor had already truncated. `time_range=(5.0, 8.0)` with `solvent_delay=2.5`
+    therefore analysed **7.5–10.5 min**, and could return the wrong peak rather than merely the
+    wrong number of them: on the synthetic two-peak chromatogram, asking for 3.0–5.0 returned the
+    peak at 5.999 instead of the one at 4.0.
+
+    The root cause was structural. `indices_range` was *derived* state cached on
+    `Analysis_Settings`, recomputed on every `update()`, and read in exactly one place — but
+    `Analysis_Settings` is built from the pre-truncation array and holds no chromatogram reference,
+    so the derivation could not see the axis it was indexing. Rather than thread a time origin into
+    the settings object, `indices_range` was **deleted** and the conversion moved to the single
+    consumer, which has the array in hand:
+
+    ```python
+    time_range = analysis_settings.pop('time_range', None)
+    if time_range:
+        start, end = np.searchsorted(chromatogram[0], time_range)
+    else:
+        start, end = 0, None
+    ```
+
+    `np.searchsorted` needs neither an origin nor `scan_rate`, and clamps a window reaching past
+    either end on its own — which also closes a trap in the old code, where a `time_range` starting
+    before the solvent delay produced a *negative* index that numpy silently reinterprets as
+    slicing from the end. A stored origin would have needed a new slot, an `__init__` reorder (the
+    old `__set_indices_range()` ran before `scan_rate` was assigned and survived only because
+    `time_range` was `None` at that point), an explicit clamp, and a second `__setstate__` hook.
+
+    Consequences worth knowing:
+    - **`time_range` is now what the history records.** `resolved` carries the caller's window
+      (`[5.0, 8.0]`, or `None` when unset) instead of a derived index pair — the user's intent
+      rather than its translation.
+    - **Removing a `__slots__` entry is exactly what §8 warns about,** so
+      `Analysis_Settings.__setstate__` now skips pickled names that are no longer slots
+      (`hasattr(type(self), name)`, which finds slot descriptors across the MRO). Every existing
+      `.pkl` carries an `indices_range` value and would otherwise raise `AttributeError` on load;
+      verified against a pickle written by the pre-change code.
+    - The dead second copy of the same bug, an unused
+      `Peak_Detection_FID.__set_indices_range` that reimplemented the conversion with raw float
+      division and no rounding, was deleted so it cannot be wired up later.
+    - `MS_Injection` needed no change, and gained nothing: see open item §11.6.
+    - The stale-cache no-op this exposed is open item §11.7.
+
+    Two latent defects in `FID_Injection.__init__` were fixed at the same time, since the change
+    rewrites those lines: the truncation passed the **parameter** `solvent_delay` rather than
+    `self.solvent_delay`, so the `solvent_delay=None` auto-detect branch computed a value and then
+    raised `TypeError` on `None / scan_rate` — unreachable dead code, now working; and
+    `if solvent_delay:` treated `solvent_delay=0` as "not provided", now `is not None`. The
+    truncation arithmetic itself is unchanged, which is what keeps the 23 golden alkane retention
+    times and 68 golden RIs in `test_fid_ri_calibration.py` green — they are the regression anchor
+    for the default whole-chromatogram path.
