@@ -34,7 +34,10 @@ class Reaction_Parser:
 
         dataset = cls.create_dataset_from_layout(layout, yield_array)
         if path:
-            message_helpers.write_message(dataset, str(path))
+            if hasattr(message_helpers, 'save_message'):
+                message_helpers.save_message(dataset, str(path))
+            else:
+                message_helpers.write_message(dataset, str(path))
         return dataset
 
     @classmethod
