@@ -56,7 +56,7 @@ jobs:
       MPLBACKEND: Agg
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
       - run: uv sync --locked --extra test --extra ord --extra mzml
@@ -74,7 +74,7 @@ jobs:
       PYGECKO_REAL_DATA_DIR: ${{ github.workspace }}/.test-data/zenodo/14316687
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
       - uses: actions/cache@v4
