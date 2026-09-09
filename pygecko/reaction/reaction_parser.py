@@ -34,7 +34,10 @@ class Reaction_Parser:
 
         dataset = cls.create_dataset_from_layout(layout, yield_array)
         if path:
-            message_helpers.write_message(dataset, path)
+            if hasattr(message_helpers, 'save_message'):
+                message_helpers.save_message(dataset, str(path))
+            else:
+                message_helpers.write_message(dataset, str(path))
         return dataset
 
     @classmethod
@@ -65,7 +68,10 @@ class Reaction_Parser:
                 cls.__add_outcomes(reaction, layout.meta_data, _yield, layout.get_product(f"{x}{y}"))
                 cls.__add_provenance(reaction, layout.meta_data)
                 reactions.append(reaction)
-        dataset = dataset_pb2.Dataset(reactions=reactions)
+        dataset = dataset_pb2.Dataset(
+            name='pyGecko reaction array',
+            description='Combinatorial reaction array exported by pyGecko.',
+            reactions=reactions)
         validations.validate_message(dataset)
         return dataset
 

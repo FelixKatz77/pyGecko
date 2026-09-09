@@ -30,6 +30,7 @@ pygecko/data_handling/tmp/
 *_yields.csv
 plateopt/
 jobs/
+.test-data/
 
 # OS files
 .DS_Store
