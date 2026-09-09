@@ -20,7 +20,8 @@ def test_build_dataset_uses_current_ord_save_api(monkeypatch, tmp_path):
     monkeypatch.setattr(
         message_helpers,
         'write_message',
-        lambda message, path: pytest.fail('deprecated ORD writer was used'))
+        lambda message, path: pytest.fail('deprecated ORD writer was used'),
+        raising=False)
 
     result = Reaction_Parser.build_dataset(None, None, output)
 
