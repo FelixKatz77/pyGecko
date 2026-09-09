@@ -458,6 +458,26 @@ without it.
 - `PDF_Report` — ReportLab document combining the heatmap, results tables, and Indigo-rendered
   structures.
 
+#### Real-data regression layers
+
+Study-data coverage has two layers. The default offline suite commits only narrow, attributed
+chromatogram excerpts plus metadata and golden CSV results under `tests/real_data/`; the fixture
+manifest records Zenodo release 1.2, the CC-BY-4.0 license, source paths, archive MD5, and excerpt
+SHA-256 hashes. `tests/support/build_real_data_excerpts.py` deterministically rebuilds those files
+from an extracted thiolation archive.
+
+Whole-plate tests never access the network themselves. `tests/support/fetch_zenodo.py` separately
+downloads the three pinned archives from record 14316687, verifies their published MD5 checksums,
+rejects unsafe ZIP members, and extracts into the ignored `.test-data/` cache. Tests consume only
+the directory named by `PYGECKO_REAL_DATA_DIR`; without it, the `realdata`/`slow` tests skip. This
+keeps ordinary CI fast and offline while a weekly/manual job processes all 96 FID and 96 mzML files
+per plate.
+
+Golden comparisons are exact rather than tolerance-based because the expected CSVs were generated
+by the same discrete workflow (integer yields and milliminute retention times). The sole intentional
+exception is Buchwald–Hartwig C9: the current overlap-border correction produces 67% and an
+`overlap` flag, whereas the publication CSV predates that correction and reports 74%.
+
 ### G. Reference usage
 
 [`examples/buchwald_hartwig/plate_processing.py`](../examples/buchwald_hartwig/plate_processing.py) is

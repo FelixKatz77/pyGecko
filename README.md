@@ -71,6 +71,33 @@ Two integration tests load Agilent `.D` directories and therefore need a configu
 executable; they fail without one. To skip them, run `pytest -m "not msconvert"`. The mzML export
 tests need the `mzml` extra; skip them with `pytest -m "not mzml"`.
 
+The normal offline suite includes small, attributed `.xy` and mzML excerpts from the pyGecko study.
+It also checks ORD/PDF export using the corresponding plate metadata. Run it with the coverage gate:
+
+```bash
+pytest -m "not msconvert and not slow" --cov=pygecko --cov-report=term-missing --cov-fail-under=80
+```
+
+### Full study-data regressions
+
+The complete plate tests use release 1.2 of the study dataset, pinned to
+[Zenodo record 14316687](https://zenodo.org/records/14316687). Raw archives and extracted files are
+kept in the ignored `.test-data/` directory and are never added to Git. Download all three
+checksum-verified archives, then run the plate regressions:
+
+```bash
+python -m tests.support.fetch_zenodo
+PYGECKO_REAL_DATA_DIR="$PWD/.test-data/zenodo/14316687" \
+  pytest tests/real_data -m "realdata and slow"
+```
+
+These regressions process all 96 FID and all 96 mzML injections for thiolation,
+Buchwald–Hartwig, and AD-HoC. Thiolation and AD-HoC reproduce the checked-in yields, retention
+times, and analyte assignments exactly. Buchwald–Hartwig reproduces every assignment and retention
+time; 26 of its 27 reported yields are exact. Well C9 is expected to be 67% with the current peak
+overlap-border correction rather than the paper's 74%, and the test requires its `overlap` flag.
+The same full run is scheduled weekly in CI and can be started with `workflow_dispatch`.
+
 ## Usage
 For non-automated workflows pyGecko is best used with jupyter notebooks. The notebooks folder of the repository contains
 examples for the usage of pyGecko for the quantitative analysis of reaction outcomes and spectral matching. The Python 

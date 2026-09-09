@@ -45,7 +45,7 @@ jobs:
         run: python -c "import pygecko.parsers, pygecko.analysis, pygecko.visualization, pygecko.data_handling, pygecko.gc_tools, pygecko.reaction"
       - name: Tests
         # The msconvert-marked tests need a vendor binary that no runner has.
-        run: pytest -m "not msconvert" --cov=pygecko --cov-report=term-missing
+        run: pytest -m "not msconvert and not slow" --cov=pygecko --cov-report=term-missing --cov-fail-under=80
 
   locked:
     # Proves the pinned environment in uv.lock still works.
@@ -61,4 +61,28 @@ jobs:
           enable-cache: true
       - run: uv sync --locked --extra test --extra ord --extra mzml
       - run: uv run python -c "import pygecko.parsers, pygecko.analysis, pygecko.visualization, pygecko.data_handling, pygecko.gc_tools, pygecko.reaction"
-      - run: uv run pytest -m "not msconvert"
+      - run: uv run pytest -m "not msconvert and not slow"
+
+  real-data:
+    # Full plates are large, so this runs only weekly or when requested manually.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    name: Zenodo v1.2 plate regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MPLBACKEND: Agg
+      PYGECKO_REAL_DATA_DIR: ${{ github.workspace }}/.test-data/zenodo/14316687
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - uses: actions/cache@v4
+        with:
+          path: .test-data/zenodo/14316687/archives
+          key: zenodo-14316687-32cce965-12a94a07-75f00228
+      - run: uv sync --locked --extra test --extra ord --extra mzml
+      - name: Download and verify Zenodo record
+        run: uv run python -m tests.support.fetch_zenodo
+      - name: Reproduce all three study plates
+        run: uv run pytest tests/real_data -m "realdata and slow"
