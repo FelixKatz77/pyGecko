@@ -39,7 +39,7 @@ class TestEntryPointsImportStandalone:
         assert import_probe(
             "import sys\n"
             "class Block:\n"
-            "    def find_module(self, name, path=None):\n"
+            "    def find_spec(self, name, path=None, target=None):\n"
             "        if name == 'psims' or name.startswith('psims.'):\n"
             "            raise ImportError('blocked')\n"
             "        return None\n"
