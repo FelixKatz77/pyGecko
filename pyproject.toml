@@ -62,4 +62,6 @@ addopts = "--strict-markers"
 markers = [
     "msconvert: needs a configured msConvert executable (Agilent .D conversion)",
     "mzml: needs psims for mzML export (pip install pyGecko[mzml])",
+    "realdata: needs the complete extracted Zenodo record configured locally",
+    "slow: long-running integration or whole-dataset regression",
 ]

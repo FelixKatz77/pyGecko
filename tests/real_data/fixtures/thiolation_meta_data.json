@@ -1,0 +1,111 @@
+{
+  "conditions":
+  {
+    "vessel": {"type": "WELL_PLATE", "material": "GLASS", "volume": "1 mL", "model": "Paradox Standard 96-Position Photoredox"},
+    "temperature": "36 C",
+    "time": "24 h",
+    "mixing": "shaking",
+    "speed": "475 rpm",
+    "wavelength": "445 nm",
+    "power": "50 mW"
+  },
+  "stock_solutions":
+  [
+    {
+      "name": "heteroarene in DMA",
+      "compound": "$row$",
+      "role": "REACTANT",
+      "volume": "100 uL",
+      "concentration": "0.15 M",
+      "solvent": "DMA",
+      "addition_order": 1,
+      "wells": ["A", "B", "C", "D", "E", "F", "G", "H"]
+    },
+    {
+      "name": "thiole in DMA",
+      "compound": "$column$",
+      "role": "REACTANT",
+      "volume": "100 uL",
+      "concentration": "0.225 M",
+      "solvent": "DMA",
+      "addition_order": 2,
+      "wells": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+    },
+    {
+      "name": "dodecane in DMA",
+      "compound": "CCCCCCCCCCCCC",
+      "role": "INTERNAL_STANDARD",
+      "volume": "50 uL",
+      "concentration": "0.3 M",
+      "solvent": "DMA",
+      "addition_order": 5,
+      "wells": ["all"]
+    },
+    {
+      "name": "IrF in DMA",
+      "compound": "F[P](F)(F)(F)(F)F.CC(C)(C)C1=CC=[N@H]2C(=C1)C3=CC(=CC=[N@@H]3[Ir]2456c7cc(F)cc(F)c7C8=CC=C(C=[N]48)C(F)(F)F)C(C)(C)C.Fc9cc(F)c(C%10=[N]5C=C(C=C%10)C(F)(F)F)c6c9",
+      "role": "CATALYST",
+      "volume": "50 uL",
+      "concentration": "0.006 M",
+      "solvent": "DMA",
+      "addition_order": 4,
+      "wells": ["all"]
+    },
+    {
+      "name": "pyridine in DMA",
+      "compound": "n1ccccc1",
+      "role": "REAGENT",
+      "volume": "50 uL",
+      "concentration": "1.125 M",
+      "solvent": "DMA",
+      "addition_order": 3,
+      "wells": ["F", "G"]
+    },
+    {
+      "name": "DMA",
+      "compound": "CC(N(C)C)=O",
+      "role": "SOLVENT",
+      "volume": "50 uL",
+      "concentration": "10.8 M",
+      "solvent": "DMA",
+      "addition_order": 3,
+      "wells": ["A", "B", "C", "D", "E", "H"]
+    }
+  ],
+  "workup":
+  [
+    {
+      "type": "FILTRATION",
+      "duration": "40 min",
+      "keep_phase": "filtrate",
+      "details": "Reaction mixtures were filtered through a 0.2 um PTFE filter (60 uL) and flushed with EtOAc (1 mL)."
+    }
+  ],
+  "analysis":
+  [
+    {
+      "type": "GCMS",
+      "details": "110_20_320_2",
+      "instrument_manufacturer": "Agilent",
+      "purpose": "IDENTIFICATION",
+      "is_normalized": false
+    },
+    {
+      "type": "GC",
+      "details": "110_20_320_2",
+      "instrument_manufacturer": "Agilent",
+      "purpose": "QUANTIFICATION",
+      "is_normalized": true
+
+    }
+  ],
+  "provenance":
+  {
+    "author": "Felix Katzenburg",
+    "email": "felix.katzenburg@uni-muenster.de",
+    "orcid": "0000-0003-3053-4911",
+    "organization": "University of Muenster",
+    "city": "Münster, NRW, Germany",
+    "doi": ""
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "license": "CC-BY-4.0",
+  "record": "https://zenodo.org/records/14316687",
+  "archive": "Thiolation_Plate_GC_Data.zip",
+  "archive_md5": "32cce96527368938cae9b1a48ff3d13f",
+  "files": {
+    "thiolation_A1_product.xy": {
+      "source": "Thiolation_Plate_GC_Data/FID/FKB-FA-060-A1.xy",
+      "retention_time_minutes": [
+        6.7,
+        7.3
+      ],
+      "sha256": "651d43281a0252273b6da90c42bb04f4164f6fd8986f1277e90b0e14f2e0fade"
+    },
+    "thiolation_A1_product.mzML": {
+      "source": "Thiolation_Plate_GC_Data/MS/FKB-FA-060-A1.mzML",
+      "retention_time_minutes": [
+        5.8,
+        6.1
+      ],
+      "sha256": "5f32b246a318d4a3d63882b5395a6895fe71434d500da467d0ca011abe1e0bcb"
+    },
+    "thiolation_meta_data.json": {
+      "source": "Thiolation_Plate_GC_Data/meta_data.json",
+      "sha256": "c9b036e5c1b6245e0672d02e3c1c56ed1530bc799abe0d5854fda7378570653d"
+    },
+    "thiolation_plate_layout.csv": {
+      "source": "Thiolation_Plate_GC_Data/plate_layout.csv",
+      "sha256": "24f1430db512b0c14dc5e4178ac1f2dbcd496ca6167a5a5d6b502ae5f18e1904"
+    }
+  }
+}
