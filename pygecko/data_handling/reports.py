@@ -2,6 +2,7 @@ import io
 from functools import partial
 from datetime import datetime
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import numpy as np
 from pygecko.visualization.visuals import Visualization
@@ -39,15 +40,16 @@ class PDF_Report(Report):
 
     def __init__(self, filename: str, experiment_id:str, layout:Reaction_Array, yield_array:np.ndarray):
         super().__init__(experiment_id, layout, yield_array)
-        self.doc = SimpleDocTemplate(filename, pagesize=A4, rightMargin=1.5*cm, leftMargin=1.5*cm, topMargin=2*cm,
+        self.doc = SimpleDocTemplate(str(filename), pagesize=A4, rightMargin=1.5*cm, leftMargin=1.5*cm, topMargin=2*cm,
                                     bottomMargin=2*cm, showBoundary=0)
         self.author = self.layout.meta_data['provenance']['author']
         self.analysis = ', '.join(analysis['type'] for analysis in self.layout.meta_data['analysis'])
         self.metadata = self.__collect_meta_data()
         self.analysis_table = self.__create_analysis_table()
-        heatmap_path = Path(__file__).resolve().parent.joinpath('tmp/heatmap.png')
-        Visualization.visualize_plate(yield_array, path=heatmap_path)
-        self.heatmap = Image(heatmap_path, 11*cm, 6*cm)
+        with TemporaryDirectory(prefix='pygecko-report-') as directory:
+            heatmap_path = Path(directory) / 'heatmap.png'
+            Visualization.visualize_plate(yield_array, path=heatmap_path)
+            self.heatmap = Image(io.BytesIO(heatmap_path.read_bytes()), 11*cm, 6*cm)
         self.results_table = self.__create_results_table_quantification()
         self.molecules_table_rows, self.molecules_table_columns, self.common_molecules_img = self.__create_molecules_table()
         self.conditions_table = self.create_conditions_table()
@@ -184,7 +186,10 @@ class PDF_Report(Report):
     def __create_results_table_quantification(self):
         alignment = 'CENTRE'
         yield_list = []
-        for lst in self.yield_array.tolist():
+        quantities = self.yield_array
+        if self.yield_array.dtype.names and 'quantity' in self.yield_array.dtype.names:
+            quantities = self.yield_array['quantity']
+        for lst in quantities.tolist():
             row = []
             for element in lst:
                 if element == -1:

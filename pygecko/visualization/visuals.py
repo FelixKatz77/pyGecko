@@ -91,7 +91,7 @@ class Visualization:
 
 
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-        cbar = plt.colorbar(sm, ticks=[0, 25, 50, 75, 100])
+        cbar = fig.colorbar(sm, ax=ax, ticks=[0, 25, 50, 75, 100])
         cbar.ax.set_ylabel(cbar_label, size=14)
         cbar.ax.tick_params(labelsize=12, )
         fig.tight_layout()

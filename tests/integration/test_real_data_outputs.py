@@ -49,6 +49,7 @@ def test_ord_export_builds_valid_dataset_from_study_results(
         thiolation_layout, np.nan_to_num(thiolation_results['quantity']), output)
 
     assert dataset.name == 'pyGecko reaction array'
+    assert dataset.description == 'Combinatorial reaction array exported by pyGecko.'
     assert len(dataset.reactions) == 96
     assert dataset.reactions[0].identifiers[0].value == 'A1'
     assert dataset.reactions[0].outcomes[0].products[0].measurements[0].percentage.value == 75
