@@ -157,34 +157,17 @@ class Spectral_Match:
             tuple[np.ndarray, np.ndarray]: Tuple containing the weighted intensity vectors for the two mass spectra.
         '''
 
-        max_mz = max(max(ms_spectrum1['mz']), max(ms_spectrum2['mz']))
-        weighted_intensity_vector1 = np.zeros(int(max_mz + 1))
-        weighted_intensity_vector2 = np.zeros(int(max_mz + 1))
-        for mz in range(int(max_mz + 1)):
-            weighted_intensity_vector1[mz] = Spectral_Match.__get_weighted_intensity(mz, ms_spectrum1)
-            weighted_intensity_vector2[mz] = Spectral_Match.__get_weighted_intensity(mz, ms_spectrum2)
-        return weighted_intensity_vector1, weighted_intensity_vector2
-
-    @staticmethod
-    def __get_weighted_intensity(mz: int, ms_spectrum: np.ndarray) -> float:
-
-        '''
-        Returns the weighted intensity of a mass spectrum at a given m/z.
-
-        Args:
-            mz (int): m/z to get the weighted intensity for.
-            ms_spectrum (np.ndarray): Mass spectrum.
-
-        Returns:
-            float: Weighted intensity of the mass spectrum at the given m/z.
-        '''
-
-        if mz in ms_spectrum['mz']:
-            rel_intensity = ms_spectrum[ms_spectrum['mz'] == mz]['rel_intensity'][0]
-            weighted_intensity = Spectral_Match.__calculate_weighted_intensity(mz, rel_intensity)
-        else:
-            weighted_intensity = 0.0
-        return weighted_intensity
+        # Both vectors span 0..max m/z of either spectrum; scattering the weighted intensities
+        # straight to their m/z index replaces a per-m/z membership test that made a single
+        # comparison cost milliseconds. Spectra carry nominal (integer-valued) m/z.
+        size = int(max(ms_spectrum1['mz'].max(), ms_spectrum2['mz'].max())) + 1
+        vectors = []
+        for ms_spectrum in (ms_spectrum1, ms_spectrum2):
+            vector = np.zeros(size)
+            mz = ms_spectrum['mz'].astype(int)
+            vector[mz] = Spectral_Match.__calculate_weighted_intensity(mz, ms_spectrum['rel_intensity'])
+            vectors.append(vector)
+        return vectors[0], vectors[1]
 
     @staticmethod
     def __calculate_weighted_intensity(mz: int, rel_intensity: float) -> float:

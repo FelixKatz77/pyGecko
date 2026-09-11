@@ -186,18 +186,22 @@ class Peak_Detection_FID:
         first_diff = np.diff(chromatogram[1]) / analysis_settings.scan_rate
         boarder_threshold = analysis_settings.pop('boarder_threshold', abs(np.mean(first_diff))*0.5)
         boarder_window = analysis_settings.pop('boarder_window', 100)
+        # Prefix sums let the boarder searches read a window mean as one subtraction. The searches
+        # step one scan at a time and averaged the window afresh at every step, which was three
+        # quarters of pick_peaks on a 30k-scan chromatogram.
+        diff_cumsum = np.concatenate(([0.0], np.cumsum(first_diff)))
         boarders = np.empty((len(peak_indices), 2), int)
 
         for i, index in enumerate(peak_indices):
-            left = Peak_Detection_FID.__find_left_boarder(index, peak_widths[i], first_diff, boarder_threshold,
+            left = Peak_Detection_FID.__find_left_boarder(index, peak_widths[i], diff_cumsum, boarder_threshold,
                                                           boarder_window)
-            right = Peak_Detection_FID.__find_right_boarder(chromatogram[1], index, peak_widths[i], first_diff,
+            right = Peak_Detection_FID.__find_right_boarder(chromatogram[1], index, peak_widths[i], diff_cumsum,
                                                             boarder_threshold, boarder_window)
             boarders[i] = [left, right]
         return boarders
 
     @staticmethod
-    def __find_left_boarder(index:int, peak_width:int, first_diff:np.ndarray, threshold:float, window:int) -> int:
+    def __find_left_boarder(index:int, peak_width:int, diff_cumsum:np.ndarray, threshold:float, window:int) -> int:
 
         '''
         Returns the left boarder of a peak in a chromatogram.
@@ -205,7 +209,8 @@ class Peak_Detection_FID:
         Args:
             index (int): The index of the peak to find the left boarder for.
             peak_width (int): The width of the peak.
-            first_diff (np.ndarray): The first derivative of the chromatogram.
+            diff_cumsum (np.ndarray): Prefix sums of the first derivative of the chromatogram, with a
+            leading 0, so that diff_cumsum[b] - diff_cumsum[a] is the sum of first_diff[a:b].
             threshold (float): The threshold for the first derivative.
             window (int): The window size for the boarder detection.
 
@@ -218,7 +223,7 @@ class Peak_Detection_FID:
             return 0
         left = max(0, _l - window)
 
-        while np.mean(first_diff[int(left):_l]) > threshold:
+        while (diff_cumsum[_l] - diff_cumsum[int(left)]) / (_l - int(left)) > threshold:
             _l -= 1
             if _l <= 0:
                 break
@@ -227,7 +232,7 @@ class Peak_Detection_FID:
         return left
 
     @staticmethod
-    def __find_right_boarder(chromatogram: np.ndarray, index: int, peak_width: int, first_diff: np.ndarray,
+    def __find_right_boarder(chromatogram: np.ndarray, index: int, peak_width: int, diff_cumsum: np.ndarray,
                              threshold: float, window: int) -> int:
 
         '''
@@ -237,7 +242,8 @@ class Peak_Detection_FID:
             chromatogram (np.ndarray): The intensity values of the chromatogram.
             index (int): The index of the peak to find the right boarder for.
             peak_width (int): The width of the peak.
-            first_diff (np.ndarray): The first derivative of the chromatogram.
+            diff_cumsum (np.ndarray): Prefix sums of the first derivative of the chromatogram, with a
+            leading 0, so that diff_cumsum[b] - diff_cumsum[a] is the sum of first_diff[a:b].
             threshold (float): The threshold for the first derivative.
             window (int): The window size for the boarder detection.
 
@@ -245,16 +251,17 @@ class Peak_Detection_FID:
             int: The right boarder of the peak.
         '''
 
+        diff_length = diff_cumsum.shape[0] - 1
         _r = int(round(index + peak_width / 2, 0))
-        if _r >= first_diff.shape[0]:
+        if _r >= diff_length:
             return chromatogram.shape[0]
-        right = min(first_diff.shape[0], _r + window)
+        right = min(diff_length, _r + window)
 
-        while abs(np.mean(first_diff[_r:int(right)])) > threshold:
+        while abs((diff_cumsum[int(right)] - diff_cumsum[_r]) / (int(right) - _r)) > threshold:
             _r += 1
-            if _r >= first_diff.shape[0]:
+            if _r >= diff_length:
                 break
-            right = min(first_diff.shape[0], _r + window)
+            right = min(diff_length, _r + window)
         right = min(chromatogram.shape[0], _r + window / 4)
         return right
     @staticmethod
