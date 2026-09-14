@@ -1,87 +1,121 @@
+from datetime import datetime
 import numpy as np
 from pathlib import Path
 from pyteomics import mzxml
-import pandas as pd
 import pymzml
+from pygecko.gc_tools.injection.raw_scans import Raw_Scans
 from pygecko.parsers.utilities import HiddenPrints
 import netCDF4 as nc
 
 
-def extract_scans_from_mzxml(mzxml_file: Path) -> pd.DataFrame:
+def _flatten(retention_times: list, mzs: list[np.ndarray], intensities: list[np.ndarray]) -> Raw_Scans:
 
     '''
-    Takes in the path to a mzxml file containing the scans of an injection, returns a DataFrame containing the scans and
-    the sample name.
+    Takes in one retention time, m/z array and intensity array per scan, returns them as Raw_Scans.
+    '''
+
+    scan_index = np.cumsum([0] + [len(mz) for mz in mzs[:-1]])
+    return Raw_Scans(retention_times, scan_index, np.concatenate(mzs), np.concatenate(intensities))
+
+
+def _parse_iso_timestamp(timestamp: str|None) -> datetime|None:
+
+    '''
+    Takes in an ISO 8601 timestamp as mzML writes it, returns a datetime. Python 3.10's
+    fromisoformat does not accept the Z suffix msConvert emits for UTC.
+    '''
+
+    if not timestamp:
+        return None
+    return datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+
+
+def extract_scans_from_mzxml(mzxml_file: Path) -> tuple[Raw_Scans, dict]:
+
+    '''
+    Takes in the path to a mzxml file containing the scans of an injection, returns the centroids as
+    read and the injection's metadata.
+
+    mzXML carries no run start time or instrument description that pyteomics exposes, so only the
+    sample name (the file stem) and the polarity are filled in.
 
     Args:
         mzxml_file (Path): Path to the mzxml file.
 
     Returns:
-        tuple[pd.DataFrame, str]: DataFrame containing the scans and the sample name.
+        tuple[Raw_Scans, dict]: The centroids and the metadata (SampleName, AcqTime, Polarity,
+        InstrumentName).
     '''
 
-    scans = []
+    retention_times, mzs, intensities = [], [], []
+    polarity = None
     with mzxml.read(str(mzxml_file)) as reader:
-        sample_name = mzxml_file.stem
         for spectrum in reader:
-            scan = {
-                'retention_time': int(spectrum['retentionTime']*60000),
-            }
-            for m, i in zip(spectrum['m/z array'], spectrum['intensity array']):
-                scan[round(m, 0)] = i
-            scans.append(scan)
+            if polarity is None:
+                polarity = {'+': 'positive', '-': 'negative'}.get(spectrum.get('polarity'))
+            retention_times.append(spectrum['retentionTime'] * 60000)
+            mzs.append(spectrum['m/z array'])
+            intensities.append(spectrum['intensity array'])
+    metadata = {'SampleName': mzxml_file.stem, 'AcqTime': None, 'Polarity': polarity,
+                'InstrumentName': None}
+    return _flatten(retention_times, mzs, intensities), metadata
 
-    df = pd.DataFrame(scans)
-    df.fillna(0, inplace=True)
-    df.set_index('retention_time', inplace=True)
-    df = df.reindex(sorted(df.columns), axis=1)
-    return df, sample_name
 
-def extract_scans_from_mzml(mzml_file: Path) -> (pd.DataFrame, str):
+def extract_scans_from_mzml(mzml_file: Path) -> tuple[Raw_Scans, dict]:
 
     '''
-    Takes in the path to a mzml file containing the scans of an injection, returns a DataFrame containing the scans and
-    the sample name.
+    Takes in the path to a mzml file containing the scans of an injection, returns the centroids as
+    read and the injection's metadata.
+
+    The polarity is taken from the first spectrum: a GC-MS run is acquired in one polarity. The
+    instrument is the first parameter of the instrument configuration: the instrument-model
+    cvParam when the file has one (msConvert writes it), or the userParam pyGecko's own writer
+    emits for a free-text instrument name.
 
     Args:
         mzml_file (Path): Path to the mzml file.
 
     Returns:
-        tuple[pd.DataFrame, str]: DataFrame containing the scans and the sample name.
+        tuple[Raw_Scans, dict]: The centroids and the metadata (SampleName, AcqTime, Polarity,
+        InstrumentName).
     '''
+
+    retention_times, mzs, intensities = [], [], []
+    polarity = None
     with HiddenPrints():
-        scans = []
         with pymzml.run.Reader(str(mzml_file)) as run:
-            sample_name = run.info['run_id']
             for spectrum in run:
-                retention_time = spectrum.scan_time[0] * 60000
-                mzs = np.round(spectrum.mz).astype(int)
-                intensities = spectrum.i
+                if polarity is None:
+                    if 'MS:1000130' in spectrum:
+                        polarity = 'positive'
+                    elif 'MS:1000129' in spectrum:
+                        polarity = 'negative'
+                retention_times.append(spectrum.scan_time[0] * 60000)
+                mzs.append(spectrum.mz)
+                intensities.append(spectrum.i)
+            configuration = run.info['instrument_configuration_list_element'].find(
+                '{*}instrumentConfiguration')
+            param = configuration.find('{*}cvParam') if configuration is not None else None
+            if param is None and configuration is not None:
+                param = configuration.find('{*}userParam')
+            instrument_name = param.attrib['name'] if param is not None else None
+            metadata = {'SampleName': run.info['run_id'],
+                        'AcqTime': _parse_iso_timestamp(run.info.get('start_time')),
+                        'Polarity': polarity, 'InstrumentName': instrument_name}
+    return _flatten(retention_times, mzs, intensities), metadata
 
-                scan = {'retention_time': retention_time}
-                scan.update(dict(zip(mzs, intensities)))
-                scans.append(scan)
-                # scan = {
-                #     'retention_time': spectrum.scan_time[0]*60000
-                # }
-                # for m, i in zip(spectrum.mz, spectrum.i):
-                #     scan[round(m, 0)] = i
-                # scans.append(scan)
-        df = pd.DataFrame(scans).fillna(0).set_index('retention_time')
-        df = df.reindex(sorted(df.columns), axis=1)
-        return df, sample_name
 
-
-def extract_scans_from_cdf(cdf_file: Path) -> tuple[pd.DataFrame, str]:
+def extract_scans_from_cdf(cdf_file: Path) -> tuple[Raw_Scans, dict]:
     '''
     Takes in the path to an AIA NetCDF (.cdf) file containing the scans of an injection,
-    returns a DataFrame containing the scans and the sample name.
+    returns the centroids as read and the injection's metadata.
 
     Args:
         cdf_file (Path): Path to the .cdf file.
 
     Returns:
-        tuple[pd.DataFrame, str]: DataFrame containing the scans and the sample name.
+        tuple[Raw_Scans, dict]: The centroids and the metadata (SampleName, AcqTime, Polarity,
+        InstrumentName).
     '''
     # Extract sample name (Assuming OpenLab format: SampleName_MS1Front...)
     sample_name = cdf_file.name.split('_')[0]
@@ -95,25 +129,19 @@ def extract_scans_from_cdf(cdf_file: Path) -> tuple[pd.DataFrame, str]:
         intensities = dataset.variables['intensity_values'][:]
         scan_index = dataset.variables['scan_index'][:]
 
-        num_scans = len(times)
-        # One scatter over the flat ANDI arrays instead of a DataFrame per scan: the per-scan
-        # groupby made this reader ~16x slower than the mzML path on a 1900-scan run. Each centroid
-        # is binned to its nominal mass and the maximum intensity per (scan, mass) is kept.
-        nominal_masses = np.round(np.asarray(masses)).astype(int)
-        intensities = np.asarray(intensities, dtype=float)
-        scan_lengths = np.diff(np.append(np.asarray(scan_index), len(nominal_masses)))
-        rows = np.repeat(np.arange(num_scans), scan_lengths)
-        columns, column_indices = np.unique(nominal_masses, return_inverse=True)
-        matrix = np.zeros((num_scans, len(columns)))
-        np.maximum.at(matrix, (rows, column_indices), intensities)
-
         # AIA NetCDF time is usually in seconds. Multiply by 1000 for milliseconds.
-        retention_times = np.asarray(times, dtype=float) * 1000
+        raw = Raw_Scans(np.asarray(times, dtype=float) * 1000, np.asarray(scan_index),
+                        np.asarray(masses), np.asarray(intensities))
+
+        # ANDI-MS global attributes; both are optional in the standard.
+        polarity = getattr(dataset, 'test_ionization_polarity', '').lower()
+        polarity = polarity.split()[0] if polarity.startswith(('positive', 'negative')) else None
+        timestamp = getattr(dataset, 'experiment_date_time_stamp', None)  # YYYYMMDDhhmmss+hhmm
+        acq_time = datetime.strptime(timestamp, '%Y%m%d%H%M%S%z') if timestamp else None
 
     finally:
         dataset.close()  # Ensure the file is closed even if an error occurs
 
-    # Format the DataFrame exactly like the mzML output
-    df = pd.DataFrame(matrix, columns=columns, index=pd.Index(retention_times, name='retention_time'))
-
-    return df, sample_name
+    metadata = {'SampleName': sample_name, 'AcqTime': acq_time, 'Polarity': polarity,
+                'InstrumentName': None}
+    return raw, metadata

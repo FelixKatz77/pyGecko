@@ -1,17 +1,20 @@
 '''Round-trip tests for the export writers.
 
-Every test here writes a file and reads it back with the reader pyGecko already ships, so the
-success criterion is the readers' own output rather than a hand-checked byte layout. The export
-is a nominal-mass reduction of the source, so round-trip fidelity is only ever claimed against
-pyGecko's readers -- never against the original vendor file.
+Every test here writes a file and reads it back, with the reader pyGecko already ships or with an
+independent parser, so the success criterion is what a reader sees rather than a hand-checked byte
+layout. An MS export carries the centroids as read, so fidelity is checked against the original
+vendor mzML as well as against pyGecko's own reader.
 '''
 
+from datetime import datetime, timezone
 from pathlib import Path
+from xml.etree import ElementTree as ET
 
 import netCDF4 as nc
 import numpy as np
 import pandas as pd
 import pytest
+from pyteomics import mzml
 
 from pygecko.gc_tools.injection.fid_injection import FID_Injection
 from pygecko.gc_tools.injection.ms_injection import MS_Injection
@@ -21,6 +24,7 @@ from pygecko.parsers.agilent_fid_parser import Agilent_FID_Parser
 from pygecko.parsers.file_readers import extract_scans_from_mzml
 from pygecko.parsers.file_writers import (write_injection_to_cdf, write_injection_to_mzml,
                                           write_sequence_to_cdf, write_sequence_to_mzml)
+from pygecko.parsers.ms_base_parser import MS_Base_Parser
 
 from .conftest import fixture_path
 from ..unit.conftest import make_fid_chromatogram, make_scans
@@ -29,9 +33,21 @@ from ..unit.conftest import make_fid_chromatogram, make_scans
 REAL_MZML = fixture_path('test_ri_calibration', 'FKB-FA-060-A1.mzML')
 
 
+def read_scans(path):
+    '''Reads an mzML back through pyGecko's reader into the nominal matrix and sample name.'''
+    raw, metadata = extract_scans_from_mzml(path)
+    return raw.to_nominal_matrix(), metadata['SampleName']
+
+
+def read_spectra(path):
+    '''Reads every spectrum of an mzML with pyteomics, independently of pymzml and psims.'''
+    with mzml.read(str(path)) as reader:
+        return list(reader)
+
+
 @pytest.fixture
 def ms_injection():
-    '''An MS_Injection over three scans, with the zero-filled gaps the readers produce.'''
+    '''An MS_Injection holding a nominal matrix only, as a file saved before raw scans existed.'''
 
     scans = make_scans(
         [89575.0, 89926.0, 90278.0],
@@ -41,51 +57,111 @@ def ms_injection():
     return MS_Injection({'SampleName': 'SMP-A1'}, chromatogram, None, scans)
 
 
+@pytest.fixture
+def real_injection():
+    return MS_Base_Parser.load_injection(REAL_MZML)
+
+
+def test_mzml_export_matches_the_source_file_spectrum_for_spectrum(real_injection, tmp_path):
+    '''What the vendor mzML holds is what the export holds: unrounded m/z, intensities, times.'''
+
+    out = tmp_path / 'FKB-FA-060-A1.mzML'
+    write_injection_to_mzml(real_injection, out)
+
+    source, export = read_spectra(REAL_MZML), read_spectra(out)
+
+    assert len(export) == len(source) == 1878
+    for original, written in zip(source, export):
+        np.testing.assert_array_equal(written['m/z array'], original['m/z array'])
+        np.testing.assert_array_equal(written['intensity array'], original['intensity array'])
+        assert written['intensity array'].dtype == original['intensity array'].dtype
+        assert (written['scanList']['scan'][0]['scan start time']
+                == original['scanList']['scan'][0]['scan start time'])
+        assert written['total ion current'] == pytest.approx(original['total ion current'])
+
+
+def test_mzml_export_writes_only_the_metadata_the_source_had(real_injection, tmp_path):
+    '''The OpenChrom fixture has a start time but no polarity: neither is invented nor dropped.'''
+
+    out = tmp_path / 'FKB-FA-060-A1.mzML'
+    write_injection_to_mzml(real_injection, out)
+
+    run = ET.parse(out).getroot().find('.//{*}run')
+    assert datetime.fromisoformat(run.attrib['startTimeStamp']) == real_injection.acq_time
+    spectrum = read_spectra(out)[0]
+    assert 'positive scan' not in spectrum and 'negative scan' not in spectrum
+
+
+def test_mzml_export_reads_back_through_the_parser_unchanged(real_injection, tmp_path):
+    '''Raw scans, matrix and metadata survive pyGecko's own read of the export.'''
+
+    out = tmp_path / 'FKB-FA-060-A1.mzML'
+    write_injection_to_mzml(real_injection, out)
+
+    round_tripped = MS_Base_Parser.load_injection(out)
+
+    np.testing.assert_array_equal(round_tripped.raw_scans.mz, real_injection.raw_scans.mz)
+    np.testing.assert_array_equal(round_tripped.raw_scans.intensity,
+                                  real_injection.raw_scans.intensity)
+    pd.testing.assert_frame_equal(round_tripped.scans, real_injection.scans)
+    assert round_tripped.sample_name == 'FKB-FA-060-A1'
+    assert round_tripped.acq_time == real_injection.acq_time
+
+
+def test_mzml_writes_polarity_and_instrument_when_known(tmp_path):
+    '''Metadata a vendor conversion provides (msConvert on a .D) is written as mzML terms.'''
+
+    scans = make_scans([1000.0, 1500.0, 2000.0], [{40: 1.0}, {40: 2.0}, {40: 3.0}])
+    chromatogram = np.array([scans.index / 60000, scans.sum(axis=1)])
+    injection = MS_Injection({'SampleName': 'SMP-A1', 'InstrumentName': 'GCMS 4',
+                              'Polarity': 'positive',
+                              'AcqTime': datetime(2023, 11, 30, 18, 53, 20, tzinfo=timezone.utc)},
+                             chromatogram, None, scans)
+
+    out = tmp_path / 'out.mzML'
+    write_injection_to_mzml(injection, out)
+
+    assert 'positive scan' in read_spectra(out)[0]
+    _, metadata = extract_scans_from_mzml(out)
+    assert metadata['InstrumentName'] == 'GCMS 4'
+    assert metadata['Polarity'] == 'positive'
+    assert metadata['AcqTime'] == injection.acq_time
+
+
 def test_mzml_round_trip_preserves_scans(ms_injection, tmp_path):
-    '''Writing then reading an injection reproduces the scans DataFrame exactly.'''
+    '''An injection without raw scans is written from its matrix and reads back exactly.'''
 
     out = tmp_path / 'out.mzML'
     write_injection_to_mzml(ms_injection, out)
 
-    scans, sample_name = extract_scans_from_mzml(out)
+    scans, sample_name = read_scans(out)
 
     pd.testing.assert_frame_equal(scans, ms_injection.scans)
     assert sample_name == 'SMP-A1'
 
 
-def test_mzml_round_trip_preserves_real_injection(tmp_path):
-    '''A full 1878-scan injection read from a real mzML survives the write/read cycle.'''
+def test_mzml_written_from_the_matrix_declares_the_binning(ms_injection, tmp_path):
+    '''Without raw scans the file holds nominal masses, and its processing history says so.'''
 
-    original, _ = extract_scans_from_mzml(Path(REAL_MZML))
+    out = tmp_path / 'out.mzML'
+    write_injection_to_mzml(ms_injection, out)
 
-    chromatogram = np.array([original.index / 60000, original.sum(axis=1)])
-    injection = MS_Injection({'SampleName': 'FKB-FA-060-A1'}, chromatogram, None, original)
-
-    out = tmp_path / 'FKB-FA-060-A1.mzML'
-    write_injection_to_mzml(injection, out)
-    round_tripped, sample_name = extract_scans_from_mzml(out)
-
-    # check_dtype is off because the reader itself is dtype-inconsistent: pymzml returns float32
-    # for two of this fixture's 241 m/z columns and float64 for the rest. The writer normalises
-    # everything to float64, which is lossless, so the values still compare exactly.
-    pd.testing.assert_frame_equal(round_tripped, original, check_dtype=False)
-    assert sample_name == 'FKB-FA-060-A1'
+    names = [param.attrib['name'] for param in
+             ET.parse(out).getroot().findall('.//{*}processingMethod/{*}userParam')]
+    assert names == ['nominal mass binning']
 
 
 def test_mzml_is_readable_by_an_independent_parser(ms_injection, tmp_path):
     '''pyteomics agrees with pymzml on the written file, so the output is not pymzml-specific.'''
 
-    from pyteomics import mzml
-
     out = tmp_path / 'out.mzML'
     write_injection_to_mzml(ms_injection, out)
 
-    with mzml.read(str(out)) as reader:
-        spectra = list(reader)
+    spectra = read_spectra(out)
 
     assert len(spectra) == len(ms_injection.scans)
     assert spectra[0]['ms level'] == 1
-    # Zeros are dropped on write and restored by the reader's fillna, so the written arrays
+    # Zeros are dropped on write and restored by the reader's zero fill, so the written arrays
     # only carry the m/z actually present in that scan.
     assert list(spectra[0]['m/z array']) == [40.0, 41.0]
 
@@ -93,13 +169,10 @@ def test_mzml_is_readable_by_an_independent_parser(ms_injection, tmp_path):
 def test_mzml_drops_zero_intensities(ms_injection, tmp_path):
     '''The dense zero-filled matrix is written sparsely.'''
 
-    from pyteomics import mzml
-
     out = tmp_path / 'out.mzML'
     write_injection_to_mzml(ms_injection, out)
 
-    with mzml.read(str(out)) as reader:
-        lengths = [len(s['m/z array']) for s in reader]
+    lengths = [len(s['m/z array']) for s in read_spectra(out)]
 
     assert lengths == [2, 2, 2]
     assert ms_injection.scans.shape[1] == 3
@@ -115,7 +188,7 @@ def test_mzml_sanitises_a_sample_name_that_is_not_a_valid_xml_id(tmp_path):
     out = tmp_path / 'out.mzML'
     write_injection_to_mzml(injection, out)
 
-    _, sample_name = extract_scans_from_mzml(out)
+    _, sample_name = read_scans(out)
     assert sample_name.endswith('2_blank_runs')
 
 
@@ -129,7 +202,7 @@ def test_mzml_handles_a_missing_sample_name(tmp_path):
     out = tmp_path / 'out.mzML'
     write_injection_to_mzml(injection, out)
 
-    round_tripped, sample_name = extract_scans_from_mzml(out)
+    round_tripped, sample_name = read_scans(out)
     pd.testing.assert_frame_equal(round_tripped, scans)
     assert sample_name == 'run'
 
@@ -155,7 +228,7 @@ def test_write_sequence_to_mzml_writes_one_file_per_injection(ms_injection, tmp_
     write_sequence_to_mzml(sequence, tmp_path)
 
     assert sorted(p.name for p in tmp_path.glob('*.mzML')) == ['SMP-A1.mzML', 'SMP-A2.mzML']
-    scans, _ = extract_scans_from_mzml(tmp_path / 'SMP-A2.mzML')
+    scans, _ = read_scans(tmp_path / 'SMP-A2.mzML')
     pd.testing.assert_frame_equal(scans, ms_injection.scans)
 
 

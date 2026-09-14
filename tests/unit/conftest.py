@@ -61,7 +61,7 @@ def make_scans(rt_ms, rows):
 
     Returns:
         pd.DataFrame: Float millisecond index named 'retention_time', ascending integer m/z
-            columns, no NaN -- the layout extract_scans_from_mzml returns.
+            columns, no NaN -- the layout Raw_Scans.to_nominal_matrix returns.
     '''
 
     index = pd.Index(np.asarray(rt_ms, dtype=float), name='retention_time')

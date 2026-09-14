@@ -2,9 +2,9 @@ import tempfile
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 
 from pygecko.gc_tools import MS_Injection, RI_Calibration, MS_Sequence
+from pygecko.gc_tools.injection.raw_scans import Raw_Scans
 from pygecko.parsers.msconvert_wraper import msconvert
 from pygecko.parsers.file_readers import extract_scans_from_mzxml, extract_scans_from_mzml, extract_scans_from_cdf
 from typing import Iterable, Optional
@@ -99,27 +99,28 @@ class MS_Base_Parser:
             MS_Injection: An MS_Injection object
         '''
 
-        scans, sample_name = MS_Base_Parser.extract_scans_from_raw_data(path, temp_dir=temp_dir)
+        raw_scans, metadata = MS_Base_Parser.extract_scans_from_raw_data(path, temp_dir=temp_dir)
+        scans = raw_scans.to_nominal_matrix()
         chromatogram = np.array([scans.index / 60000, scans.sum(axis=1)])
-        injection = MS_Injection({'SampleName':sample_name}, chromatogram, None, scans, pos=pos)
+        injection = MS_Injection(metadata, chromatogram, None, scans, pos=pos, raw_scans=raw_scans)
         injection.record_step('MS_Base_Parser.load_injection',
                               {'raw_data_path': str(path), 'pos': pos})
         return injection
 
 
     @staticmethod
-    def extract_scans_from_raw_data(raw_path: Path, temp_dir: tempfile.TemporaryDirectory = None) -> (pd.DataFrame, str):
+    def extract_scans_from_raw_data(raw_path: Path, temp_dir: tempfile.TemporaryDirectory = None) -> tuple[Raw_Scans, dict]:
 
         '''
-        Takes in the path to a raw file containing the scans of an injection, returns a DataFrame containing the scans
-        and the injection's sample name.
+        Takes in the path to a raw file containing the scans of an injection, returns the centroids as read and the
+        injection's metadata (SampleName, AcqTime, Polarity, InstrumentName).
         '''
 
 
         if raw_path.suffix == '.mzML':
             try:
-                scans_df, sample_name = extract_scans_from_mzml(raw_path)
-                return scans_df, sample_name
+                raw_scans, metadata = extract_scans_from_mzml(raw_path)
+                return raw_scans, metadata
             except KeyError as error:
                 print(f'Cannot extract scans from {raw_path.name}: {error}')
                 raise KeyError(f'Cannot extract scans from {raw_path.name}: {error}')
@@ -127,8 +128,8 @@ class MS_Base_Parser:
                 raise FileNotFoundError(error)
         elif raw_path.suffix == '.mzXML':
             try:
-                scans_df, sample_name = extract_scans_from_mzxml(raw_path)
-                return scans_df, sample_name
+                raw_scans, metadata = extract_scans_from_mzxml(raw_path)
+                return raw_scans, metadata
             except KeyError as error:
                 print(f'Cannot extract scans from {raw_path.name}: {error}')
                 raise KeyError(f'Cannot extract scans from {raw_path.name}: {error}')
@@ -136,8 +137,8 @@ class MS_Base_Parser:
                 raise FileNotFoundError(error)
         elif raw_path.suffix.lower() == '.cdf':
             try:
-                scans_df, sample_name = extract_scans_from_cdf(raw_path)
-                return scans_df, sample_name
+                raw_scans, metadata = extract_scans_from_cdf(raw_path)
+                return raw_scans, metadata
             except Exception as error:
                 print(f'Cannot extract scans from {raw_path.name}: {error}')
                 raise RuntimeError(f'Cannot extract scans from {raw_path.name}: {error}')
@@ -147,8 +148,8 @@ class MS_Base_Parser:
             mzml_path = Path.joinpath(Path(temp_dir.name), raw_path.name).with_suffix('.mzML')
             try:
                 msconvert([raw_path], temp_dir.name)
-                scans_df, sample_name = extract_scans_from_mzml(mzml_path)
-                return scans_df, sample_name
+                raw_scans, metadata = extract_scans_from_mzml(mzml_path)
+                return raw_scans, metadata
             except KeyError as error:
                 raise KeyError(f'Cannot extract scans from {mzml_path.name}: {error}')
             except FileNotFoundError as error:

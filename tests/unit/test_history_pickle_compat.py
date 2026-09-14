@@ -16,8 +16,9 @@ import numpy as np
 
 from pygecko.gc_tools.analysis.analysis_settings import Analysis_Settings
 from pygecko.gc_tools.injection.fid_injection import FID_Injection
+from pygecko.gc_tools.injection.ms_injection import MS_Injection
 
-from .conftest import make_injection, make_peak
+from .conftest import make_injection, make_peak, make_scans
 
 CHROMATOGRAM = np.array([[0.0, 0.1, 0.2, 0.3], [1.0, 1.0, 1.0, 1.0]])
 
@@ -41,6 +42,21 @@ class TestOldPicklesStillLoad:
         assert restored._recording is False
         restored.flag_peak(5.0)
         assert len(restored.history) == 1
+
+    def test_an_ms_injection_pickled_without_raw_scans_loads_with_them_defaulted(self):
+        # raw_scans, acq_time and polarity were appended when the export learned to write the
+        # centroids as read; an older file carries the nominal matrix only.
+        scans = make_scans([1000.0, 2000.0, 3000.0], [{40: 1.0}, {41: 2.0}, {41: 3.0}])
+        injection = MS_Injection({'SampleName': 'SMP-A1'},
+                                 np.array([scans.index / 60000, scans.sum(axis=1)]), None, scans)
+        del injection.raw_scans
+        del injection.acq_time
+        del injection.polarity
+        restored = round_trip(injection)
+        assert restored.raw_scans is None
+        assert restored.acq_time is None
+        assert restored.polarity is None
+        assert restored.history == []
 
     def test_settings_pickled_without_resolved_still_accept_pop(self):
         settings = Analysis_Settings(CHROMATOGRAM)

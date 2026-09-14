@@ -196,9 +196,13 @@ class Agilent_MS_Parser:
             MS_Injection: An MS_Injection object
         '''
 
-        scans = MS_Base_Parser.extract_scans_from_raw_data(path, temp_dir=temp_dir)[0]
+        raw_scans, raw_metadata = MS_Base_Parser.extract_scans_from_raw_data(path, temp_dir=temp_dir)
+        scans = raw_scans.to_nominal_matrix()
         chromatogram = np.array([scans.index / 60000, scans.sum(axis=1)])
-        injection = MS_Injection(metadata, chromatogram, None, scans, pos=pos)
+        # sequence.xml is authoritative for the sample and instrument names; the converted mzML
+        # contributes what it alone carries (start time, polarity).
+        injection = MS_Injection({**raw_metadata, **metadata}, chromatogram, None, scans, pos=pos,
+                                 raw_scans=raw_scans)
         injection.record_step('Agilent_MS_Parser.load_injection', {'raw_directory': str(path)})
         return injection
 

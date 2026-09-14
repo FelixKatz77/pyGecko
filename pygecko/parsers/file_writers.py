@@ -40,12 +40,13 @@ def write_injection_to_mzml(injection: MS_Injection, path: Path|str) -> None:
     '''
     Writes an MS injection to an indexed mzML file.
 
-    The scan matrix is a nominal-mass reduction of whatever was read: the readers round m/z to
-    integer mass and pyGecko retains no polarity, instrument or acquisition metadata. The file is
-    therefore a faithful record of the injection as pyGecko holds it, not a copy of the original
-    vendor file, and the MS1/centroid/positive cvParams are the writer's defaults rather than
-    values read from the source. Zero intensities, which the readers insert to square off the scan
-    matrix, are dropped again on write.
+    The spectra are the centroids exactly as the reader delivered them: unrounded m/z and the
+    intensities in their source dtype, so the file holds what the vendor file held. Polarity,
+    acquisition start time and instrument are written only when the source provided them; a term
+    the source lacked is left out rather than defaulted. An injection that carries no raw scans
+    (one saved before they were kept) is written from its nominal-mass matrix instead, with the
+    binning declared in the file's processing history, and the zeros that square off the matrix
+    are dropped on write.
 
     Args:
         injection (MS_Injection): Injection to write.
@@ -59,10 +60,15 @@ def write_injection_to_mzml(injection: MS_Injection, path: Path|str) -> None:
         raise ValueError(f'Cannot write {injection.sample_name} to mzML: the injection holds no '
                          f'scans.')
 
-    scans = injection.scans
-    mzs = scans.columns.to_numpy(dtype=np.float64)
-    intensities = scans.to_numpy(dtype=np.float64)
+    if injection.raw_scans is not None:
+        spectra = injection.raw_scans.spectra()
+        processing = ['Conversion to mzML']
+    else:
+        spectra = _matrix_spectra(injection.scans)
+        processing = ['Conversion to mzML', {'nominal mass binning': None}]
     run_id = _xml_id(injection.sample_name)
+    start_time = injection.acq_time.isoformat() if injection.acq_time else None
+    instrument = [injection.instrument_name] if injection.instrument_name else []
 
     with MzMLWriter(str(path)) as writer:
         writer.controlled_vocabularies()
@@ -70,28 +76,41 @@ def write_injection_to_mzml(injection: MS_Injection, path: Path|str) -> None:
         writer.software_list([{'id': 'pygecko', 'version': __version__,
                                'params': ['custom unreleased software tool']}])
         writer.instrument_configuration_list(
-            [writer.InstrumentConfiguration(id='IC1', component_list=[], params=[])])
+            [writer.InstrumentConfiguration(id='IC1', component_list=[], params=instrument)])
         writer.data_processing_list([writer.DataProcessing(
-            [writer.ProcessingMethod(order=1, software_reference='pygecko',
-                                     params=['Conversion to mzML'])],
+            [writer.ProcessingMethod(order=1, software_reference='pygecko', params=processing)],
             id='DP1')])
 
-        with writer.run(id=run_id, instrument_configuration='IC1'):
-            with writer.spectrum_list(count=len(scans)):
-                for index, (rt_ms, row) in enumerate(zip(scans.index, intensities), start=1):
-                    present = row != 0
+        with writer.run(id=run_id, instrument_configuration='IC1', start_time=start_time):
+            with writer.spectrum_list(count=len(injection.scans)):
+                for index, (rt_ms, mzs, intensities) in enumerate(spectra, start=1):
                     writer.write_spectrum(
-                        mzs[present], row[present],
+                        mzs, intensities,
                         id=f'scan={index}',
+                        polarity=injection.polarity,
                         centroided=True,
                         scan_start_time=rt_ms / 60000,
-                        encoding=np.float64,
-                        params=[{'ms level': 1}, {'total ion current': row.sum()}])
+                        encoding={'m/z array': np.float64,
+                                  'intensity array': intensities.dtype.type},
+                        params=[{'ms level': 1}, {'total ion current': intensities.sum()}])
             with writer.chromatogram_list(count=1):
                 writer.write_chromatogram(
                     injection.chromatogram[0], injection.chromatogram[1],
                     id='TIC', chromatogram_type='total ion current chromatogram',
                     encoding=np.float64)
+
+
+def _matrix_spectra(scans):
+
+    '''
+    Yields the retention time in milliseconds, m/z array and intensity array of every row of a
+    nominal-mass matrix, without the zeros that square it off.
+    '''
+
+    mzs = scans.columns.to_numpy(dtype=np.float64)
+    for rt_ms, row in zip(scans.index, scans.to_numpy(dtype=np.float64)):
+        present = row != 0
+        yield rt_ms, mzs[present], row[present]
 
 
 def write_sequence_to_mzml(sequence: MS_Sequence, directory: Path|str) -> None:

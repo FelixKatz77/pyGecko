@@ -1,4 +1,5 @@
 from collections import defaultdict
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -10,6 +11,7 @@ from pygecko.gc_tools.analyte import Analyte
 from pygecko.gc_tools.analysis import Analysis_Settings
 from pygecko.gc_tools.history import records_processing
 from pygecko.gc_tools.injection import Injection
+from pygecko.gc_tools.injection.raw_scans import Raw_Scans
 from pygecko.gc_tools.peak import Peak_Detection_MS, MS_Peak
 
 
@@ -22,10 +24,13 @@ class MS_Injection(Injection):
     Attributes:
         chromatogram (np.ndarray): Chromatogram of the injection.
         peaks (dict[float, MS_Peak]): Peaks of the injection.
-        scans (pd.DataFrame): Scans of the injection.
+        scans (pd.DataFrame): Scans of the injection binned to nominal mass.
         detector (str): Detector used for the injection.
         analysis_settings (Analysis_Settings): Data method used for the injection.
         solvent_delay (float): Solvent delay applied to the injection.
+        raw_scans (Raw_Scans|None): Centroids of the injection as read, unbinned.
+        acq_time (datetime|None): Start time of the acquisition.
+        polarity (str|None): Ion polarity of the acquisition, 'positive' or 'negative'.
     '''
 
     chromatogram: np.ndarray
@@ -34,10 +39,15 @@ class MS_Injection(Injection):
     detector: str
     analysis_settings: Analysis_Settings
     solvent_delay: float
+    raw_scans: Raw_Scans|None
+    acq_time: datetime|None
+    polarity: str|None
 
-    __slots__ = 'chromatogram', 'peaks', 'scans', 'detector', 'analysis_settings', 'solvent_delay'
+    __slots__ = ('chromatogram', 'peaks', 'scans', 'detector', 'analysis_settings', 'solvent_delay',
+                 'raw_scans', 'acq_time', 'polarity')
 
-    def __init__(self, metadata:dict|None, chromatogram:np.ndarray, peaks:dict|None, scans:pd.DataFrame, pos:bool=False):
+    def __init__(self, metadata:dict|None, chromatogram:np.ndarray, peaks:dict|None, scans:pd.DataFrame, pos:bool=False,
+                 raw_scans:Raw_Scans|None=None):
         super().__init__(metadata, pos=pos)
         self.chromatogram = chromatogram
         self._check_for_missing_signal()
@@ -46,6 +56,21 @@ class MS_Injection(Injection):
         self.detector = 'MS'
         self.analysis_settings = Analysis_Settings(chromatogram)
         self.solvent_delay = chromatogram[0][0]
+        self.raw_scans = raw_scans
+        self.acq_time = metadata.get('AcqTime')
+        self.polarity = metadata.get('Polarity')
+
+    def __setstate__(self, state:tuple) -> None:
+
+        '''
+        Restores an MS_Injection from its pickled state, defaulting the raw scans and acquisition
+        metadata that files written before the export kept them do not carry.
+        '''
+
+        super().__setstate__(state)
+        for name in ('raw_scans', 'acq_time', 'polarity'):
+            if not hasattr(self, name):
+                setattr(self, name, None)
 
     @records_processing
     def match_mz(self, mz:float, **kwargs) -> MS_Peak|list[MS_Peak]|None:

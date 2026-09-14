@@ -28,6 +28,14 @@ pygecko.gc\_tools.injection.ms\_injection module
    :undoc-members:
    :show-inheritance:
 
+pygecko.gc\_tools.injection.raw\_scans module
+---------------------------------------------
+
+.. automodule:: pygecko.gc_tools.injection.raw_scans
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 
