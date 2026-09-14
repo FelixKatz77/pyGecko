@@ -13,7 +13,7 @@ jobs:
       MPLBACKEND: Agg
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v7
       - run: uv build
       - name: Smoke-test the wheel in a fresh environment
         # Installs the built wheel (not the checkout) so missing package data or a broken
