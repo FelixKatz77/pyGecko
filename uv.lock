@@ -2501,8 +2501,7 @@ wheels = [
 ]
 
 [[package]]
-name = "pygecko"
-version = "0.1.0"
+name = "pygecko-gc"
 source = { editable = "." }
 dependencies = [
     { name = "brain-isotopic-distribution" },
@@ -2516,6 +2515,7 @@ dependencies = [
     { name = "numpy", version = "2.5.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "pandas", version = "3.0.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "psims" },
     { name = "pybaselines" },
     { name = "pymzml", version = "2.6.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.13'" },
     { name = "pymzml", version = "2.7.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.13'" },
@@ -2539,9 +2539,6 @@ docs = [
     { name = "sphinx", version = "9.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "sphinx-rtd-theme" },
 ]
-mzml = [
-    { name = "psims" },
-]
 ord = [
     { name = "ord-schema", version = "0.5.9", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "ord-schema", version = "0.8.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
@@ -2560,7 +2557,7 @@ requires-dist = [
     { name = "numpy", specifier = ">=1.26.3" },
     { name = "ord-schema", marker = "extra == 'ord'", specifier = ">=0.5.9" },
     { name = "pandas", specifier = ">=2.0.3" },
-    { name = "psims", marker = "extra == 'mzml'", specifier = ">=1.3.2" },
+    { name = "psims", specifier = ">=1.3.2" },
     { name = "pybaselines", specifier = ">=1.0.0" },
     { name = "pymzml", specifier = ">=2.5.2" },
     { name = "pyteomics", extras = ["xml"], specifier = ">=4.6.2" },
@@ -2575,7 +2572,7 @@ requires-dist = [
     { name = "statsmodels", specifier = ">=0.14.0" },
     { name = "xarray", specifier = ">=2023.6.0" },
 ]
-provides-extras = ["mzml", "ord", "test", "docs"]
+provides-extras = ["ord", "test", "docs"]
 
 [[package]]
 name = "pygithub"

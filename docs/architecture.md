@@ -322,11 +322,9 @@ functions matching the shape of `file_readers.py`. They are the first true inter
 
 - **mzML is written with [psims](https://github.com/mobiusklein/psims), not pyteomics.** pyteomics
   is read-only for mzML — across the whole library only `fasta` and `mgf` define a `write`. psims is
-  the canonical writer and validates every CV term. It is an *optional* dependency behind the `mzml`
-  extra, so `_load_mzml_writer` defers the import to call time; a module-scope import would make
-  `pygecko.parsers` unimportable without the extra. The deferral buys no import *time*, because
-  `file_readers` imports pyteomics and pyteomics imports psims at module scope whenever it is
-  installed (~0.4 s of the ~1.3 s `import pygecko.parsers`).
+  the canonical writer and validates every CV term. It is a regular dependency, imported at module
+  scope: it costs no extra import time, because `file_readers` imports pyteomics and pyteomics
+  imports psims at module scope anyway (~0.4 s of the ~1.3 s `import pygecko.parsers`).
 - **FID is written as ANDI/AIA netCDF, not mzML.** The PSI-MS CV holds no term for a flame
   ionization detector, and none of the fifteen descendants of `MS:1000626` (chromatogram type)
   describes one — they are all mass-spectrometric or instrument parameters. A chromatogram-only
@@ -602,9 +600,10 @@ Exports are module-level functions in
    layout. Mind §3.4's mixed units: `scans` is indexed in milliseconds, chromatograms are in
    minutes, and mzML `scan start time` is written in **minutes** because that is what
    `extract_scans_from_mzml` assumes.
-3. **Keep a heavy writer library optional.** Put it behind an extra in `pyproject.toml` (see
-   `mzml`), import it inside the function via a `_load_*` helper raising an `ImportError` that
-   names the extra, and register a pytest marker so the tests can be deselected.
+3. **Keep a heavy writer library optional** unless the format is a core deliverable. Put it
+   behind an extra in `pyproject.toml`, import it inside the function via a `_load_*` helper
+   raising an `ImportError` that names the extra, and register a pytest marker so the tests can be
+   deselected.
 4. Do not overstate fidelity. If the domain model dropped information at read time, the docstring
    and README must say the export is a record of the injection as pyGecko holds it, not a copy of
    the source.

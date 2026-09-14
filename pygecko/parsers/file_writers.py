@@ -3,41 +3,13 @@ from pathlib import Path
 
 import netCDF4 as nc
 import numpy as np
+from psims.mzml import MzMLWriter
 
 from pygecko import __version__
 from pygecko.gc_tools.injection.fid_injection import FID_Injection
 from pygecko.gc_tools.injection.ms_injection import MS_Injection
 from pygecko.gc_tools.sequence.fid_sequence import FID_Sequence
 from pygecko.gc_tools.sequence.ms_sequence import MS_Sequence
-
-_MZML_IMPORT_ERROR = ('Writing mzML requires psims, which is an optional dependency. '
-                      'Install it with `pip install pyGecko[mzml]`.')
-
-
-def _load_mzml_writer():
-
-    '''
-    Returns psims' MzMLWriter class.
-
-    The import is deferred rather than made at module scope so that psims stays a genuinely
-    optional dependency: `pygecko.parsers` imports eagerly, and a module-scope import would make
-    the whole package unimportable without the [mzml] extra. Note that it does not save any import
-    time when psims *is* installed, because pyteomics imports psims itself at module scope, and
-    `file_readers` imports pyteomics.
-
-    Returns:
-        type: psims.mzml.MzMLWriter.
-
-    Raises:
-        ImportError: If psims is not installed.
-    '''
-
-    try:
-        from psims.mzml import MzMLWriter
-    except ImportError as error:
-        raise ImportError(_MZML_IMPORT_ERROR) from error
-    return MzMLWriter
-
 
 def _xml_id(name: str) -> str:
 
@@ -80,7 +52,6 @@ def write_injection_to_mzml(injection: MS_Injection, path: Path|str) -> None:
         path (Path|str): Path of the mzML file to write.
 
     Raises:
-        ImportError: If psims is not installed.
         ValueError: If the injection holds no scan matrix.
     '''
 
@@ -88,13 +59,12 @@ def write_injection_to_mzml(injection: MS_Injection, path: Path|str) -> None:
         raise ValueError(f'Cannot write {injection.sample_name} to mzML: the injection holds no '
                          f'scans.')
 
-    mzml_writer = _load_mzml_writer()
     scans = injection.scans
     mzs = scans.columns.to_numpy(dtype=np.float64)
     intensities = scans.to_numpy(dtype=np.float64)
     run_id = _xml_id(injection.sample_name)
 
-    with mzml_writer(str(path)) as writer:
+    with MzMLWriter(str(path)) as writer:
         writer.controlled_vocabularies()
         writer.file_description(['MS1 spectrum', 'centroid spectrum'])
         writer.software_list([{'id': 'pygecko', 'version': __version__,
@@ -133,8 +103,6 @@ def write_sequence_to_mzml(sequence: MS_Sequence, directory: Path|str) -> None:
         sequence (MS_Sequence): Sequence to write.
         directory (Path|str): Directory to write the files into. Created if it does not exist.
 
-    Raises:
-        ImportError: If psims is not installed.
     '''
 
     directory = Path(directory)

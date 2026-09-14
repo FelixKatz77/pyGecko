@@ -1,0 +1,44 @@
+name: publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      MPLBACKEND: Agg
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv build
+      - name: Smoke-test the wheel in a fresh environment
+        # Installs the built wheel (not the checkout) so missing package data or a broken
+        # dynamic version shows up here rather than after the upload.
+        run: |
+          uv venv smoke
+          uv pip install --python smoke/bin/python dist/*.whl
+          smoke/bin/python -c "import pygecko.parsers, pygecko.analysis, pygecko.visualization, pygecko.data_handling, pygecko.gc_tools, pygecko.reaction; print(pygecko.__version__)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  pypi:
+    # Uses PyPI Trusted Publishing: register this repo/workflow/environment as a
+    # publisher on pypi.org once; no API token is stored in the repository.
+    needs: build
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
