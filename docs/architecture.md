@@ -293,14 +293,15 @@ Format dispatch happens in exactly one place,
 - `.mzXML` → `extract_scans_from_mzxml` (pyteomics)
 - `.cdf` → `extract_scans_from_cdf` (netCDF4) — ANDI/AIA open format, the second native path that
   needs no external binary. Nominal-mass binned, keeping the maximum intensity per bin.
-- anything else (`.D`, `.RAW`) → [`msconvert()`](../pygecko/parsers/msconvert_wraper.py#L16) into a
+- anything else (`.D`, `.RAW`) → [`msconvert()`](../pygecko/parsers/msconvert_wraper.py#L20) into a
   `tempfile.TemporaryDirectory`, then read back as `.mzML`
 
 `msconvert()` is a `subprocess.run` wrapper around the external ProteoWizard executable. Its path is
-read **at import time** from `pygecko/config.ini` via `configparser`
-([`msconvert_wraper.py:7-10`](../pygecko/parsers/msconvert_wraper.py#L7-L10)) and is populated
-interactively by running `python pygecko/__init__.py`. The path may legitimately be empty: conversion
-is then unavailable, but open formats still work. This is the package's only external-binary
+resolved **at call time** by [`find_msconvert()`](../pygecko/parsers/msconvert_wraper.py): the
+`PYGECKO_MSCONVERT` environment variable if set, otherwise `shutil.which('msconvert')`. Nothing is
+written into the package directory, so the same code works for an editable checkout and a wheel
+installed into `site-packages`. The path may legitimately be absent: conversion is then unavailable,
+but open formats still work. This is the package's only external-binary
 dependency, and it is deliberately isolated behind one function.
 
 FID data is simpler: `FID_Base_Parser.read_xy_array` reads tab-delimited `.xy` or comma-delimited

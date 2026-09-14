@@ -1,16 +1,20 @@
 import subprocess
 import os
-import configparser
-from pathlib import Path
+import shutil
 from pygecko.parsers.utilities import list_files_and_directories
 
-config = configparser.ConfigParser()
-config_path = Path(__file__).parent.parent.joinpath('config.ini')
-config.read(config_path)
-msconvert_path = config.get('msConvertSettings','exe_path')
 
+def find_msconvert() -> str | None:
 
+    '''
+    Returns the path to the msConvert executable: the PYGECKO_MSCONVERT environment variable if set, otherwise
+    an `msconvert` found on PATH. None if neither points to an existing file.
+    '''
 
+    path = os.environ.get('PYGECKO_MSCONVERT') or shutil.which('msconvert')
+    if path and os.path.exists(path):
+        return path
+    return None
 
 
 def msconvert(input_files: list|str, output_dir, format='mzML'):
@@ -25,12 +29,11 @@ def msconvert(input_files: list|str, output_dir, format='mzML'):
         format (str): Output format. Default: 'mzML'.
     '''
 
-    # Define the path to the msconvert executable
     output_format = format
 
-    # Check if the msconvert executable exists at the specified path
-    if not os.path.exists(msconvert_path):
-        print("msconvert executable not found at the specified path.")
+    msconvert_path = find_msconvert()
+    if msconvert_path is None:
+        print("msconvert executable not found. Set PYGECKO_MSCONVERT or add msconvert to PATH.")
         return
 
     # Change the working directory to the specified path
