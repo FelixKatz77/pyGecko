@@ -28,6 +28,7 @@ classifiers = [
 dependencies = [
     "brain_isotopic_distribution>=1.5.14",
     "epam.indigo>=1.13.0",
+    "lxml>=6.1.0",  # transitive via pyteomics/psims; floor closes CVE-2026-41066 (XXE in iterparse)
     "matplotlib>=3.6.2",
     "netCDF4>=1.6.5",
     "numpy>=1.26.3",
