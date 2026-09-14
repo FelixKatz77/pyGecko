@@ -123,9 +123,21 @@ access is a named method rather than an operator: `GC_Sequence.get_injection_by_
 - **Chromatogram** — `np.ndarray` of shape `(2, N)`: row 0 is time in **minutes**, row 1 is
   intensity. Both detectors use this shape, which is why `Visualization` and `Analysis_Settings` can
   treat them uniformly (`scan_rate` is derived as `chromatogram[0,2] - chromatogram[0,1]`).
+- **Raw scans** — `MS_Injection.raw_scans` is a
+  [`Raw_Scans`](../pygecko/gc_tools/injection/raw_scans.py): the centroids exactly as the reader
+  delivered them, in the flat ANDI layout (one `mz` and one `intensity` array for the run, a
+  `scan_index` offset per scan, `retention_times` in **milliseconds**). m/z is unrounded and the
+  intensity keeps its source dtype. This is the raw record; nothing downstream reads it except the
+  mzML writer.
 - **Scan matrix** — `MS_Injection.scans` is a `pd.DataFrame` indexed by retention time in
-  **milliseconds**, with integer m/z columns and zero-filled gaps. The MS TIC is derived from it:
-  `np.array([scans.index / 60000, scans.sum(axis=1)])`.
+  **milliseconds**, with integer m/z columns and zero-filled gaps. It is derived from the raw scans
+  by `Raw_Scans.to_nominal_matrix`, the one binning step in the code base: centroids are rounded
+  to nominal mass and **summed** per bin, which conserves the ion count so that the MS TIC derived
+  from it — `np.array([scans.index / 60000, scans.sum(axis=1)])` — equals the sum of the centroids
+  as acquired. Nominal mass is the working representation because the instruments this targets are
+  unit-mass single quadrupoles: the 0.05-Da centroid positions ChemStation reports jitter from
+  scan to scan and carry no information, and every consumer (`Peak_Detection_MS` per mass trace,
+  `match_mz`, the isotope check, `Spectral_Match`) indexes by integer m/z.
 - **Heterogeneous records** are NumPy **structured arrays**, not classes:
   `MS_Peak.mass_spectrum` with fields `('mz', 'intensity', 'rel_intensity')`, `RI_Calibration.alkanes`
   with `('smiles', 'c_count', 'rt')`, and the plate result array with
@@ -292,9 +304,19 @@ Format dispatch happens in exactly one place,
 - `.mzML` → [`extract_scans_from_mzml`](../pygecko/parsers/file_readers.py) (pymzml)
 - `.mzXML` → `extract_scans_from_mzxml` (pyteomics)
 - `.cdf` → `extract_scans_from_cdf` (netCDF4) — ANDI/AIA open format, the second native path that
-  needs no external binary. Nominal-mass binned, keeping the maximum intensity per bin.
+  needs no external binary.
 - anything else (`.D`, `.RAW`) → [`msconvert()`](../pygecko/parsers/msconvert_wraper.py#L20) into a
   `tempfile.TemporaryDirectory`, then read back as `.mzML`
+
+Every reader returns `(Raw_Scans, metadata)`: the centroids as read, and a dict with `SampleName`
+plus the run-level acquisition metadata the format carries — `AcqTime` (a tz-aware `datetime`),
+`Polarity` (`'positive'`/`'negative'`) and `InstrumentName` — each `None` where the format or file
+has nothing. mzML supplies all three (start time from `run/@startTimeStamp`, polarity from the
+first spectrum's cvParam since a GC-MS run is single-polarity, instrument from the first parameter
+of the instrument configuration); ANDI-MS supplies start time and polarity from its global
+attributes; mzXML supplies polarity only. `MS_Base_Parser.initialize_injection` bins the raw scans
+into the matrix and hands both to `MS_Injection`. `Agilent_MS_Parser` merges the reader's metadata
+under its own from `sequence.xml`, so the sample fields and `GCMS 4` win over what msConvert wrote.
 
 `msconvert()` is a `subprocess.run` wrapper around the external ProteoWizard executable. Its path is
 resolved **at call time** by [`find_msconvert()`](../pygecko/parsers/msconvert_wraper.py): the
@@ -334,15 +356,18 @@ functions matching the shape of `file_readers.py`. They are the first true inter
   export round-trips through `Agilent_FID_Parser.__read_cdf_file`. Because ANDI reconstructs the
   time axis from a single `actual_sampling_interval`, the writer rejects a non-uniform axis rather
   than silently distorting it.
-- **The export is lossy relative to the raw file, and says so.** All three MS readers round m/z to
-  nominal integer mass, and `MS_Base_Parser.initialize_injection` builds the injection from
-  `{'SampleName': …}` alone — polarity, MS level, instrument, scan windows and acquisition time are
-  never captured. The MS1/centroid/positive `cvParam`s are therefore writer defaults, not values
-  from the source. Round-trip fidelity is claimed only against pyGecko's own readers. Intensities
-  are written as float64 (the readers' own dtype) rather than the more compact float32, so a
-  written file can be slightly *larger* than the vendor mzML it came from; exactness is worth more
-  than the bytes. The zeros the readers insert to square off the scan matrix are dropped again on
-  write, which the reader's `fillna(0)` restores.
+- **The mzML export writes the raw record, not the working matrix.** `write_injection_to_mzml`
+  iterates `Raw_Scans.spectra()`, so every spectrum carries the unrounded m/z array and the
+  intensity array in its source dtype; `tests/integration/test_file_writers.py` checks the export
+  against the vendor mzML spectrum for spectrum with pyteomics, and it is byte-identical for the
+  OpenChrom fixture. Polarity, `startTimeStamp` and the instrument are written only when the
+  injection holds them: psims omits the polarity term for `None`, and a free-text instrument name
+  becomes a `userParam` (a name that is a PSI-MS term, such as msConvert's `Agilent instrument
+  model`, resolves to a `cvParam`). Nothing the source lacked is defaulted. An injection without
+  `raw_scans` — a `.pkl` written before they were kept — falls back to the matrix, drops the zeros
+  that square it off, and declares `nominal mass binning` as a `userParam` of its
+  `processingMethod`. Not carried: `sourceFileList` (the raw path is in the processing history),
+  base-peak terms and scan windows.
 
 Two loading concerns are handled at this layer rather than downstream:
 
@@ -597,16 +622,17 @@ Exports are module-level functions in
 2. **Write what a pyGecko reader can read back.** The success criterion for an export is a
    round-trip through the matching `extract_scans_from_*` / `read_*` function, compared with
    `pd.testing.assert_frame_equal` or `np.testing.assert_allclose` — not a hand-checked byte
-   layout. Mind §3.4's mixed units: `scans` is indexed in milliseconds, chromatograms are in
-   minutes, and mzML `scan start time` is written in **minutes** because that is what
-   `extract_scans_from_mzml` assumes.
+   layout — and, where a vendor fixture exists, a spectrum-for-spectrum comparison with the source
+   through an independent parser. Mind §3.4's mixed units: `scans` and `Raw_Scans` are indexed in
+   milliseconds, chromatograms are in minutes, and mzML `scan start time` is written in
+   **minutes** because that is what `extract_scans_from_mzml` assumes.
 3. **Keep a heavy writer library optional** unless the format is a core deliverable. Put it
    behind an extra in `pyproject.toml`, import it inside the function via a `_load_*` helper
    raising an `ImportError` that names the extra, and register a pytest marker so the tests can be
    deselected.
-4. Do not overstate fidelity. If the domain model dropped information at read time, the docstring
-   and README must say the export is a record of the injection as pyGecko holds it, not a copy of
-   the source.
+4. Do not overstate fidelity. Write from `raw_scans` where the format holds spectra, write
+   metadata only when the injection holds it, and if something is still dropped, the docstring and
+   README must say so.
 5. Export it from [`pygecko/parsers/__init__.py`](../pygecko/parsers/__init__.py) and add an
    `automodule` stub to `docs/source/pygecko.parsers.rst`.
 
@@ -660,8 +686,10 @@ Two consequences follow, and both are real constraints on how the code may chang
 pickled state with its default. This is what lets files written before §3.6 still load: they carry no
 `history`, `_recording` or `_resolved` entry, and without the shims the first `pop` after loading such
 a file raises `AttributeError`. `Analysis_Settings` needs its own because it is nested inside a pickled
-injection and restores itself — `Injection.__setstate__` cannot reach it. Appending to `__slots__` is
-safe for existing files; reordering or inserting is not.
+injection and restores itself — `Injection.__setstate__` cannot reach it. `MS_Injection` adds its own
+for the `raw_scans`, `acq_time` and `polarity` slots appended when the mzML export learned to write
+the centroids as read; an older file loads with all three `None` and exports from its matrix (§6.A).
+Appending to `__slots__` is safe for existing files; reordering or inserting is not.
 
 ---
 
@@ -736,10 +764,9 @@ defect actually did — is worth not rediscovering either.
    [`data_handling/reports.py`](../pygecko/data_handling/reports.py); the latter two have no direct
    tests and CI covers them only with an import smoke test. `file_readers.py` is a partial case
    since the export writers landed: the mzML reader is now exercised on every round-trip in
-   `tests/integration/test_file_writers.py`, but `extract_scans_from_mzxml` and
-   `extract_scans_from_cdf` remain untested because no `.mzXML` or `.cdf` fixture is checked in.
-   `write_injection_to_cdf` is a way to close the `.cdf` half of that without committing a binary
-   fixture.
+   `tests/integration/test_file_writers.py`, and `tests/unit/test_file_readers.py` now covers all
+   three readers on fixtures it builds in `tmp_path` (netCDF4 for `.cdf`, psims for `.mzML`, a
+   hand-written two-scan document for `.mzXML`).
    [`gc_tools/peak/peak_detection_fid.py`](../pygecko/gc_tools/peak/peak_detection_fid.py) left that
    list with §11.18 and is now at 94%. No `--cov-fail-under` gate is set, because
    one at 80% would keep CI permanently red — worse than no gate. Note the command in `CLAUDE.md`

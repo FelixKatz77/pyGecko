@@ -176,12 +176,19 @@ write_sequence_to_cdf(fid_sequence, 'exported/')
 mzML is written with [psims](https://github.com/mobiusklein/psims) and netCDF with netCDF4;
 both ship with the default install.
 
-> [!IMPORTANT]
-> An export is a record of the injection **as pyGecko holds it**, not a copy of the original
-> vendor file. pyGecko's readers round m/z to nominal integer mass and keep no polarity,
-> instrument or acquisition metadata, so the MS1/centroid/positive terms in the written mzML are
-> the writer's defaults rather than values from the source. Data written by pyGecko reads back
-> through pyGecko's own readers unchanged; it is not a faithful round-trip of the raw file.
+An mzML export holds the spectra **as they were read**: the readers keep every centroid with its
+unrounded m/z and source intensity dtype in `MS_Injection.raw_scans`, and the nominal-mass matrix
+the analysis works on (`MS_Injection.scans`) is derived from them. The run start time, ion
+polarity and instrument are written when the source provides them (an Agilent `.D` via msConvert
+does; an OpenChrom export carries the start time only; mzXML carries polarity only) and are left
+out otherwise rather than defaulted. Spectrum for spectrum, an exported file matches the vendor
+mzML it was read from.
+
+> [!NOTE]
+> Injections saved as `.pkl` before raw scans were kept hold the nominal-mass matrix only. They
+> still export, at integer m/z, and the file's `dataProcessing` declares the `nominal mass
+> binning`. A free-text instrument name (Agilent's `sequence.xml` gives e.g. `GCMS 4`) is written
+> as a `userParam`, since it is not a PSI-MS term.
 
 FID data is written as netCDF rather than mzML deliberately. The PSI-MS controlled vocabulary has
 no term for a flame ionization detector, and none of its chromatogram types describes one, so an
