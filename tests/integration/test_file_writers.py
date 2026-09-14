@@ -25,7 +25,6 @@ from pygecko.parsers.file_writers import (write_injection_to_cdf, write_injectio
 from .conftest import fixture_path
 from ..unit.conftest import make_fid_chromatogram, make_scans
 
-pytestmark = pytest.mark.mzml
 
 REAL_MZML = fixture_path('test_ri_calibration', 'FKB-FA-060-A1.mzML')
 

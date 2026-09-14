@@ -16,28 +16,25 @@ Installation
 To read vendor files you need to install the msConvert tool from ProteoWizard. You can download it from [here](http://proteowizard.sourceforge.net/download.html).
 You need to specify the path to the msConvert.exe before the first run of pyGecko.
 
-pyGecko can be installed via pip:
+pyGecko is published on PyPI as ``pygecko-gc`` (the import name stays ``pygecko``):
 
 .. code-block:: bash
 
-   git clone https://github.com/FelixKatz77/pyGecko.git
-   cd pyGecko
-   pip install -e .
+   pip install pygecko-gc
 
-Afterward the path to the msConvert.exe needs to be specified. This can be done by running the following command:
+Afterward tell pyGecko where msConvert is. It looks, each time a vendor file is converted, first at
+the ``PYGECKO_MSCONVERT`` environment variable and then for an ``msconvert`` on your ``PATH``. Set
+the variable once for your user account (on Windows via *Start → "Edit environment variables for
+your account" → New*, on Linux/macOS via ``export PYGECKO_MSCONVERT=/path/to/msconvert`` in your
+shell profile), or for the current session from Python:
 
-.. code-block:: bash
+.. code-block:: python
 
-   cd pygecko
-   python __init__.py
+   import os
+   os.environ["PYGECKO_MSCONVERT"] = r"C:\path\to\msconvert.exe"
 
-This will prompt you to specify the path to the msConvert.exe file:
-
-.. code-block:: bash
-
-   Please provide the path to the msConvert executable or specify it in the config.ini:
-
-After that pyGecko is ready to use.
+After that pyGecko is ready to use. Without msConvert, open formats (``.mzML``, ``.mzXML``,
+``.cdf``, ``.xy``, ``.csv``) still work.
 
 
 

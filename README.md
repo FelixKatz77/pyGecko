@@ -24,17 +24,24 @@ Paper: https://doi.org/10.1039/D4DD00347K
 > To read vendor files you need to install the msConvert tool from ProteoWizard. You can download it from [here](http://proteowizard.sourceforge.net/download.html).
 > You need to specify the path to the msConvert.exe before the first run of pyGecko.
 
-pyGecko requires Python 3.10 or newer and can be installed via pip:
+pyGecko requires Python 3.10 or newer and is published on PyPI as `pygecko-gc`
+(the import name stays `pygecko`):
 
-```bash 
-git clone https://github.com/FelixKatz77/pyGecko.git
-cd pyGecko
-pip install -e .
+```bash
+pip install pygecko-gc
 ```
 
-Optional extras: `pip install -e ".[ord]"` adds Open Reaction Database export
-(`Reaction_Parser`), `".[mzml]"` adds mzML export, `".[test]"` the test dependencies and
-`".[docs]"` the documentation build.
+Optional extras: `pip install "pygecko-gc[ord]"` adds Open Reaction Database export
+(`Reaction_Parser`), `"pygecko-gc[test]"` the test dependencies and `"pygecko-gc[docs]"` the
+documentation build.
+
+To work on pyGecko itself, install an editable checkout instead:
+
+```bash
+git clone https://github.com/FelixKatz77/pyGecko.git
+cd pyGecko
+pip install -e ".[test]"
+```
 
 To install the exact, pinned set of dependency versions instead of the newest compatible ones,
 use [uv](https://docs.astral.sh/uv/) with the committed lock file:
@@ -43,18 +50,25 @@ use [uv](https://docs.astral.sh/uv/) with the committed lock file:
 uv sync
 ```
 
-Afterward the path to the msConvert.exe needs to be specified. This can be done by running the following command:
+### Configuring msConvert
 
-```bash
-cd pygecko
-python __init__.py
-```
-This will prompt you to specify the path to the msConvert.exe file:
+pyGecko looks for the msConvert executable each time a vendor file is converted, in this order:
 
-```bash
-Please provide the path to the msConvert executable or specify it in the config.ini:
+1. the `PYGECKO_MSCONVERT` environment variable, set to the full path of the executable
+2. an `msconvert` found on your `PATH`
+
+Set the variable once for your user account, e.g. on Windows via *Start → "Edit environment
+variables for your account" → New* (name `PYGECKO_MSCONVERT`, value
+`C:\path\to\msconvert.exe`), or on Linux/macOS by adding
+`export PYGECKO_MSCONVERT=/path/to/msconvert` to your shell profile. Inside a script or notebook
+you can also set it for the current session before calling pyGecko:
+
+```python
+import os
+os.environ["PYGECKO_MSCONVERT"] = r"C:\path\to\msconvert.exe"
 ```
-After that pyGecko is ready to use.
+
+Without msConvert, open formats (`.mzML`, `.mzXML`, `.cdf`, `.xy`, `.csv`) still work.
 
 
 ## Documentation
@@ -63,13 +77,12 @@ The documentation for pyGecko can be found [here](https://pygecko.readthedocs.io
 ## Running the tests
 
 ```bash
-pip install -e ".[test,ord,mzml]"
+pip install -e ".[test,ord]"
 pytest
 ```
 
 Two integration tests load Agilent `.D` directories and therefore need a configured msConvert
-executable; they fail without one. To skip them, run `pytest -m "not msconvert"`. The mzML export
-tests need the `mzml` extra; skip them with `pytest -m "not mzml"`.
+executable; they fail without one. To skip them, run `pytest -m "not msconvert"`.
 
 The normal offline suite includes small, attributed `.xy` and mzML excerpts from the pyGecko study.
 It also checks ORD/PDF export using the corresponding plate metadata. Run it with the coverage gate:
@@ -160,8 +173,8 @@ write_injection_to_cdf(fid_injection, 'FBS-FA-033-A1.cdf')
 write_sequence_to_cdf(fid_sequence, 'exported/')
 ```
 
-mzML export needs the `mzml` extra (`pip install -e ".[mzml]"`), which pulls in
-[psims](https://github.com/mobiusklein/psims). netCDF export needs nothing extra.
+mzML is written with [psims](https://github.com/mobiusklein/psims) and netCDF with netCDF4;
+both ship with the default install.
 
 > [!IMPORTANT]
 > An export is a record of the injection **as pyGecko holds it**, not a copy of the original
