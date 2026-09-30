@@ -77,7 +77,7 @@ class TestIntegrateRecomputesTheAreasPickPeaksSet:
         # axis value, which shifts a narrow peak's area by percent (2.8% on the CSV fixture).
         injection = make_fid_injection(solvent_delay=NO_TRUNCATION)
         injection.pick_peaks()
-        time = injection.processed_chromatogram[0]
+        time = injection.chromatogram.time
         for peak in injection.peaks.values():
             assert peak.boarders[0] in time and peak.boarders[1] in time
 
@@ -88,10 +88,10 @@ class TestIntegrateRecomputesTheAreasPickPeaksSet:
         for peak in injection.peaks.values():
             assert peak.area > 0
 
-    def test_integrate_reports_an_empty_peak_list(self, capsys):
+    def test_integrate_without_peaks_raises(self):
         injection = make_fid_injection(solvent_delay=NO_TRUNCATION)
-        injection.integrate()
-        assert 'Peaks list is empty.' in capsys.readouterr().out
+        with pytest.raises(ValueError, match='no peaks to integrate'):
+            injection.integrate()
 
 
 class TestPeakCoordinates:
@@ -110,7 +110,7 @@ class TestPeakCoordinates:
 
     def test_boarders_stay_inside_the_chromatogram(self):
         injection = picked()
-        start, end = injection.chromatogram[0][0], injection.chromatogram[0][-1]
+        start, end = injection.chromatogram.run_time
         for peak in injection.peaks.values():
             assert start <= peak.boarders[0] < peak.boarders[1] <= end
 
@@ -164,10 +164,11 @@ class TestTimeRangeIsRelativeToTheChromatogramStart:
         assert len(injection.peaks) == 1
         assert next(iter(injection.peaks)) == pytest.approx(ANALYTE_RT, abs=0.01)
 
-    def test_the_processed_chromatogram_spans_the_requested_window(self):
+    def test_the_processed_signal_spans_the_run_not_the_window(self):
+        # The window selects peaks; the processed signal covers the run from the solvent delay on.
         injection = picked_truncated(time_range=(3.0, 5.0))
-        window = injection.processed_chromatogram[0]
-        assert 3.0 <= window[0] and window[-1] <= 5.0
+        assert injection.chromatogram.time[0] == pytest.approx(TRUNCATING, abs=0.01)
+        assert len(injection.chromatogram.processed) == len(injection.chromatogram.time)
 
     def test_the_boarders_stay_inside_the_requested_window(self):
         peak = next(iter(picked_truncated(time_range=(3.0, 5.0)).peaks.values()))
@@ -182,7 +183,7 @@ class TestTimeRangeIsRelativeToTheChromatogramStart:
         # The old arithmetic could produce a negative index here, which numpy silently reinterprets
         # as slicing from the end - a wrong window with no error.
         injection = picked_truncated(time_range=(0.5, 5.0))
-        assert injection.processed_chromatogram[0][0] == pytest.approx(TRUNCATING, abs=0.01)
+        assert injection.chromatogram.time[0] == pytest.approx(TRUNCATING, abs=0.01)
         assert len(injection.peaks) == 1
         assert next(iter(injection.peaks)) == pytest.approx(IS_RT, abs=0.01)
 
@@ -190,7 +191,7 @@ class TestTimeRangeIsRelativeToTheChromatogramStart:
         # The default path the golden retention indices in test_fid_ri_calibration.py ride on.
         injection = picked_truncated()
         assert len(injection.peaks) == 2
-        assert injection.processed_chromatogram.shape[1] == injection.chromatogram.shape[1]
+        assert len(injection.chromatogram.processed) == len(injection.chromatogram.time)
 
 
 class TestSolventDelayHandling:
@@ -198,11 +199,11 @@ class TestSolventDelayHandling:
     def test_a_zero_solvent_delay_is_honoured_rather_than_auto_detected(self):
         injection = make_fid_injection(solvent_delay=0)
         assert injection.solvent_delay == 0
-        assert injection.chromatogram.shape[1] == 4000
+        assert len(injection.chromatogram.time) == 4000
 
     def test_an_omitted_solvent_delay_is_auto_detected(self):
         # This branch computed a value and then raised TypeError on None / scan_rate, because the
         # truncation used the parameter rather than the resolved self.solvent_delay.
         injection = make_fid_injection(solvent_delay=None)
         assert injection.solvent_delay > 0
-        assert injection.chromatogram.shape[1] < 4000
+        assert len(injection.chromatogram.time) < 4000

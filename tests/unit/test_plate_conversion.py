@@ -9,6 +9,7 @@ from pygecko.gc_tools.analyte import Analyte
 from pygecko.gc_tools.injection.fid_injection import FID_Injection
 from pygecko.gc_tools.peak import FID_Peak
 from pygecko.gc_tools.sequence.gc_sequence import GC_Sequence
+from pygecko.gc_tools.chromatogram import Chromatogram
 
 from .conftest import make_ms_injection
 
@@ -16,7 +17,7 @@ SUBSTRATE = 'c1ccccc1'
 SUBSTRATE_MZ = 78.0
 IS_RT = 4.0
 ANALYTE_RT = 6.0
-CHROMATOGRAM = np.array([[0.0, 0.1, 0.2, 0.3], [1.0, 1.0, 1.0, 1.0]])
+CHROMATOGRAM = Chromatogram([0.0, 0.1, 0.2, 0.3], [1.0, 1.0, 1.0, 1.0], kind='FID')
 
 
 class StubLayout:
@@ -108,3 +109,28 @@ class TestRemainingStartingMaterial:
     def test_is_not_clamped_above_one_hundred_percent(self, sequences, fixed_remaining):
         fixed_remaining(150.0)
         assert remaining(*sequences) == pytest.approx(150.0)
+
+
+class TestPlateResultsAreRounded:
+    '''Quantification returns float percentages; the plate layer rounds, so exports stay integral.'''
+
+    def test_a_plate_yield_is_rounded(self, sequences, fixed_remaining):
+        fixed_remaining(42.4)
+        assert remaining(*sequences) == 42
+
+    def test_conversion_is_computed_from_the_rounded_yield(self, sequences, fixed_remaining):
+        # Rounding first reproduces the published conversions, which were computed from the
+        # integer yields: 100 - 41 / 1.5 = 72.67 -> 73, where 100 - 41.4 / 1.5 = 72.4 would give 72.
+        fixed_remaining(41.4)
+        assert conversion(*sequences, equivalents=1.5) == 73
+
+    def test_quantify_plate_rounds(self, sequences, fixed_remaining):
+        fixed_remaining(74.6)
+        _, fid_sequence = sequences
+        result = Analysis.quantify_plate(fid_sequence, ANALYTE_RT, layout=StubLayout())
+        assert result['quantity'][0][0] == 75
+
+    def test_quantify_analyte_rounds(self, sequences, fixed_remaining):
+        fixed_remaining(74.6)
+        _, fid_sequence = sequences
+        assert Analysis.quantify_analyte(fid_sequence, ANALYTE_RT)['A1'][0] == 75

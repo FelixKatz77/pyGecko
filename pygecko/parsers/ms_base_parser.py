@@ -1,13 +1,15 @@
+import logging
 import tempfile
 from pathlib import Path
 
-import numpy as np
 
-from pygecko.gc_tools import MS_Injection, RI_Calibration, MS_Sequence
+from pygecko.gc_tools import Chromatogram, MS_Injection, RI_Calibration, MS_Sequence
 from pygecko.gc_tools.injection.raw_scans import Raw_Scans
 from pygecko.parsers.msconvert_wraper import msconvert
 from pygecko.parsers.file_readers import extract_scans_from_mzxml, extract_scans_from_mzml, extract_scans_from_cdf
 from typing import Iterable, Optional
+
+logger = logging.getLogger(__name__)
 
 
 class MS_Base_Parser:
@@ -32,12 +34,13 @@ class MS_Base_Parser:
             An MS_Sequence object.
         """
 
-        print('Loading GC-MS sequence...')
+        logger.info('Loading GC-MS sequence...')
         raw_directory = Path(raw_directory)
-        supported_formats = ['.D', '.mzML', '.mzXML', 'cdf', '.CDF']
-        raw_files = []
-        for file_format in supported_formats:
-            raw_files.extend(raw_directory.glob(f'*{file_format}'))
+        # Matched on the lower-cased suffix of each entry, so every case variant is found on a
+        # case-sensitive filesystem and each file is listed once on a case-insensitive one.
+        supported_formats = {'.d', '.mzml', '.mzxml', '.cdf'}
+        raw_files = sorted(entry for entry in raw_directory.iterdir()
+                           if entry.suffix.lower() in supported_formats)
 
         allowed_names = set(sample_filter) if sample_filter is not None else None
 
@@ -49,7 +52,7 @@ class MS_Base_Parser:
             if allowed_names is not None and injection.sample_name not in allowed_names:
                 continue
             injections[injection.sample_name] = injection
-        print(f'Sequence loaded with {len(injections)} injections.')
+        logger.info('Sequence loaded with %d injections.', len(injections))
         return MS_Sequence({}, injections)
 
     @staticmethod
@@ -101,7 +104,7 @@ class MS_Base_Parser:
 
         raw_scans, metadata = MS_Base_Parser.extract_scans_from_raw_data(path, temp_dir=temp_dir)
         scans = raw_scans.to_nominal_matrix()
-        chromatogram = np.array([scans.index / 60000, scans.sum(axis=1)])
+        chromatogram = Chromatogram(scans.index / 60000, scans.sum(axis=1), kind='TIC')
         injection = MS_Injection(metadata, chromatogram, None, scans, pos=pos, raw_scans=raw_scans)
         injection.record_step('MS_Base_Parser.load_injection',
                               {'raw_data_path': str(path), 'pos': pos})
@@ -117,41 +120,14 @@ class MS_Base_Parser:
         '''
 
 
-        if raw_path.suffix == '.mzML':
-            try:
-                raw_scans, metadata = extract_scans_from_mzml(raw_path)
-                return raw_scans, metadata
-            except KeyError as error:
-                print(f'Cannot extract scans from {raw_path.name}: {error}')
-                raise KeyError(f'Cannot extract scans from {raw_path.name}: {error}')
-            except FileNotFoundError as error:
-                raise FileNotFoundError(error)
-        elif raw_path.suffix == '.mzXML':
-            try:
-                raw_scans, metadata = extract_scans_from_mzxml(raw_path)
-                return raw_scans, metadata
-            except KeyError as error:
-                print(f'Cannot extract scans from {raw_path.name}: {error}')
-                raise KeyError(f'Cannot extract scans from {raw_path.name}: {error}')
-            except FileNotFoundError as error:
-                raise FileNotFoundError(error)
-        elif raw_path.suffix.lower() == '.cdf':
-            try:
-                raw_scans, metadata = extract_scans_from_cdf(raw_path)
-                return raw_scans, metadata
-            except Exception as error:
-                print(f'Cannot extract scans from {raw_path.name}: {error}')
-                raise RuntimeError(f'Cannot extract scans from {raw_path.name}: {error}')
-        else:
-            if not temp_dir:
-                temp_dir = tempfile.TemporaryDirectory()
-            mzml_path = Path.joinpath(Path(temp_dir.name), raw_path.name).with_suffix('.mzML')
-            try:
-                msconvert([raw_path], temp_dir.name)
-                raw_scans, metadata = extract_scans_from_mzml(mzml_path)
-                return raw_scans, metadata
-            except KeyError as error:
-                raise KeyError(f'Cannot extract scans from {mzml_path.name}: {error}')
-            except FileNotFoundError as error:
-                raise FileNotFoundError(error)
-
+        suffix = raw_path.suffix.lower()
+        if suffix == '.mzml':
+            return extract_scans_from_mzml(raw_path)
+        if suffix == '.mzxml':
+            return extract_scans_from_mzxml(raw_path)
+        if suffix == '.cdf':
+            return extract_scans_from_cdf(raw_path)
+        if not temp_dir:
+            temp_dir = tempfile.TemporaryDirectory()
+        msconvert([raw_path], temp_dir.name)
+        return extract_scans_from_mzml(Path(temp_dir.name, raw_path.name).with_suffix('.mzML'))

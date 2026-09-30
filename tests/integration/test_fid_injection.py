@@ -1,7 +1,7 @@
-import numpy as np
 import pytest
 from pygecko.parsers import FID_Base_Parser
 from .conftest import fixture_path
+from pygecko.gc_tools import Chromatogram
 
 def test_fid_base_parser():
 
@@ -10,8 +10,7 @@ def test_fid_base_parser():
     assert injection is not None
     assert injection.sample_name == 'FBS-FA-033-A1'
     assert injection.solvent_delay == 3.06
-    assert type(injection.chromatogram) is np.ndarray
-    assert injection.chromatogram.shape[0] == 2
+    assert isinstance(injection.chromatogram, Chromatogram)
     assert injection.detector == 'FID'
     assert injection.peaks is None
     assert injection.history[0].operation == 'FID_Base_Parser.load_injection'
@@ -50,5 +49,5 @@ def test_a_time_range_selects_peaks_inside_the_window():
 
     assert injection.peaks
     assert 5.0 <= min(injection.peaks) and max(injection.peaks) <= 8.0
-    window = injection.processed_chromatogram[0]
-    assert 5.0 <= window[0] and window[-1] <= 8.0
+    # The window selects peaks; it no longer crops the processed signal.
+    assert len(injection.chromatogram.processed) == len(injection.chromatogram.time)

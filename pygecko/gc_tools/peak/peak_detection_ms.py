@@ -4,6 +4,7 @@ from scipy.signal import find_peaks
 
 
 from pygecko.gc_tools.analysis.analysis_settings import Analysis_Settings
+from pygecko.gc_tools.chromatogram import Chromatogram
 from pygecko.gc_tools.peak.fid_peak import FID_Peak
 from pygecko.gc_tools.peak.ms_peak import MS_Peak
 from pygecko.gc_tools.utilities import Utilities
@@ -15,13 +16,17 @@ class Peak_Detection_MS:
     '''
 
     @staticmethod
-    def pick_peaks(chromatogram: np.ndarray, scans: pd.DataFrame, analysis_settings: Analysis_Settings) -> dict[float:MS_Peak]:
+    def pick_peaks(chromatogram: Chromatogram, scans: pd.DataFrame, analysis_settings: Analysis_Settings) -> dict[float:MS_Peak]:
 
         '''
         Returns a dictionary of MS peaks.
 
+        Peaks are detected over the whole TIC; a time_range then keeps those whose apex lies inside
+        it. The filter runs before the spectra are extracted, so the kept peak indices still address
+        the full scans frame they share an axis with.
+
         Args:
-            chromatogram (np.ndarray): Chromatogram to detect peaks in.
+            chromatogram (Chromatogram): Total ion current to detect peaks in.
             scans (pd.DataFrame): Mass traces of the chromatogram.
             analysis_settings (Analysis_Settings): Data_Method object containing settings for the peak detection.
 
@@ -31,19 +36,24 @@ class Peak_Detection_MS:
 
         peak_indices, peak_rts, peak_heights, peak_widths, peak_boarders = Peak_Detection_MS.__detect_peaks_scipy(
             chromatogram, analysis_settings)
+        time_range = analysis_settings.pop('time_range', None)
+        if time_range:
+            kept = (peak_rts >= time_range[0]) & (peak_rts <= time_range[1])
+            peak_indices, peak_rts, peak_heights, peak_widths, peak_boarders = (
+                values[kept] for values in (peak_indices, peak_rts, peak_heights, peak_widths, peak_boarders))
         spectra = Peak_Detection_MS.__extract_mass_spectrum(scans, peak_rts, peak_indices, analysis_settings)
         peaks = Peak_Detection_MS.__initialize_peaks(peak_rts, peak_heights, peak_widths, peak_boarders, spectra)
         return peaks
 
     @staticmethod
-    def __detect_peaks_scipy(chromatogram: np.ndarray, analysis_settings: Analysis_Settings) -> tuple[
+    def __detect_peaks_scipy(chromatogram: Chromatogram, analysis_settings: Analysis_Settings) -> tuple[
         np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
 
         '''
         Returns the peak indices, retention times and heights of a chromatogram.
 
         Args:
-            chromatogram (np.ndarray): Chromatogram to detect peaks in.
+            chromatogram (Chromatogram): Total ion current to detect peaks in.
             analysis_settings (Analysis_Settings): Data_Method object containing settings for the peak detection.
 
         Returns:
@@ -51,8 +61,8 @@ class Peak_Detection_MS:
             widths, and boarders.
         '''
 
-        time = chromatogram[0]
-        intensities = chromatogram[1]
+        time = chromatogram.time
+        intensities = chromatogram.intensity
 
         min_height = analysis_settings.pop('height', np.min(intensities[intensities != 0]) * 50)
         prominence = analysis_settings.pop('prominence_ms', 1)
@@ -63,8 +73,8 @@ class Peak_Detection_MS:
                                                    prominence=prominence, width=width, height=min_height, rel_height=0.97)
         peak_heights = peak_properties['peak_heights']
         peak_boarders = np.vstack((peak_properties['left_ips'], peak_properties['right_ips'])).transpose()
-        peak_boarders = (peak_boarders * analysis_settings.scan_rate) + time[0]
-        peak_widths = peak_properties['widths'] * analysis_settings.scan_rate
+        peak_boarders = (peak_boarders * chromatogram.scan_rate) + time[0]
+        peak_widths = peak_properties['widths'] * chromatogram.scan_rate
         peak_rts = time[peak_indices]
         return peak_indices, peak_rts, peak_heights, peak_widths, peak_boarders
 

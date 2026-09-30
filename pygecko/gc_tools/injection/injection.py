@@ -1,10 +1,17 @@
 import _pickle as cPickle
 import json
+from typing import TYPE_CHECKING
 
+import numpy as np
+
+from pygecko.gc_tools.chromatogram import Chromatogram
 from pygecko.gc_tools.history import Processing_Step, records_processing
 from pygecko.gc_tools.peak import Peak
 from pygecko.gc_tools.analyte import Analyte
 from pygecko.gc_tools.utilities import Utilities
+
+if TYPE_CHECKING:
+    from matplotlib.figure import Figure
 
 
 
@@ -40,7 +47,7 @@ class Injection:
     detector: None|str
     plate_pos: str | None
     analysis_settings: None
-    chromatogram: None
+    chromatogram: Chromatogram|None
     history: list[Processing_Step]
     _recording: bool
 
@@ -124,15 +131,21 @@ class Injection:
 
         Args:
             rt (float): Retention time of the peak.
-            flag (str|None): Flag to be assigned to the peak. Default is None.
+            flag (str|None): Flag to be assigned to the peak. Default is None, which leaves the flags unchanged.
             tolerance (float): Tolerance for the retention time matching. Default is 0.05.
-            analyte (Analyte|None): Analyte object to be assigned to the peak. Default is None.
+            analyte (Analyte|None): Analyte object to be assigned to the peak. Default is None, which leaves the
+                peak's analyte unchanged.
 
         Returns:
             None|Peak: The peak with the closest retention time to the given retention time or None if
             no peak was found within the tolerance.
+
+        Raises:
+            ValueError: If the injection's peaks have not been picked.
         '''
 
+        if self.peaks is None:
+            raise ValueError(f'{self.sample_name}: peaks not picked; call pick_peaks first.')
         candidates = {}
         for peak in self.peaks.values():
             if Utilities.check_interval(rt, peak.rt, tolerance):
@@ -140,8 +153,10 @@ class Injection:
                 candidates[deviation] = peak
         if candidates:
             best_candidate = candidates[min(candidates)]
-            best_candidate.flags.append(flag)
-            best_candidate.analyte = analyte
+            if flag is not None:
+                best_candidate.flags.append(flag)
+            if analyte is not None:
+                best_candidate.analyte = analyte
             return best_candidate
         else:
             return None
@@ -252,20 +267,23 @@ class Injection:
 
         self.plate_pos = pos
 
-    def view_chromatogram(self, path:str|None=None, **kwargs) -> None:
+    def view_chromatogram(self, **kwargs) -> 'Figure':
 
         '''
-        Plots the chromatogram of the injection.
+        Returns a plot of the chromatogram of the injection.
 
         Args:
             **kwargs: Keyword arguments for the visualization.
+
+        Returns:
+            Figure: The plot; the caller saves it with savefig and releases it with plt.close.
         '''
 
         # Imported here, not at module scope: visualization imports gc_tools, so a
         # module-level import makes pygecko.visualization unimportable on its own.
         from pygecko.visualization import Visualization
 
-        Visualization.view_chromatogram(self, path=path, **kwargs)
+        return Visualization.view_chromatogram(self, **kwargs)
 
     def _check_for_peak(self, chromatogram_slice) -> list[bool]:
 
@@ -331,11 +349,19 @@ class Injection:
         history existed carry no history or _recording entry. Both are defaulted rather than
         reconstructed: the steps that produced those objects were never recorded, and an empty
         history is the honest statement of that.
+
+        Injections saved before the Chromatogram existed carry the chromatogram as a (2, N) array
+        and an FID one a processed_chromatogram slot. The array is wrapped; the processed signal is
+        dropped, since it may have been cropped to a time_range, and is recomputed on the next pick.
         '''
 
         _, slots = state
         for name, value in (slots or {}).items():
-            setattr(self, name, value)
+            # hasattr on the type finds slot descriptors across the MRO; a removed slot has none.
+            if hasattr(type(self), name):
+                setattr(self, name, value)
+        if isinstance(getattr(self, 'chromatogram', None), np.ndarray):
+            self.chromatogram = Chromatogram(*self.chromatogram, kind='TIC' if self.detector == 'MS' else 'FID')
         if not hasattr(self, 'history'):
             self.history = []
         if not hasattr(self, '_recording'):
@@ -351,24 +377,6 @@ class Injection:
 
         with open(filename, 'wb') as outp:
             cPickle.dump(self, outp)
-
-    def _check_for_missing_signal(self):
-
-        '''Check the chromatogram for stretches with no signal and print a one-line summary.
-
-        A real MS TIC carries dozens of short dropouts per injection, so the ranges are summarised
-        rather than listed: itemising them buries every other message a plate run prints. Use
-        Utilities.find_empty_ranges directly to inspect the individual gaps.
-        '''
-
-        ranges = Utilities.find_empty_ranges(self.chromatogram)
-        if not ranges:
-            return
-        dead_time = sum(end - start for start, end in ranges)
-        run_time = self.chromatogram[0][-1] - self.chromatogram[0][0]
-        start, end = max(ranges, key=lambda r: r[1] - r[0])
-        print(f'{self.sample_name}: {len(ranges)} empty ranges, {dead_time:.2f} min dead of '
-              f'{run_time:.2f} min, longest {end - start:.3f} min at {start:.2f}-{end:.2f}')
 
 
 def load_injection(filename) -> Injection:

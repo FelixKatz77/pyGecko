@@ -51,25 +51,52 @@ def test_env_var_wins_over_path(monkeypatch, tmp_path, run_calls, no_msconvert_o
     assert run_calls[0][0] == str(env_exe)
 
 
-def test_missing_executable_does_not_run(tmp_path, run_calls, no_msconvert_on_path, capsys):
-    msconvert_wraper.msconvert(['a.D'], str(tmp_path))
+def test_missing_executable_raises_and_does_not_run(tmp_path, run_calls, no_msconvert_on_path):
+    # Returning quietly let the caller go on to read an .mzML that was never written, and fail with
+    # a FileNotFoundError naming that file instead of the missing executable.
+    with pytest.raises(FileNotFoundError, match='PYGECKO_MSCONVERT'):
+        msconvert_wraper.msconvert(['a.D'], str(tmp_path))
 
     assert run_calls == []
-    assert 'not found' in capsys.readouterr().out
 
 
-def test_env_var_pointing_nowhere_does_not_run(monkeypatch, tmp_path, run_calls, no_msconvert_on_path):
+def test_unresolved_executable_raises(monkeypatch, tmp_path, run_calls):
+    monkeypatch.setattr(msconvert_wraper, 'find_msconvert', lambda: None)
+
+    with pytest.raises(FileNotFoundError, match='PYGECKO_MSCONVERT'):
+        msconvert_wraper.msconvert(['a.D'], str(tmp_path))
+
+    assert run_calls == []
+
+
+def test_env_var_pointing_nowhere_raises_and_does_not_run(monkeypatch, tmp_path, run_calls, no_msconvert_on_path):
     monkeypatch.setenv('PYGECKO_MSCONVERT', str(tmp_path / 'does_not_exist'))
 
-    msconvert_wraper.msconvert(['a.D'], str(tmp_path))
+    with pytest.raises(FileNotFoundError):
+        msconvert_wraper.msconvert(['a.D'], str(tmp_path))
 
     assert run_calls == []
+
+
+def test_a_failing_conversion_raises(monkeypatch, tmp_path, no_msconvert_on_path):
+    exe = tmp_path / 'msconvert.exe'
+    exe.touch()
+    monkeypatch.setenv('PYGECKO_MSCONVERT', str(exe))
+
+    def fail(cmd, **kwargs):
+        raise subprocess.CalledProcessError(1, cmd)
+
+    monkeypatch.setattr(subprocess, 'run', fail)
+
+    with pytest.raises(subprocess.CalledProcessError):
+        msconvert_wraper.msconvert(['a.D'], str(tmp_path))
 
 
 def test_resolution_happens_at_call_time(monkeypatch, tmp_path, run_calls, no_msconvert_on_path):
     exe = tmp_path / 'msconvert.exe'
     exe.touch()
-    msconvert_wraper.msconvert(['a.D'], str(tmp_path))
+    with pytest.raises(FileNotFoundError):
+        msconvert_wraper.msconvert(['a.D'], str(tmp_path))
     assert run_calls == []
 
     monkeypatch.setenv('PYGECKO_MSCONVERT', str(exe))

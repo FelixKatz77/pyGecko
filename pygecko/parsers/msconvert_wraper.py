@@ -1,7 +1,10 @@
+import logging
 import subprocess
 import os
 import shutil
 from pygecko.parsers.utilities import list_files_and_directories
+
+logger = logging.getLogger(__name__)
 
 
 def find_msconvert() -> str | None:
@@ -33,8 +36,8 @@ def msconvert(input_files: list|str, output_dir, format='mzML'):
 
     msconvert_path = find_msconvert()
     if msconvert_path is None:
-        print("msconvert executable not found. Set PYGECKO_MSCONVERT or add msconvert to PATH.")
-        return
+        raise FileNotFoundError('msconvert executable not found. Set PYGECKO_MSCONVERT to its path or add '
+                                'msconvert to PATH.')
 
     # Change the working directory to the specified path
     #working_dir = r'C:\Users\felix\AppData\Local\Apps\ProteoWizard 3.0.23289.fd07aa9 64-bit'
@@ -52,19 +55,6 @@ def msconvert(input_files: list|str, output_dir, format='mzML'):
     # Add the input filenames to the command
     msconvert_cmd.extend(input_files)
 
-    try:
-        # Execute the msconvert command
-        subprocess.run(msconvert_cmd, check=True)
-        print(f"Conversion to {output_format} format successful.")
-    except subprocess.CalledProcessError as e:
-        print(f"Error during conversion: {e}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-if __name__ == "__main__":
-    # Provide a list of input filenames and the output directory
-    input_files = ["C:/Users/felix/Documents/sciebo/AK/FKB-FA-005/FKB-FA-005_A.D", "C:Users/felix/Documents/sciebo/AK/FKB-FA-005/FKB-FA-005_B.D"]
-    output_directory = "C:/Users/felix/Documents/sciebo/AK/Research/pyGECKO/pyGECKO/data"
-
-    msconvert(input_files, output_directory)
-    print()
+    # Execute the msconvert command; check=True raises CalledProcessError on a failed conversion.
+    subprocess.run(msconvert_cmd, check=True)
+    logger.info('Conversion to %s format successful.', output_format)

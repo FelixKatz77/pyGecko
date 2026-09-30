@@ -1,7 +1,11 @@
 import numpy as np
 import pandas as pd
+from typing import TYPE_CHECKING
 
 from pygecko.gc_tools.peak import Peak
+
+if TYPE_CHECKING:
+    from matplotlib.figure import Figure
 
 
 class MS_Peak(Peak):
@@ -31,18 +35,21 @@ class MS_Peak(Peak):
         if flag:
             self.flags = [flag]
 
-    def view_mass_spectrum(self, path:str|None=None, **kwargs) -> None:
+    def view_mass_spectrum(self, **kwargs) -> 'Figure':
         '''
-        Plots the mass spectrum of the peak.
+        Returns a plot of the mass spectrum of the peak.
         Args:
             **kwargs: Keyword arguments for the visualization.
+
+        Returns:
+            Figure: The plot; the caller saves it with savefig and releases it with plt.close.
         '''
 
         # Imported here, not at module scope: visualization imports gc_tools, so a
         # module-level import makes pygecko.visualization unimportable on its own.
         from pygecko.visualization import Visualization
 
-        Visualization.view_mass_spectrum(self, path=path, **kwargs)
+        return Visualization.view_mass_spectrum(self, **kwargs)
 
     def __contains__(self, item):
 

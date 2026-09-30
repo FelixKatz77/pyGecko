@@ -129,6 +129,9 @@ class GC_Sequence:
             try:
                 injection.set_internal_standard(rt, tolerance=tolerance, name=name, smiles=smiles)
             except ValueError:
+                # Un-picked peaks are a caller error, not a missing standard peak.
+                if injection.peaks is None:
+                    raise
                 missing.append(sample_name)
         if missing:
             warnings.warn(

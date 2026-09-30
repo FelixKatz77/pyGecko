@@ -10,7 +10,7 @@ class Quantification:
     '''
 
     @staticmethod
-    def quantify_ratio(peak:FID_Peak, standard:FID_Peak) -> int:
+    def quantify_ratio(peak:FID_Peak, standard:FID_Peak) -> float:
 
         '''
         Returns the relative quantity of an analyte based on the ratio of the analytes peak area to the peak area of a
@@ -21,14 +21,14 @@ class Quantification:
             standard (FID_Peak): Standard peak to use for quantification.
 
         Returns:
-            yield_ (int): Relative quantity of analyte.
+            yield_ (float): Relative quantity of analyte in percent.
         '''
 
         yield_ = peak.area/standard.area * 100
-        return int(round(yield_, 0))
+        return yield_
 
     @staticmethod
-    def quantify_calibration(peak:FID_Peak, standard:FID_Peak, slope:float, intercept: float) -> int:
+    def quantify_calibration(peak:FID_Peak, standard:FID_Peak, slope:float, intercept: float) -> float:
 
         '''
         Returns the relative quantity of an analyte based on a calibration curve.
@@ -40,15 +40,14 @@ class Quantification:
             intercept (float): Intercept of the calibration curve.
 
         Returns:
-            yield_ (int): Relative quantity of analyte.
+            yield_ (float): Relative quantity of analyte in percent.
         '''
 
         yield_ = (slope * (peak.area/standard.area) + intercept) * 100
-        yield_ = int(round(yield_, 0))
         return yield_
 
     @staticmethod
-    def quantify_polyarc(peak:FID_Peak, std_peak:FID_Peak) -> int:
+    def quantify_polyarc(peak:FID_Peak, std_peak:FID_Peak) -> float:
 
         '''
         Returns the relative quantity of an analyte based on the ratio of the analytes carbon-normalized peak area to
@@ -59,7 +58,7 @@ class Quantification:
             std_peak: Standard peak to use for quantification.
 
         Returns:
-            yield_ (int): Relative quantity of analyte.
+            yield_ (float): Relative quantity of analyte in percent.
         '''
 
         analyte = peak.analyte.mol
@@ -69,7 +68,7 @@ class Quantification:
                 C_analyte = Quantification.__get_c_count(analyte)
                 C_std = Quantification.__get_c_count(std)
                 yield_ = ((peak.area/C_analyte) / (std_peak.area/C_std)) * 100
-                return int(round(yield_, 0))
+                return yield_
             else:
                 raise TypeError('No molecule assigned for Standard.')
         else:

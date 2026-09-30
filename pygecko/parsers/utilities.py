@@ -18,8 +18,7 @@ def list_files_and_directories(directory_path):
 def find_directories_with_extension(directory_path, extension):
     directory_path = Path(directory_path)
     if not directory_path.is_dir():
-        print(f"{directory_path} is not a valid directory.")
-        return []
+        raise NotADirectoryError(f'{directory_path} is not a directory.')
 
     matching_directories = [entry for entry in directory_path.iterdir() if entry.is_dir() and entry.suffix == extension]
 

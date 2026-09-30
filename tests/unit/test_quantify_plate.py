@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from pygecko.analysis import Analysis
+from pygecko.gc_tools.chromatogram import Chromatogram
 from pygecko.gc_tools.injection.fid_injection import FID_Injection
 from pygecko.gc_tools.sequence.fid_sequence import FID_Sequence
 from pygecko.reaction.array import Product_Array
@@ -17,7 +18,7 @@ def make_fid_injection(pos):
     '''
     time_axis = np.arange(0, 1.0, 0.01)
     injection = FID_Injection({'SampleName': pos},
-                              np.array([time_axis, np.ones_like(time_axis)]),
+                              Chromatogram(time_axis, np.ones_like(time_axis), kind='FID'),
                               0.05, pos=True)
     injection.peaks = {}
     return injection

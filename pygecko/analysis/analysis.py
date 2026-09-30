@@ -1,3 +1,6 @@
+import logging
+import warnings
+
 import numpy as np
 import pandas as pd
 from statistics import linear_regression
@@ -10,6 +13,8 @@ from pygecko.gc_tools.analyte import Analyte
 from pygecko.reaction import Reaction_Array, Product_Array
 from numpy.lib.recfunctions import unstructured_to_structured
 from pygecko.visualization.utilities import Flags
+
+logger = logging.getLogger(__name__)
 
 
 class Analysis:
@@ -266,7 +271,9 @@ class Analysis:
 
                 if fid_candidates:
                     fid_match = Analysis.__find_best_ri_match(fid_candidates, fid_injection, ms_height_ratio, analyte=mz_match.analyte)
-                    yield_ = fid_injection.quantify(fid_match.rt)
+                    # Quantification returns a float percentage; plate results are reported as whole
+                    # percent, rounded before the conversion arithmetic so conversions match the yields.
+                    yield_ = round(fid_injection.quantify(fid_match.rt))
                     if mode == 'conv':
                         # Reference the remaining substrate to its charged loading (equivalents) so an excess
                         # substrate is not reported as negative conversion, and floor at 0.
@@ -304,7 +311,7 @@ class Analysis:
         for injection in fid_sequence.injections.values():
             peak = injection.flag_peak(rt_analyte, analyte=analyte)
             if peak:
-                yield_ = injection.quantify(peak.rt, method=method, **kwargs)
+                yield_ = round(injection.quantify(peak.rt, method=method, **kwargs))
                 flags = Flags.return_flags_value(peak.flags)
                 rt = peak.rt
                 if peak.analyte:
@@ -359,7 +366,7 @@ class Analysis:
             analyte: Analyte,
             ratios: list[float],
             intercept: bool = False,  # set to False to force through (0,0)
-    ) -> tuple[float, float]:
+    ) -> tuple[float, float, float]:
         """
         Fits a calibration curve to the analyte in a FID sequence using scikit-learn.
 
@@ -370,7 +377,7 @@ class Analysis:
             intercept (bool): If True, fit intercept (default True). If False, force through origin.
 
         Returns:
-            tuple[float, float]: (slope, intercept) of calibration curve.
+            tuple[float, float, float]: (slope, intercept, R^2) of the calibration curve.
         """
         area_ratios = []
         for injection in fid_sequence.injections.values():
@@ -396,11 +403,11 @@ class Analysis:
         # R^2 score
         r2 = float(model.score(X, y))
 
-        print(f'Calibration fitted: Slope: {slope}, Intercept: {b}, R^2: {r2}')
+        logger.info('Calibration fitted: slope %s, intercept %s, R^2 %s', slope, b, r2)
         if r2 < 0.9:
-            print('Calibration curve fit is not accurate.')
+            warnings.warn(f'Calibration curve fit is not accurate (R^2 = {r2:.3f} < 0.9).')
 
-        return slope, b
+        return slope, b, r2
 
     @staticmethod
     def quantify_plate(fid_sequence:FID_Sequence, rt_analyte:float, analyte:Analyte|None=None, method='polyarc',
@@ -428,7 +435,7 @@ class Analysis:
         for injection in fid_sequence.injections.values():
             peak = injection.flag_peak(rt_analyte, analyte=analyte)
             if peak:
-                yield_ = injection.quantify(peak.rt, method=method, **kwargs)
+                yield_ = round(injection.quantify(peak.rt, method=method, **kwargs))
                 flags = Flags.return_flags_value(peak.flags)
                 rt = peak.rt
                 if peak.analyte:

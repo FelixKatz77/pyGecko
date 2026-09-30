@@ -95,7 +95,7 @@ def write_injection_to_mzml(injection: MS_Injection, path: Path|str) -> None:
                         params=[{'ms level': 1}, {'total ion current': intensities.sum()}])
             with writer.chromatogram_list(count=1):
                 writer.write_chromatogram(
-                    injection.chromatogram[0], injection.chromatogram[1],
+                    injection.chromatogram.time, injection.chromatogram.intensity,
                     id='TIC', chromatogram_type='total ion current chromatogram',
                     encoding=np.float64)
 
@@ -151,7 +151,7 @@ def write_injection_to_cdf(injection: FID_Injection, path: Path|str) -> None:
         ValueError: If the chromatogram's time axis is not uniformly sampled.
     '''
 
-    time_min, intensities = injection.chromatogram
+    time_min, intensities = injection.chromatogram.time, injection.chromatogram.intensity
     intervals = np.diff(time_min)
     if not np.allclose(intervals, intervals[0], rtol=1e-6, atol=1e-12):
         raise ValueError(f'Cannot write {injection.sample_name} to netCDF: ANDI/AIA reconstructs '

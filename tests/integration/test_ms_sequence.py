@@ -1,8 +1,8 @@
-import numpy as np
 import pytest
 from pygecko.parsers import Agilent_MS_Parser
 from datetime import datetime
 from .conftest import fixture_path
+from pygecko.gc_tools import Chromatogram
 
 # Loads an Agilent .D sequence, which only msConvert can turn into mzML.
 pytestmark = pytest.mark.msconvert
@@ -23,8 +23,7 @@ def test_agilent_fid_parser():
     assert injection.acq_method == '110_20_320_2_1,4_MINSD'
     assert injection.instrument_name == 'GCMS 4'
     assert injection.vial_pos == '12'
-    assert type(injection.chromatogram) is np.ndarray
-    assert injection.chromatogram.shape[0] == 2
+    assert isinstance(injection.chromatogram, Chromatogram)
     assert injection.detector == 'MS'
     assert injection.peaks is None
     assert injection.raw_scans is not None

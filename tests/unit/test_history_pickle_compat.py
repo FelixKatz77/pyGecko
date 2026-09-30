@@ -12,15 +12,15 @@ own shim the first pop inside Peak_Detection_FID after loading raises AttributeE
 
 import pickle
 
-import numpy as np
 
 from pygecko.gc_tools.analysis.analysis_settings import Analysis_Settings
+from pygecko.gc_tools.chromatogram import Chromatogram
 from pygecko.gc_tools.injection.fid_injection import FID_Injection
 from pygecko.gc_tools.injection.ms_injection import MS_Injection
 
 from .conftest import make_injection, make_peak, make_scans
 
-CHROMATOGRAM = np.array([[0.0, 0.1, 0.2, 0.3], [1.0, 1.0, 1.0, 1.0]])
+CHROMATOGRAM = Chromatogram([0.0, 0.1, 0.2, 0.3], [1.0, 1.0, 1.0, 1.0], kind='FID')
 
 
 def round_trip(obj):
@@ -48,7 +48,7 @@ class TestOldPicklesStillLoad:
         # centroids as read; an older file carries the nominal matrix only.
         scans = make_scans([1000.0, 2000.0, 3000.0], [{40: 1.0}, {41: 2.0}, {41: 3.0}])
         injection = MS_Injection({'SampleName': 'SMP-A1'},
-                                 np.array([scans.index / 60000, scans.sum(axis=1)]), None, scans)
+                                 Chromatogram(scans.index / 60000, scans.sum(axis=1), kind='TIC'), None, scans)
         del injection.raw_scans
         del injection.acq_time
         del injection.polarity
@@ -59,7 +59,7 @@ class TestOldPicklesStillLoad:
         assert restored.history == []
 
     def test_settings_pickled_without_resolved_still_accept_pop(self):
-        settings = Analysis_Settings(CHROMATOGRAM)
+        settings = Analysis_Settings()
         del settings._resolved
         restored = round_trip(settings)
         assert restored.pop('sn', 1) == 5
@@ -78,7 +78,7 @@ class TestOldPicklesStillLoad:
         # indices_range was a slot until the window came to be derived from the chromatogram at the
         # call site. Every .pkl written before that carries a value for it, and __setstate__ has to
         # drop names that are no longer slots rather than raise.
-        settings = Analysis_Settings(CHROMATOGRAM)
+        settings = Analysis_Settings()
         state = (None, {name: getattr(settings, name) for name in Analysis_Settings.__slots__})
         state[1]['indices_range'] = [0, None]
 

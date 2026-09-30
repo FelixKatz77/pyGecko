@@ -28,7 +28,7 @@ def test_load_injection_tic_equals_the_sum_of_the_centroids():
     injection = MS_Base_Parser.load_injection(REAL_MZML)
 
     expected = [intensity.sum() for _, _, intensity in injection.raw_scans.spectra()]
-    np.testing.assert_allclose(injection.chromatogram[1], expected, rtol=1e-6)
+    np.testing.assert_allclose(injection.chromatogram.intensity, expected, rtol=1e-6)
 
 
 def test_load_injection_reads_the_run_metadata():

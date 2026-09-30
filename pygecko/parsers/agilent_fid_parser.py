@@ -1,3 +1,5 @@
+import logging
+import warnings
 import xml.etree.ElementTree as ET
 import re
 import numpy as np
@@ -5,9 +7,11 @@ from pathlib import Path
 from datetime import datetime
 
 from pygecko.parsers.fid_base_parser import FID_Base_Parser
-from pygecko.gc_tools import FID_Sequence, FID_Injection, RI_Calibration
+from pygecko.gc_tools import Chromatogram, FID_Sequence, FID_Injection, RI_Calibration
 import netCDF4 as nc
 from typing import Iterable, Optional
+
+logger = logging.getLogger(__name__)
 
 
 
@@ -34,7 +38,7 @@ class Agilent_FID_Parser:
             FID_Sequence: An FID_Sequence object
         '''
 
-        print('Loading GC-FID sequence...')
+        logger.info('Loading GC-FID sequence...')
         acaml_files = list(Path(raw_directory).glob('*.acaml'))
         if acaml_files:
             sequence_metadata, injections = cls.__load_sequence_data(
@@ -50,7 +54,7 @@ class Agilent_FID_Parser:
             # This happens with incomplete/partial exports. Fall back to
             # enumerating the FID injections straight from the AIA/*_FID1A.cdf
             # files, deriving the sample name from each filename.
-            print(
+            warnings.warn(
                 f'No .acaml file found in {raw_directory}; falling back to '
                 f'enumerating FID injections from AIA/*_FID1A.cdf.'
             )
@@ -66,7 +70,7 @@ class Agilent_FID_Parser:
                                   {'raw_directory': str(raw_directory), 'solvent_delay': solvent_delay,
                                    'pos': pos, 'file_source': file_source,
                                    'sample_filter': sample_filter})
-        print(f'Sequence loaded with {len(injections)} injections.')
+        logger.info('Sequence loaded with %d injections.', len(injections))
         return FID_Sequence(sequence_metadata, injections)
 
     @classmethod
@@ -151,7 +155,7 @@ class Agilent_FID_Parser:
                 f'{injection_metadata.get("SampleName")} in {raw_directory} '
                 f'(file_source={resolved_source}).'
             )
-        injection = FID_Injection(injection_metadata, xy_array, solvent_delay)
+        injection = FID_Injection(injection_metadata, Chromatogram(*xy_array, kind='FID'), solvent_delay)
         injection.record_step('Agilent_FID_Parser.load_injection',
                               {'raw_directory': str(raw_directory), 'solvent_delay': solvent_delay,
                                'file_source': file_source})
@@ -249,7 +253,7 @@ class Agilent_FID_Parser:
                         'InjectorPosition': None, 'SampleDescription': None, 'SampleName': sample_name,
                         'SampleType': 'Sample', 'VialNumber': None, 'RawDataFileName': cdf_path.name}
             xy_array = Agilent_FID_Parser.__read_cdf_file(cdf_path)
-            injection = FID_Injection(metadata, xy_array, solvent_delay, pos=pos)
+            injection = FID_Injection(metadata, Chromatogram(*xy_array, kind='FID'), solvent_delay, pos=pos)
             injections[injection.sample_name] = injection
 
         sequence_metadata = {'sequence_name': Path(raw_directory).stem, 'instrument_name': None, 'instrument': None}
@@ -508,7 +512,7 @@ class Agilent_FID_Parser:
         if resolved_source == 'cdf':
             cdf_path = raw_path / 'AIA' / f'{raw_data_stem}_FID1A.cdf'
             if not cdf_path.exists():
-                print(f'Warning: No matching FID CDF for sample {sample_name} at {cdf_path}')
+                warnings.warn(f'No matching FID CDF for sample {sample_name} at {cdf_path}')
                 return None
             return Agilent_FID_Parser.__read_cdf_file(cdf_path)
 
@@ -528,7 +532,7 @@ class Agilent_FID_Parser:
             if fp.suffix in supported_formats
         ]
         if not file_paths:
-            print(f'Warning: No matching file for sample {sample_name}')
+            warnings.warn(f'No matching file for sample {sample_name}')
             return None
         return FID_Base_Parser.read_xy_array(file_paths[0])
 
@@ -575,7 +579,7 @@ class Agilent_FID_Parser:
 
         injections = {}
         for name, metadata in injections_metadata.items():
-            injection = FID_Injection(metadata, xy_arrays[name], solvent_delay, pos=pos)
+            injection = FID_Injection(metadata, Chromatogram(*xy_arrays[name], kind='FID'), solvent_delay, pos=pos)
             injections[injection.sample_name] = injection
         return injections
 

@@ -110,7 +110,7 @@ def records_processing(func):
     The step records the call's arguments with defaults applied, plus every setting the algorithms
     resolved out of the injection's Analysis_Settings while it ran. Only the outermost decorated
     call on an injection records: FID_Injection.pick_peaks calls baseline_correction when no
-    processed chromatogram exists yet, and set_internal_standard calls flag_peak, so recording the
+    processed signal exists for the current baseline settings, and set_internal_standard calls flag_peak, so recording the
     inner call would put a step in the history the caller never asked for and a replay driver would
     then execute twice. The guard suppresses nesting, not repetition - an explicit
     baseline_correction followed by pick_peaks still records two steps.
