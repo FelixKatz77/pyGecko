@@ -16,6 +16,7 @@ import pandas as pd
 import pytest
 from pyteomics import mzml
 
+from pygecko.gc_tools.chromatogram import Chromatogram
 from pygecko.gc_tools.injection.fid_injection import FID_Injection
 from pygecko.gc_tools.injection.ms_injection import MS_Injection
 from pygecko.gc_tools.sequence.fid_sequence import FID_Sequence
@@ -53,7 +54,7 @@ def ms_injection():
         [89575.0, 89926.0, 90278.0],
         [{40: 1000.0, 41: 250.5}, {40: 900.0, 78: 12.0}, {41: 5.0, 78: 3000.25}],
     )
-    chromatogram = np.array([scans.index / 60000, scans.sum(axis=1)])
+    chromatogram = Chromatogram(scans.index / 60000, scans.sum(axis=1), kind='TIC')
     return MS_Injection({'SampleName': 'SMP-A1'}, chromatogram, None, scans)
 
 
@@ -112,7 +113,7 @@ def test_mzml_writes_polarity_and_instrument_when_known(tmp_path):
     '''Metadata a vendor conversion provides (msConvert on a .D) is written as mzML terms.'''
 
     scans = make_scans([1000.0, 1500.0, 2000.0], [{40: 1.0}, {40: 2.0}, {40: 3.0}])
-    chromatogram = np.array([scans.index / 60000, scans.sum(axis=1)])
+    chromatogram = Chromatogram(scans.index / 60000, scans.sum(axis=1), kind='TIC')
     injection = MS_Injection({'SampleName': 'SMP-A1', 'InstrumentName': 'GCMS 4',
                               'Polarity': 'positive',
                               'AcqTime': datetime(2023, 11, 30, 18, 53, 20, tzinfo=timezone.utc)},
@@ -182,7 +183,7 @@ def test_mzml_sanitises_a_sample_name_that_is_not_a_valid_xml_id(tmp_path):
     '''A sample name with spaces or a leading digit still produces a readable file.'''
 
     scans = make_scans([1000.0, 1500.0, 2000.0], [{40: 1.0}, {40: 2.0}, {40: 3.0}])
-    chromatogram = np.array([scans.index / 60000, scans.sum(axis=1)])
+    chromatogram = Chromatogram(scans.index / 60000, scans.sum(axis=1), kind='TIC')
     injection = MS_Injection({'SampleName': '2 blank runs'}, chromatogram, None, scans)
 
     out = tmp_path / 'out.mzML'
@@ -196,7 +197,7 @@ def test_mzml_handles_a_missing_sample_name(tmp_path):
     '''The AIA fallback path synthesises None metadata, which must still produce a valid id.'''
 
     scans = make_scans([1000.0, 1500.0, 2000.0], [{40: 1.0}, {40: 2.0}, {40: 3.0}])
-    chromatogram = np.array([scans.index / 60000, scans.sum(axis=1)])
+    chromatogram = Chromatogram(scans.index / 60000, scans.sum(axis=1), kind='TIC')
     injection = MS_Injection({}, chromatogram, None, scans)
 
     out = tmp_path / 'out.mzML'
@@ -210,7 +211,7 @@ def test_mzml_handles_a_missing_sample_name(tmp_path):
 def test_mzml_rejects_an_injection_without_scans(tmp_path):
     '''An injection carrying no scan matrix cannot be exported.'''
 
-    chromatogram = np.array([[0.0, 0.1, 0.2, 0.3], [1.0, 1.0, 1.0, 1.0]])
+    chromatogram = Chromatogram([0.0, 0.1, 0.2, 0.3], [1.0, 1.0, 1.0, 1.0], kind='TIC')
     injection = MS_Injection({'SampleName': 'SMP-A1'}, chromatogram, None, None)
 
     with pytest.raises(ValueError, match='no scans'):
@@ -259,8 +260,9 @@ def test_cdf_round_trip_preserves_the_chromatogram(fid_injection, tmp_path):
 
     round_tripped = read_cdf(out)
 
-    assert round_tripped.shape == fid_injection.chromatogram.shape
-    np.testing.assert_allclose(round_tripped, fid_injection.chromatogram, rtol=1e-9, atol=1e-9)
+    expected = np.array([fid_injection.chromatogram.time, fid_injection.chromatogram.intensity])
+    assert round_tripped.shape == expected.shape
+    np.testing.assert_allclose(round_tripped, expected, rtol=1e-9, atol=1e-9)
 
 
 def test_cdf_writes_the_andi_variables(fid_injection, tmp_path):
@@ -281,10 +283,10 @@ def test_cdf_writes_the_andi_variables(fid_injection, tmp_path):
     finally:
         dataset.close()
 
-    time = fid_injection.chromatogram[0]
+    time = fid_injection.chromatogram.time
     assert interval == pytest.approx(np.diff(time).mean() * 60.0)
     assert delay == pytest.approx(time[0] * 60.0)
-    np.testing.assert_allclose(intensities, fid_injection.chromatogram[1])
+    np.testing.assert_allclose(intensities, fid_injection.chromatogram.intensity)
 
 
 def test_cdf_rejects_a_non_uniform_time_axis(tmp_path):
@@ -293,7 +295,7 @@ def test_cdf_rejects_a_non_uniform_time_axis(tmp_path):
     # Two different spacings spliced together: uniform enough to survive FID_Injection's
     # solvent-delay truncation, non-uniform where ANDI needs a single interval.
     time = np.concatenate([np.linspace(0.0, 5.0, 2000), np.linspace(5.01, 10.0, 500)])
-    chromatogram = np.array([time, np.full(time.size, 5.0)])
+    chromatogram = Chromatogram(time, np.full(time.size, 5.0), kind='FID')
     injection = FID_Injection({'SampleName': 'FID-A1'}, chromatogram, 1.0)
 
     with pytest.raises(ValueError, match='uniform'):
@@ -310,5 +312,6 @@ def test_write_sequence_to_cdf_writes_one_file_per_injection(fid_injection, tmp_
     write_sequence_to_cdf(sequence, tmp_path)
 
     assert sorted(p.name for p in tmp_path.glob('*.cdf')) == ['FID-A1.cdf', 'FID-A2.cdf']
-    np.testing.assert_allclose(read_cdf(tmp_path / 'FID-A2.cdf'), other.chromatogram,
+    np.testing.assert_allclose(read_cdf(tmp_path / 'FID-A2.cdf'),
+                               [other.chromatogram.time, other.chromatogram.intensity],
                                rtol=1e-9, atol=1e-9)

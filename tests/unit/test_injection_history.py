@@ -33,7 +33,8 @@ SOLVENT_DELAY = 1.0
 def write_xy(directory, sample_name='SMP-A1'):
     '''Writes a synthetic chromatogram as a tab-delimited .xy file and returns its path.'''
     path = directory / f'{sample_name}.xy'
-    np.savetxt(path, np.transpose(make_fid_chromatogram()), delimiter='\t')
+    chromatogram = make_fid_chromatogram()
+    np.savetxt(path, np.transpose([chromatogram.time, chromatogram.intensity]), delimiter='\t')
     return path
 
 
@@ -137,23 +138,21 @@ class TestResolvedParametersAreCaptured:
         assert 'prominence_fid' in injection.history[-1].resolved
 
     def test_resolved_is_not_a_settable_setting(self):
-        settings = Analysis_Settings(make_fid_chromatogram())
+        settings = Analysis_Settings()
         with pytest.raises(KeyError):
             settings.update(_resolved={})
 
     def test_resolved_is_not_a_poppable_setting(self):
-        settings = Analysis_Settings(make_fid_chromatogram())
+        settings = Analysis_Settings()
         with pytest.raises(KeyError):
             settings.pop('_resolved', 1)
 
-    def test_a_falsy_configured_setting_falls_through_to_the_default_and_the_default_is_recorded(self):
-        # Analysis_Settings.pop tests truthiness, so a legitimately configured 0 is treated as
-        # unset (architecture 5, a known deviation). Pinned rather than fixed: resolved must report
-        # the value the caller actually received, whatever that value is.
-        settings = Analysis_Settings(make_fid_chromatogram())
+    def test_a_falsy_configured_setting_is_used_and_recorded(self):
+        # Only None means unset, so a configured 0 reaches the algorithm and resolved reports it.
+        settings = Analysis_Settings()
         settings.update(sn=0)
-        assert settings.pop('sn', 5) == 5
-        assert settings._resolved['sn'] == 5
+        assert settings.pop('sn', 5) == 0
+        assert settings._resolved['sn'] == 0
 
 
 class TestNestedCallsRecordOnce:

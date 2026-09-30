@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from pygecko.gc_tools.chromatogram import Chromatogram
 from pygecko.gc_tools.injection.fid_injection import FID_Injection
 from pygecko.gc_tools.injection.injection import Injection
 from pygecko.gc_tools.injection.ms_injection import MS_Injection
@@ -28,12 +29,12 @@ def make_injection(peaks, sample_name='SMP-A1'):
 
 
 def make_fid_chromatogram(peak_rts=(4.0, 6.0), points=4000, run_time=10.0):
-    '''Builds a two-row FID chromatogram with a Gaussian peak at each given retention time.'''
+    '''Builds an FID chromatogram with a Gaussian peak at each given retention time.'''
     time = np.linspace(0.0, run_time, points)
     intensity = np.full(points, 5.0)
     for rt in peak_rts:
         intensity = intensity + 1000.0 * np.exp(-0.5 * ((time - rt) / 0.03) ** 2)
-    return np.array([time, intensity])
+    return Chromatogram(time, intensity, kind='FID')
 
 
 def make_fid_injection(sample_name='SMP-A1', solvent_delay=1.0, **kwargs):
@@ -71,8 +72,8 @@ def make_scans(rt_ms, rows):
 
 
 def make_ms_injection(peaks, sample_name='SMP-A1', scans=None):
-    '''Builds an MS_Injection with a minimal two-row chromatogram and the given MS peaks.'''
-    chromatogram = np.array([[0.0, 0.1, 0.2, 0.3], [1.0, 1.0, 1.0, 1.0]])
+    '''Builds an MS_Injection with a minimal chromatogram and the given MS peaks.'''
+    chromatogram = Chromatogram([0.0, 0.1, 0.2, 0.3], [1.0, 1.0, 1.0, 1.0], kind='TIC')
     return MS_Injection(
         {'SampleName': sample_name},
         chromatogram,

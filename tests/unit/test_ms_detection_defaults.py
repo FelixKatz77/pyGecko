@@ -107,3 +107,14 @@ class TestMatchMzHonoursSettings:
         injection = make_ms_injection(
             [ms_peak_factory(5.0, {51.0: 100.0, BENZENE_MZ: 1000.0})])
         assert injection.match_mz(BENZENE_MZ) is not None
+
+
+class TestMatchMzAmbiguity:
+
+    def test_several_candidates_warn_and_are_all_returned(self, ms_peak_factory):
+        injection = make_ms_injection(
+            [ms_peak_factory(5.0, {51.0: 100.0, BENZENE_MZ: 1000.0}),
+             ms_peak_factory(6.0, {51.0: 100.0, BENZENE_MZ: 800.0})])
+        with pytest.warns(UserWarning, match='Multiple peaks'):
+            candidates = injection.match_mz(BENZENE_MZ)
+        assert [peak.rt for peak in candidates] == [5.0, 6.0]

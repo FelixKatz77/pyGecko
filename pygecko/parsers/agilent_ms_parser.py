@@ -1,13 +1,15 @@
+import logging
 import tempfile
-import numpy as np
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
-from pygecko.gc_tools import MS_Injection, MS_Sequence, RI_Calibration
+from pygecko.gc_tools import Chromatogram, MS_Injection, MS_Sequence, RI_Calibration
 
 
 from pygecko.parsers.ms_base_parser import MS_Base_Parser
 from .utilities import find_directories_with_extension
+
+logger = logging.getLogger(__name__)
 
 
 class Agilent_MS_Parser:
@@ -31,9 +33,9 @@ class Agilent_MS_Parser:
             MS_Sequence: An MS_Sequence object
         '''
 
-        print('Loading GC-MS sequence...')
+        logger.info('Loading GC-MS sequence...')
         sequence_metadata, injections = cls.__load_sequence_data(sequence_directory, pos=pos)
-        print(f'Sequence loaded with {len(injections)} injections.')
+        logger.info('Sequence loaded with %d injections.', len(injections))
         return MS_Sequence(sequence_metadata, injections)
 
     @classmethod
@@ -198,7 +200,7 @@ class Agilent_MS_Parser:
 
         raw_scans, raw_metadata = MS_Base_Parser.extract_scans_from_raw_data(path, temp_dir=temp_dir)
         scans = raw_scans.to_nominal_matrix()
-        chromatogram = np.array([scans.index / 60000, scans.sum(axis=1)])
+        chromatogram = Chromatogram(scans.index / 60000, scans.sum(axis=1), kind='TIC')
         # sequence.xml is authoritative for the sample and instrument names; the converted mzML
         # contributes what it alone carries (start time, polarity).
         injection = MS_Injection({**raw_metadata, **metadata}, chromatogram, None, scans, pos=pos,

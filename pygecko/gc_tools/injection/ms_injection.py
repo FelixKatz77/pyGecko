@@ -1,3 +1,4 @@
+import warnings
 from collections import defaultdict
 from datetime import datetime
 
@@ -8,6 +9,7 @@ from rdkit import Chem
 from rdkit.Chem import Descriptors
 
 from pygecko.gc_tools.analyte import Analyte
+from pygecko.gc_tools.chromatogram import Chromatogram
 from pygecko.gc_tools.analysis import Analysis_Settings
 from pygecko.gc_tools.history import records_processing
 from pygecko.gc_tools.injection import Injection
@@ -22,9 +24,10 @@ class MS_Injection(Injection):
     Class to represent MS injections.
 
     Attributes:
-        chromatogram (np.ndarray): Chromatogram of the injection.
+        chromatogram (Chromatogram): Total ion current of the injection, on a time axis in minutes.
         peaks (dict[float, MS_Peak]): Peaks of the injection.
-        scans (pd.DataFrame): Scans of the injection binned to nominal mass.
+        scans (pd.DataFrame): Scans of the injection binned to nominal mass, indexed by retention time in
+        milliseconds - not the minutes of the chromatogram's time axis.
         detector (str): Detector used for the injection.
         analysis_settings (Analysis_Settings): Data method used for the injection.
         solvent_delay (float): Solvent delay applied to the injection.
@@ -33,7 +36,7 @@ class MS_Injection(Injection):
         polarity (str|None): Ion polarity of the acquisition, 'positive' or 'negative'.
     '''
 
-    chromatogram: np.ndarray
+    chromatogram: Chromatogram
     peaks: dict[float, MS_Peak]|None
     scans: pd.DataFrame
     detector: str
@@ -46,16 +49,15 @@ class MS_Injection(Injection):
     __slots__ = ('chromatogram', 'peaks', 'scans', 'detector', 'analysis_settings', 'solvent_delay',
                  'raw_scans', 'acq_time', 'polarity')
 
-    def __init__(self, metadata:dict|None, chromatogram:np.ndarray, peaks:dict|None, scans:pd.DataFrame, pos:bool=False,
+    def __init__(self, metadata:dict|None, chromatogram:Chromatogram, peaks:dict|None, scans:pd.DataFrame, pos:bool=False,
                  raw_scans:Raw_Scans|None=None):
         super().__init__(metadata, pos=pos)
         self.chromatogram = chromatogram
-        self._check_for_missing_signal()
         self.peaks = peaks
         self.scans = scans
         self.detector = 'MS'
-        self.analysis_settings = Analysis_Settings(chromatogram)
-        self.solvent_delay = chromatogram[0][0]
+        self.analysis_settings = Analysis_Settings()
+        self.solvent_delay = chromatogram.time[0]
         self.raw_scans = raw_scans
         self.acq_time = metadata.get('AcqTime')
         self.polarity = metadata.get('Polarity')
@@ -101,7 +103,7 @@ class MS_Injection(Injection):
                     candidates.append(peak)
         if candidates:
             if len(candidates) > 1:
-                print(f'Multiple peaks with m/z {mz} fitting the calculated isotope pattern were found for {self.sample_name}.')
+                warnings.warn(f'Multiple peaks with m/z {mz} fitting the calculated isotope pattern were found for {self.sample_name}.')
                 return candidates
             else:
                 return candidates[0]
@@ -165,7 +167,7 @@ class MS_Injection(Injection):
                         candidates[rt] = peak
         if candidates:
             if len(candidates) > 1:
-                print(
+                warnings.warn(
                     f'Multiple peaks with m/z {mz} were found for {self.sample_name}.')
             if return_canidates:
                 return candidates

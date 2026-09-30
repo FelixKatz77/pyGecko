@@ -1,7 +1,11 @@
-import numpy as np
+import logging
 from pathlib import Path
 
-from pygecko.gc_tools import FID_Injection, FID_Sequence, RI_Calibration
+import numpy as np
+
+from pygecko.gc_tools import Chromatogram, FID_Injection, FID_Sequence, RI_Calibration
+
+logger = logging.getLogger(__name__)
 
 
 class FID_Base_Parser:
@@ -20,17 +24,18 @@ class FID_Base_Parser:
             FID_Sequence: An FID_Sequence object.
         '''
 
-        print('Loading GC-FID sequence...')
+        logger.info('Loading GC-FID sequence...')
         xy_directory = Path(xy_directory)
-        supported_formats = ['.xy', '.CSV']
-        xy_files = []
-        for file_format in supported_formats:
-            xy_files.extend(xy_directory.glob(f'*{file_format}'))
+        # Matched on the lower-cased suffix of each entry, so every case variant is found on a
+        # case-sensitive filesystem and each file is listed once on a case-insensitive one.
+        supported_formats = {'.xy', '.csv'}
+        xy_files = sorted(entry for entry in xy_directory.iterdir()
+                          if entry.suffix.lower() in supported_formats)
         injections = {}
         for xy_file in xy_files:
             injection = FID_Base_Parser.load_injection(xy_file, solvent_delay, pos=pos)
             injections[injection.sample_name] = injection
-        print(f'Sequence loaded with {len(injections)} injections.')
+        logger.info('Sequence loaded with %d injections.', len(injections))
         return FID_Sequence({}, injections)
 
     @staticmethod
@@ -52,7 +57,7 @@ class FID_Base_Parser:
         xy_file = Path(xy_file)
         xy_array = FID_Base_Parser.read_xy_array(xy_file)
         sample_name = xy_file.stem.split('.')[0]
-        injection = FID_Injection({'SampleName': sample_name}, xy_array, solvent_delay)
+        injection = FID_Injection({'SampleName': sample_name}, Chromatogram(*xy_array, kind='FID'), solvent_delay)
         injection.record_step('FID_Base_Parser.load_injection',
                               {'xy_file': str(xy_file), 'solvent_delay': solvent_delay})
         return RI_Calibration(injection, c_count, rt)
@@ -73,25 +78,22 @@ class FID_Base_Parser:
         xy_file = Path(xy_file)
         xy_array = FID_Base_Parser.read_xy_array(xy_file)
         sample_name = xy_file.stem.split('.')[0]
-        injection = FID_Injection({'SampleName':sample_name}, xy_array, solvent_delay, pos=pos)
+        injection = FID_Injection({'SampleName':sample_name}, Chromatogram(*xy_array, kind='FID'), solvent_delay,
+                                  pos=pos)
         injection.record_step('FID_Base_Parser.load_injection',
                               {'xy_file': str(xy_file), 'solvent_delay': solvent_delay, 'pos': pos})
         return injection
 
 
     @staticmethod
-    def read_xy_array(path:Path) -> np.ndarray|None:
+    def read_xy_array(path:Path) -> np.ndarray:
 
-        '''Takes in the path to a xy-file, returns the xy_array.'''
+        '''Takes in the path to a tab-separated .xy or comma-separated .csv file, in any case, returns the
+        xy_array.'''
 
-        if path.suffix == '.xy':
-            array = np.transpose(np.loadtxt(path, delimiter='\t'))
-            return array
-        elif path.suffix == '.CSV':
-            array = np.transpose(np.loadtxt(path, delimiter=',', converters={0: float}))
-            return array
-        else:
-            print(f'Cannot read {path.name}: File format not supported.')
-            return None
+        delimiter = {'.xy': '\t', '.csv': ','}.get(path.suffix.lower())
+        if delimiter is None:
+            raise ValueError(f'Cannot read {path.name}: unsupported suffix {path.suffix!r}, expected .xy or .csv.')
+        return np.transpose(np.loadtxt(path, delimiter=delimiter, converters={0: float}))
 
 

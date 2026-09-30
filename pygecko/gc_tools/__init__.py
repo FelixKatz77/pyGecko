@@ -1,3 +1,4 @@
+from pygecko.gc_tools.chromatogram import Chromatogram
 from pygecko.gc_tools.analysis import Analysis_Settings, Quantification, RI_Calibration, Spectral_Match
 from pygecko.gc_tools.injection import Injection, FID_Injection, MS_Injection
 from pygecko.gc_tools.sequence import GC_Sequence, MS_Sequence, FID_Sequence

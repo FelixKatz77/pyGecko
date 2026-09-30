@@ -1,7 +1,7 @@
-import numpy as np
 from pygecko.parsers import Agilent_FID_Parser
 from datetime import datetime
 from .conftest import fixture_path
+from pygecko.gc_tools import Chromatogram
 
 def test_agilent_fid_parser_xy():
 
@@ -22,8 +22,7 @@ def test_agilent_fid_parser_xy():
     assert injection.sample_number == '2'
     assert injection.vial_pos == '97'
     assert injection.solvent_delay == 2.4
-    assert type(injection.chromatogram) is np.ndarray
-    assert injection.chromatogram.shape[0] == 2
+    assert isinstance(injection.chromatogram, Chromatogram)
     assert injection.detector == 'FID'
     assert injection.peaks is None
 
@@ -45,7 +44,6 @@ def test_agilent_fid_parser_csv():
     assert injection.sample_number == '2'
     assert injection.vial_pos == '148'
     assert injection.solvent_delay == 2.7
-    assert type(injection.chromatogram) is np.ndarray
-    assert injection.chromatogram.shape[0] == 2
+    assert isinstance(injection.chromatogram, Chromatogram)
     assert injection.detector == 'FID'
     assert injection.peaks is None

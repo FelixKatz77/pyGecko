@@ -1,3 +1,5 @@
+import warnings
+
 from rdkit import Chem
 from rdkit.Chem import AllChem
 
@@ -33,7 +35,7 @@ class Transformation:
         '''
 
         if len(substrates) != self.transform.GetNumReactantTemplates():
-            print('Number of Substrates provided does not match transform!')
+            warnings.warn('Number of Substrates provided does not match transform!')
         else:
             mols = [Chem.MolFromSmiles(s) for s in substrates]
             #mols = [Chem.AddHs(Chem.MolFromSmiles(s)) for s in substrates] #TODO: Fix this

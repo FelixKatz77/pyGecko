@@ -1,9 +1,9 @@
 import io
+import warnings
 from functools import partial
 from datetime import datetime
-from pathlib import Path
-from tempfile import TemporaryDirectory
 
+import matplotlib.pyplot as plt
 import numpy as np
 from pygecko.visualization.visuals import Visualization
 from reportlab.graphics.shapes import Drawing, Line
@@ -46,10 +46,11 @@ class PDF_Report(Report):
         self.analysis = ', '.join(analysis['type'] for analysis in self.layout.meta_data['analysis'])
         self.metadata = self.__collect_meta_data()
         self.analysis_table = self.__create_analysis_table()
-        with TemporaryDirectory(prefix='pygecko-report-') as directory:
-            heatmap_path = Path(directory) / 'heatmap.png'
-            Visualization.visualize_plate(yield_array, path=heatmap_path)
-            self.heatmap = Image(io.BytesIO(heatmap_path.read_bytes()), 11*cm, 6*cm)
+        heatmap = Visualization.visualize_plate(yield_array)
+        buffer = io.BytesIO()
+        heatmap.savefig(buffer, format='png', dpi=400)
+        plt.close(heatmap)
+        self.heatmap = Image(buffer, 11*cm, 6*cm)
         self.results_table = self.__create_results_table_quantification()
         self.molecules_table_rows, self.molecules_table_columns, self.common_molecules_img = self.__create_molecules_table()
         self.conditions_table = self.create_conditions_table()
@@ -377,8 +378,8 @@ class PDF_Report(Report):
             try:
                 mol = indigo.loadMolecule(smiles)
                 mol_array.arrayAdd(mol)
-            except:
-                print(f'{smiles} could not be rendered bei Indigo.')
+            except IndigoException as error:
+                warnings.warn(f'{smiles} could not be rendered by Indigo: {error}')
         buffer = renderer.renderGridToBuffer(mol_array, None, len(common_molecules))
         buffer = io.BytesIO(buffer)
         image = self.__scale_image_by_factor(buffer, width_factor, height_factor)

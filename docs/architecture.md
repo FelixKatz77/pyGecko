@@ -69,7 +69,8 @@ Three parallel hierarchies, each split by detector:
 | [`Peak`](../pygecko/gc_tools/peak/peak.py#L6) | [`FID_Peak`](../pygecko/gc_tools/peak/fid_peak.py#L6) | [`MS_Peak`](../pygecko/gc_tools/peak/ms_peak.py#L8) |
 
 A `GC_Sequence` holds `dict[str, Injection]` keyed by sample name; an `Injection` holds
-`dict[float, Peak]` keyed by retention time. Chemical identity lives in a separate
+`dict[float, Peak]` keyed by retention time and its detector signal as a
+[`Chromatogram`](../pygecko/gc_tools/chromatogram.py) (§3.4). Chemical identity lives in a separate
 [`Analyte`](../pygecko/gc_tools/analyte.py#L4) object attached to a peak.
 
 ### 3.1 Detector split by subclass, shared behaviour on the base
@@ -120,9 +121,18 @@ access is a named method rather than an operator: `GC_Sequence.get_injection_by_
 
 ### 3.4 Data representation and units
 
-- **Chromatogram** — `np.ndarray` of shape `(2, N)`: row 0 is time in **minutes**, row 1 is
-  intensity. Both detectors use this shape, which is why `Visualization` and `Analysis_Settings` can
-  treat them uniformly (`scan_rate` is derived as `chromatogram[0,2] - chromatogram[0,1]`).
+- **Chromatogram** — a [`Chromatogram`](../pygecko/gc_tools/chromatogram.py) object:
+  `time` in **minutes** (strictly increasing), `intensity` (the raw signal), `processed` (the
+  smoothed, baseline-corrected signal on the same axis, `None` until a baseline correction ran) and
+  `kind` (`'FID'` or `'TIC'`). `scan_rate`, `run_time` and `empty_ranges()` are derived from it. It
+  was a bare `(2, N)` array; it became an object so the agent layer can hold chromatograms behind
+  handles and so a malformed axis fails when it is built — the constructor rejects mismatched
+  lengths and a non-monotonic time axis — rather than when an algorithm indexes it. Slicing
+  (`chromatogram[start:]`) returns a new `Chromatogram` with `processed` sliced alongside; the
+  FID solvent-delay crop is one. Readers still return `(2, N)` arrays, and the parsers wrap them.
+  Peaks are deliberately **not** stored on the chromatogram: matching, flagging and RI assignment
+  operate on `Injection.peaks`, and MS peaks carry spectra from the injection-level scans, so a copy
+  here would be a second owner.
 - **Raw scans** — `MS_Injection.raw_scans` is a
   [`Raw_Scans`](../pygecko/gc_tools/injection/raw_scans.py): the centroids exactly as the reader
   delivered them, in the flat ANDI layout (one `mz` and one `intensity` array for the run, a
@@ -143,7 +153,8 @@ access is a named method rather than an operator: `GC_Sequence.get_injection_by_
   with `('smiles', 'c_count', 'rt')`, and the plate result array with
   `('quantity', 'rt_ms', 'rt_fid', 'flags')`.
 
-The mixed time units (minutes on chromatograms, milliseconds on the scans index) are a real trap.
+The mixed time units (minutes on chromatograms, milliseconds on the scans index and
+`Raw_Scans.retention_times`) are a real trap; both docstrings state their unit.
 
 > **Rule.** Preserve the convention rather than converting ad hoc, and state the unit in the
 > docstring of every new signature that takes a time.
@@ -187,8 +198,8 @@ Recording happens two ways:
   mutates an injection's peaks from outside it. Passing plain data is what keeps the layering rule of
   §2 intact — `gc_tools` learns nothing about file formats or the calibration's internals.
 
-**Nested calls record once.** `pick_peaks` calls `baseline_correction` when no processed chromatogram
-exists, and `set_internal_standard` calls `flag_peak`. An `_recording` guard means only the outermost
+**Nested calls record once.** `pick_peaks` calls `baseline_correction` when no processed signal
+exists for the current baseline settings, and `set_internal_standard` calls `flag_peak`. An `_recording` guard means only the outermost
 decorated call on an injection appends a step, so the history holds no step the caller never asked
 for and a replay would not execute the inner work twice. The guard suppresses *nesting*, not
 *repetition*: an explicit `baseline_correction()` followed by `pick_peaks()` still records two steps.
@@ -213,14 +224,15 @@ The division of labour is consistent: **domain objects hold data and delegate; n
 algorithms and take plain data.**
 
 ```python
-# FID_Injection.pick_peaks — fid_injection.py:75
+# FID_Injection.pick_peaks
 self.analysis_settings.update(**kwargs)
-if not isinstance(self.processed_chromatogram, np.ndarray):
+if self._baseline_settings != self.__baseline_settings():
     self.baseline_correction()
-peaks = Peak_Detection_FID.pick_peaks(self.processed_chromatogram, self.analysis_settings)
+peaks = Peak_Detection_FID.pick_peaks(self.chromatogram, self.analysis_settings)
 ```
 
-`Peak_Detection_FID.pick_peaks` receives an array and a settings object — never the `Injection`. That
+`Peak_Detection_FID.pick_peaks` receives a `Chromatogram` and a settings object — never the
+`Injection`; its private steps take plain `(time, signal)` arrays. That
 keeps the algorithms independently testable and prevents cycles between the peak and injection
 subpackages.
 
@@ -237,11 +249,11 @@ are `__private` statics (`Peak_Detection_MS.pick_peaks` → `__detect_peaks_scip
 ## 5. Parameter handling: `Analysis_Settings`
 
 [`Analysis_Settings`](../pygecko/gc_tools/analysis/analysis_settings.py#L4) is the single carrier for
-every processing parameter. One instance is created per injection, in the injection's constructor,
-from the chromatogram, from which it derives `scan_rate`. It carries `time_range` as a plain
-setting; the scan indices for that window are derived at the call site, by
-`Peak_Detection_FID.baseline_correction` against the chromatogram it is about to slice, because that
-is the only place the axis being indexed is known (§11.19).
+every processing parameter. One instance is created per injection, in the injection's constructor.
+It holds only settings — the scan rate is a property of the `Chromatogram` (§3.4). It carries
+`time_range` as a plain setting, and that setting is a **detection window**, not a crop: both
+detectors find peaks over the whole stored run and keep those whose apex lies inside the window
+(§6.B, §11.21).
 
 Parameters thread through the code in exactly one way:
 
@@ -252,7 +264,9 @@ Parameters thread through the code in exactly one way:
 2. **The algorithm reads each parameter** via `settings.pop('name', computed_default)`.
 
 Note that `Analysis_Settings.pop` does **not** remove anything ([`analysis_settings.py:88`](../pygecko/gc_tools/analysis/analysis_settings.py#L88)).
-It means *"the configured value if one is set, otherwise this default"*. The name is misleading; the
+It means *"the configured value if one is set, otherwise this default"*, and only `None` counts as
+unset: an explicit `height=0` or `time_range=()` is a choice the caller made and reaches the
+algorithm (§11.24). The name is misleading; the
 behaviour is deliberate, and it is what allows defaults to be **derived from the data at the call
 site** rather than fixed in the constructor:
 
@@ -308,6 +322,11 @@ Format dispatch happens in exactly one place,
 - anything else (`.D`, `.RAW`) → [`msconvert()`](../pygecko/parsers/msconvert_wraper.py#L20) into a
   `tempfile.TemporaryDirectory`, then read back as `.mzML`
 
+The dispatch is on the lower-cased suffix, and `MS_Base_Parser.load_sequence` discovers files the
+same way — one pass over `iterdir()` keeping entries whose `suffix.lower()` is supported — so each
+file is found once whatever its case, on case-sensitive and case-insensitive filesystems alike.
+Reader errors propagate with their own type; nothing is caught and re-wrapped.
+
 Every reader returns `(Raw_Scans, metadata)`: the centroids as read, and a dict with `SampleName`
 plus the run-level acquisition metadata the format carries — `AcqTime` (a tz-aware `datetime`),
 `Polarity` (`'positive'`/`'negative'`) and `InstrumentName` — each `None` where the format or file
@@ -323,13 +342,15 @@ resolved **at call time** by [`find_msconvert()`](../pygecko/parsers/msconvert_w
 `PYGECKO_MSCONVERT` environment variable if set, otherwise `shutil.which('msconvert')`. Nothing is
 written into the package directory, so the same code works for an editable checkout and a wheel
 installed into `site-packages`. The path may legitimately be absent: conversion is then unavailable,
-but open formats still work. This is the package's only external-binary
+but open formats still work. A conversion attempted without it raises `FileNotFoundError` naming
+`PYGECKO_MSCONVERT`, and a failed conversion raises `subprocess.CalledProcessError`. This is the package's only external-binary
 dependency, and it is deliberately isolated behind one function.
 
 FID data is simpler: `FID_Base_Parser.read_xy_array` reads tab-delimited `.xy` or comma-delimited
-`.CSV` with `np.loadtxt`. `Agilent_FID_Parser` additionally reads ANDI/AIA `.cdf`, reconstructing the
-time axis from `actual_sampling_interval` (plus optional `actual_delay_time`) and converting to
-minutes so the `(2, N)` shape of §3.4 is preserved. Which of the two it uses is chosen by the
+`.csv`, in any case, with `np.loadtxt`, and raises `ValueError` for any other suffix.
+`Agilent_FID_Parser` additionally reads ANDI/AIA `.cdf`, reconstructing the time axis from
+`actual_sampling_interval` (plus optional `actual_delay_time`) and converting to minutes. Both return
+a `(2, N)` array that the parser wraps in a `Chromatogram` (§3.4). Which of the two it uses is chosen by the
 `file_source` argument (`'csv'` for the legacy layout, `'cdf'` for split-GC exports).
 
 Vendor parsers add **only metadata extraction** and delegate signal reading to the base parsers:
@@ -385,13 +406,22 @@ Two loading concerns are handled at this layer rather than downstream:
 smoothing, with the window auto-tuned by a Durbin–Watson statistic (`statsmodels`), then SNIP
 baseline subtraction (`pybaselines`) → `scipy.signal.find_peaks` → border detection by first-derivative
 threshold → overlap resolution via `gaussian_filter1d` + `argrelmin`, which sets the `"overlap"` flag
-→ Simpson integration for areas.
+→ Simpson integration for areas. Areas are integrated over the time axis
+(`Peak_Detection_FID.peak_area`, shared by `pick_peaks` and `FID_Injection.integrate`), so they are
+in **intensity·min** and do not change with the sampling rate. The baseline correction always
+processes the whole stored run (solvent delay to end) into `chromatogram.processed`; `FID_Injection`
+caches it keyed on the settings it depends on (`savgol_window`, `max_half_window`), so changing those
+recomputes it and changing `time_range` does not. `time_range` then keeps the peaks whose apex lies
+inside it, after borders, overlap resolution and areas are computed, so a windowed peak is identical
+to the same peak picked over the full run and its borders may extend past the window.
 
 **MS** ([`peak_detection_ms.py`](../pygecko/gc_tools/peak/peak_detection_ms.py)): `find_peaks` on the
 TIC gives candidate retention times; then every m/z trace is peak-picked independently, and a trace
 peak within ±5 scans of a TIC peak contributes its intensity to that peak's mass spectrum. Relative
 intensities are normalised to the base peak when the `MS_Peak` is built. MS peaks carry no baseline
-correction and no area — MS is used for *identification*, FID for *quantification*.
+correction and no area — MS is used for *identification*, FID for *quantification*. `time_range`
+applies the same apex filter after TIC detection and before spectrum extraction, so the kept peak
+indices still address the full scan matrix.
 
 ### C. Identification — `gc_tools/analysis/`
 
@@ -418,9 +448,12 @@ correction and no area — MS is used for *identification*, FID for *quantificat
 
 All quantification is relative to the internal standard.
 `quantify_polyarc` is the calibration-free default: it normalises areas by carbon count, exploiting
-the FID's near-uniform per-carbon response. `quantify_calibration` uses a fitted slope/intercept.
-Selection is by a `method` string in
-[`FID_Injection.quantify`](../pygecko/gc_tools/injection/fid_injection.py#L111).
+the FID's near-uniform per-carbon response. `quantify_calibration` uses a fitted slope/intercept
+(`Analysis.fit_calibration_curve` returns slope, intercept and R²), and `quantify_ratio` the plain
+area ratio. Selection is by the `method` string (`'polyarc'`, `'ratio'`, `'calibration'`) in
+[`FID_Injection.quantify`](../pygecko/gc_tools/injection/fid_injection.py#L111); anything else, or a
+missing internal standard, raises `ValueError`. All three return the yield as a **float
+percentage**; rounding is the caller's decision.
 
 ### E. Orchestration — `analysis/analysis.py`
 
@@ -467,6 +500,10 @@ sequence is 11×3) work; legacy 8×12 layouts produce the same grid as before. T
 `Analysis.quantify_plate` takes the same `layout` as an optional argument and falls back to 8×12
 without it.
 
+`Analysis` rounds each well's yield to whole percent (`round(quantify(...))`) as it fills the plate and
+report results, before the conversion arithmetic, so the plate arrays, CSV, ORD and PDF exports
+reproduce the published yields exactly.
+
 > **Rule.** Plate-level results are structured arrays with a `quantity` field and an integer `flags`
 > field. Optional CSV export is a `path` keyword argument on the same method, not a separate function.
 
@@ -474,8 +511,11 @@ without it.
 
 - [`Visualization`](../pygecko/visualization/visuals.py#L22) — `visualize_plate` (well-plate heatmap
   with optional flag markers), `view_chromatogram`, `view_mass_spectrum`, `stack_chromatograms`,
-  `compare_mass_spectra` (head-to-tail). Every method takes `path=None`: it shows the figure when
-  `path` is omitted and writes it when given. `visualize_plate` takes `row_labels`/`col_labels` for
+  `compare_mass_spectra` (head-to-tail). Every method **returns the `Figure`** and neither shows nor
+  saves it: the caller does `fig.savefig(...)` and releases it with `plt.close(fig)`. The house style
+  (Arial, 12 pt) is applied per figure through `plt.rc_context(_STYLE)`, never to the global
+  rcParams, and every method draws on explicit `Figure`/`Axes` objects rather than the pyplot state
+  machine. `Injection.view_chromatogram` and `MS_Peak.view_mass_spectrum` return the figure too. `visualize_plate` takes `row_labels`/`col_labels` for
   non-8×12 plates and `cbar_label` so a conversion or RSM plate is not mislabelled "Yield [%]".
 - `Reaction_Parser.build_dataset` — exports to the Open Reaction Database schema (`ord_schema`
   protobufs), validated with `validations.validate_message`.
@@ -691,6 +731,13 @@ for the `raw_scans`, `acq_time` and `polarity` slots appended when the mzML expo
 the centroids as read; an older file loads with all three `None` and exports from its matrix (§6.A).
 Appending to `__slots__` is safe for existing files; reordering or inserting is not.
 
+`Injection.__setstate__` also skips pickled names that are no longer slots, the same way
+`Analysis_Settings.__setstate__` does, and wraps a `(2, N)` array chromatogram into a `Chromatogram`
+(`kind` from the detector). An FID file's `processed_chromatogram` is dropped rather than migrated,
+because it may have been cropped to a `time_range`; `FID_Injection.__setstate__` defaults the
+`_baseline_settings` cache key to `None`, so the next pick recomputes it. Peaks in such a file keep
+the areas they were saved with, which are in the old intensity·scan unit (§11.25).
+
 ---
 
 ## 9. Conventions
@@ -705,6 +752,9 @@ elsewhere — internal consistency is worth more here than conformance to an ext
   exceptions are the pickle helpers `load_sequence` / `save_sequence` / `load_injection`, which are
   module-level by design so they can be imported without the class.
 - **`__slots__` plus class-level annotations** on all domain classes (§3.2).
+- **The library never prints.** Progress messages go to `logging.getLogger(__name__).info`,
+  advisories to `warnings.warn`, and errors are raised. `tests/unit/test_no_print.py` walks the
+  syntax tree of every module in `pygecko/` and fails on any `print` call.
 - **Google-style docstrings** with `Args:` / `Returns:` sections, in `'''` triple single quotes.
   `sphinx.ext.napoleon` renders them into the API docs, so every public method needs one.
 - **Modern typing**: built-in generics and `X|None` unions, no `typing.Optional`. These are
@@ -751,13 +801,13 @@ See §11.1 for the gap between these rules and the current suite.
 
 ## 11. Known deviations and open issues
 
-Recorded so they are tracked rather than rediscovered. Items 1–7 are **open**: each is a statement
+Recorded so they are tracked rather than rediscovered. Items 1–4 are **open**: each is a statement
 about the code as it stands. The subsection that follows records deviations that have since been
 **resolved**, kept because the reasoning behind the fix — and, in one case, a correction to what the
 defect actually did — is worth not rediscovering either.
 
 1. **Test suite does not meet the stated coverage rules.** Coverage is now measurable and measured:
-   `pytest-cov` is declared, and `pytest --cov=pygecko` reports **58%** for the suite CI runs
+   `pytest-cov` is declared, and `pytest --cov=pygecko` reports **89%** for the suite CI runs
    against `CLAUDE.md`'s 80% requirement. The gap is concentrated in
    [`parsers/file_readers.py`](../pygecko/parsers/file_readers.py) (39%),
    [`visualization/`](../pygecko/visualization) and
@@ -789,38 +839,10 @@ defect actually did — is worth not rediscovering either.
    key. Unlike `match_ri`/`match_rt` (fixed — see §11.6 below) `flag_peak` has no `return_candidates`
    mode and always returns a single peak, so the collision only changes *which* of two equally-close
    peaks is chosen, never how many survive. Left as-is deliberately.
-4. **`visuals.py` mutates global rcParams at import time.**
-   [`visuals.py:187-190`](../pygecko/visualization/visuals.py#L187-L190) sets `font.family` to Arial
-   process-wide when the module is imported, which affects any other plotting in the same
-   interpreter and emits `findfont` warnings wherever Arial is absent — every Linux runner. The same
-   module imports `pyplot` at module scope, which is why CI sets `MPLBACKEND=Agg`.
-5. **`docs/source/pygecko.reaction.rst:42` autodocuments a module that no longer exists.**
+4. **`docs/source/pygecko.reaction.rst:42` autodocuments a module that no longer exists.**
    `pygecko.reaction.well_plate` was removed, but the `automodule` directive was not, so every docs
    build logs an `autodoc: failed to import` warning. Pre-existing and harmless; left for whoever
    next regenerates the `sphinx-apidoc` stubs.
-
-6. **`time_range` is silently a no-op on `MS_Injection`.** `Peak_Detection_MS` never slices by a
-   window: `pick_peaks` hands the whole chromatogram to `__detect_peaks_scipy`
-   ([`peak_detection_ms.py:32`](../pygecko/gc_tools/peak/peak_detection_ms.py#L32)). `time_range` is
-   still accepted, type-checked and stored by `Analysis_Settings`, so an MS caller gets no error and
-   no effect. Deliberately left alone when §11.19 was fixed: `__extract_mass_spectrum`
-   ([`peak_detection_ms.py:88`](../pygecko/gc_tools/peak/peak_detection_ms.py#L88)) indexes the full
-   `scans` frame with the same `peak_indices` that index the chromatogram, so slicing one without
-   the other desynchronises the two axes and yields a `KeyError` on `mass_spectra[rts[peak_index]]`
-   or, worse, a silently mismatched mass spectrum. Windowing MS wants its own change.
-7. **A cached `processed_chromatogram` makes a later `time_range` a no-op.**
-   `FID_Injection.pick_peaks` only calls `baseline_correction` when `processed_chromatogram` is not
-   yet an array ([`fid_injection.py:93`](../pygecko/gc_tools/injection/fid_injection.py#L93)), and
-   since §11.19 that method is the only place the window is applied. So `pick_peaks()` followed by
-   `pick_peaks(time_range=(5.0, 8.0))` re-picks over the *whole* chromatogram and ignores the
-   window; the same holds for `savgol_window` and `max_half_window`, which also determine the
-   baseline. Verified against the pre-§11.18 code, where the second call instead raised
-   `IndexError: index 30347 is out of bounds for axis 0 with size 30000` — the crash was the
-   double-counted offset, and removing it exposed the stale cache underneath. Not fixed with §11.19
-   because the honest fix is cache invalidation — deciding which settings dirty
-   `processed_chromatogram` and re-running the (expensive) baseline correction when they change —
-   which is a design question, not a one-line change. Workaround: call `baseline_correction(**kwargs)`
-   explicitly, or pick peaks on a freshly loaded injection.
 
 ### Resolved
 
@@ -995,7 +1017,7 @@ defect actually did — is worth not rediscovering either.
     resolved parameters now picks it up (it had been read directly, bypassing `pop`).
     `Peak_Detection_MS` performs the same index-to-minute conversion arithmetically and correctly —
     it has no `indices_range` term — and is left alone: MS peaks carry no area, so nothing converts
-    back. See §11.4 for the separate, still-open question of what `time_range` is relative to.
+    back. See §11.19 for the separate question of what `time_range` is relative to.
 
 19. **`time_range` was measured from absolute zero but applied to a chromatogram truncated at the
     solvent delay.** `Analysis_Settings.__set_indices_range` converted the window with
@@ -1040,8 +1062,8 @@ defect actually did — is worth not rediscovering either.
     - The dead second copy of the same bug, an unused
       `Peak_Detection_FID.__set_indices_range` that reimplemented the conversion with raw float
       division and no rounding, was deleted so it cannot be wired up later.
-    - `MS_Injection` needed no change, and gained nothing: see open item §11.6.
-    - The stale-cache no-op this exposed is open item §11.7.
+    - `MS_Injection` needed no change, and gained nothing; its window came with §11.21.
+    - The stale-cache no-op this exposed was fixed in §11.21.
 
     Two latent defects in `FID_Injection.__init__` were fixed at the same time, since the change
     rewrites those lines: the truncation passed the **parameter** `solvent_delay` rather than
@@ -1051,3 +1073,58 @@ defect actually did — is worth not rediscovering either.
     truncation arithmetic itself is unchanged, which is what keeps the 23 golden alkane retention
     times and 68 golden RIs in `test_fid_ri_calibration.py` green — they are the regression anchor
     for the default whole-chromatogram path.
+20. **Plotting changed global matplotlib state and returned nothing.** `visuals.py` set the
+    `font.*` rcParams at import, restyling every other matplotlib user in the process, and every
+    `Visualization` method ended in `plt.savefig(path)`/`plt.show()` through the pyplot state
+    machine, so a server or agent could neither get the figure back nor use it without a GUI
+    backend. Each method now builds its figure inside `plt.rc_context(_STYLE)` on explicit axes and
+    returns the `Figure` (§6.F); the `path` parameter is gone from them and from the
+    `Injection.view_chromatogram` / `MS_Peak.view_mass_spectrum` wrappers, and `PDF_Report` saves the
+    heatmap into a buffer. `stack_chromatograms` also popped `raw`, `xlim` and `ylim` inside its
+    loop, so they applied to the first trace only; they are now read once for all traces.
+21. **`time_range` is a detection window on both detectors.** `baseline_correction` cropped the
+    chromatogram to the window before smoothing and SNIP and stored the crop as the processed
+    signal, and `pick_peaks` only recomputed it when none existed — so a second, wider window ran on
+    the first crop and silently found nothing new, and the savgol auto-tuning and SNIP edge effects
+    depended on the window. MS accepted `time_range` and ignored it. The baseline correction now
+    always processes the whole stored run, the cache is keyed on `savgol_window` and
+    `max_half_window`, and both detectors filter detected peaks by apex (§6.B). The solvent-delay
+    crop is unaffected: it happens once, when the injection is built. The default `prominence_fid`
+    (the mean of the processed signal) is consequently taken over the whole run rather than the
+    window.
+22. **Chromatograms are objects** (§3.4). `FID_Injection.processed_chromatogram` became
+    `chromatogram.processed`, `Analysis_Settings.scan_rate` became `Chromatogram.scan_rate`, and
+    `Injection._check_for_missing_signal` — which printed a summary line for every injection built —
+    was replaced by `Chromatogram.empty_ranges()`, which reports on request and emits nothing at
+    construction. Old pickles load through the shim in §8.
+23. **`print()` is gone from the library** (§9). Errors that were printed and then ignored now raise:
+    `integrate()` without peaks and an unsupported `read_xy_array` suffix raise `ValueError`,
+    `find_directories_with_extension` on a non-directory raises `NotADirectoryError`, and a missing
+    msConvert raises `FileNotFoundError` naming `PYGECKO_MSCONVERT` — before, it printed and
+    returned, and the next step failed with a misleading `FileNotFoundError` for the `.mzML` that was
+    never written. `extract_scans_from_raw_data` no longer wraps readers in handlers that printed
+    and re-raised (the CDF branch had turned every error into a `RuntimeError`), and `PDF_Report`
+    catches `IndigoException` rather than a bare `except:`.
+24. **`Analysis_Settings.pop` treated a falsy value as unset** (`if not value`), so an explicit
+    `height=0`, `width=0`, `prominence_fid=0` or `time_range=()` was replaced by the computed default
+    — `prominence_fid` by the mean of the signal. Only `None` means unset now.
+25. **FID areas were in intensity·scans and yields were integers.** `simpson` was called without `x`,
+    in two duplicated places, so reported areas doubled with the scan rate and could not be compared
+    across methods; ratios, and so yields, were unaffected. `Quantification` returned
+    `int(round(yield_, 0))`, turning 0.4 % into 0. Areas now come from one helper integrating over
+    the time axis, `Quantification` returns float percentages, and the rounding moved to the plate
+    layer (§6.E), which keeps every published yield identical.
+26. **`quantify` and `flag_peak` failed silently or corrupted state.** `FID_Injection.quantify`
+    returned `None` for any method but `'polyarc'` and `'calibration'` — `'ratio'` included — and
+    raised a bare `KeyError` for an unknown retention time. `flag_peak` appended `None` to the flags
+    when called without a flag and overwrote the analyte with `None` when called without one, so
+    `Analysis.fit_calibration_curve`, which flags the internal standard by retention time, erased the
+    standard's molecule and a following polyarc raised. It raised `AttributeError` before peaks were
+    picked; it now raises `ValueError`, and `GC_Sequence.set_internal_standard` re-raises that
+    rather than reporting it as a missing standard peak.
+27. **File discovery was case-sensitive and double-counted.** `read_xy_array` compared
+    `suffix == '.xy'` / `== '.CSV'`, rejecting `.csv` and `.XY` exports that the Agilent fallback
+    had already found. `MS_Base_Parser.load_sequence` globbed `'cdf'` without its dot, matching names
+    like `x_notcdf`, and on case-insensitive filesystems its `.cdf`/`.CDF` patterns listed one file
+    several times. `FID_Base_Parser.load_sequence` missed lowercase `.csv`. All three now match the
+    lower-cased suffix of each directory entry once (§6.A).

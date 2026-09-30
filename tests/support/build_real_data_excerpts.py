@@ -10,7 +10,7 @@ from pathlib import Path
 
 import numpy as np
 
-from pygecko.gc_tools import MS_Injection
+from pygecko.gc_tools import Chromatogram, MS_Injection
 from pygecko.parsers import MS_Base_Parser, write_injection_to_mzml
 
 
@@ -41,7 +41,7 @@ def build_excerpts(source: Path, destination: Path) -> None:
     injection = MS_Base_Parser.load_injection(ms_source, pos=True)
     start, end = (value * 60_000 for value in MS_RANGE)
     scans = injection.scans.loc[start:end]
-    chromatogram = np.array([scans.index / 60_000, scans.sum(axis=1)])
+    chromatogram = Chromatogram(scans.index / 60_000, scans.sum(axis=1), kind='TIC')
     excerpt = MS_Injection(
         {'SampleName': injection.sample_name}, chromatogram, peaks=None, scans=scans, pos=True)
     ms_output = destination / 'thiolation_A1_product.mzML'

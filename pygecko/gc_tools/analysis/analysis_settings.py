@@ -1,5 +1,3 @@
-import numpy as np
-
 class Analysis_Settings:
 
     '''
@@ -21,7 +19,6 @@ class Analysis_Settings:
         min_rel_intensity (float): Minimum relative intensity for m/z trace to be considered for analyte assignment.
         min_mz_fraction (float): Minimum fraction of a spectrum's maximum m/z that the parent ion must exceed to
         be considered for analyte assignment.
-        scan_rate (float): Scan rate of chromatogram.
         _resolved (dict): Values handed out by pop since the recording decorator last cleared it,
         keyed by setting name. Not a setting itself: it is rejected by update and by pop.
     '''
@@ -40,14 +37,13 @@ class Analysis_Settings:
     max_isotopic_diff: float|None
     min_rel_intensity: float|None
     min_mz_fraction: float|None
-    scan_rate: float
     _resolved: dict
 
 
     __slots__ = 'sn', 'time_range', 'width', 'prominence_ms', 'prominence_fid', 'trace_prominence', 'height', \
-                'savgol_window', 'max_half_window', 'boarder_threshold', 'boarder_window', 'max_isotopic_diff', 'min_rel_intensity', 'min_mz_fraction', 'scan_rate', '_resolved'
+                'savgol_window', 'max_half_window', 'boarder_threshold', 'boarder_window', 'max_isotopic_diff', 'min_rel_intensity', 'min_mz_fraction', '_resolved'
 
-    def __init__(self, chromatogram:np.ndarray):
+    def __init__(self):
         self.sn = 5
         self.time_range = None
         self.width = None
@@ -62,7 +58,6 @@ class Analysis_Settings:
         self.max_isotopic_diff = None
         self.min_rel_intensity = None
         self.min_mz_fraction = None
-        self.scan_rate = chromatogram[0, 2] - chromatogram[0, 1]
         self._resolved = {}
 
     def __str__(self) -> str:
@@ -71,8 +66,7 @@ class Analysis_Settings:
                f'Trace Prominence: {self.trace_prominence}\nHeight: {self.height}\n' \
                f'Savitzky-Golay Window: {self.savgol_window}\nMax Half Window: {self.max_half_window}\n' \
                f'Boarder Threshold: {self.boarder_threshold}\nBoarder Window: {self.boarder_window}\n' \
-               f'Max Isotopic Diff: {self.max_isotopic_diff}\nMin Relative Intensity: {self.min_rel_intensity}\n' \
-               f'Scan Rate: {self.scan_rate}'
+               f'Max Isotopic Diff: {self.max_isotopic_diff}\nMin Relative Intensity: {self.min_rel_intensity}'
 
 
     def update(self, **kwargs):
@@ -91,7 +85,8 @@ class Analysis_Settings:
     def pop(self, key:str, default):
 
         '''
-        Returns the configured value for a setting if one is set and the given default otherwise,
+        Returns the configured value for a setting if one is set (anything but None, so an explicit 0
+        or () is kept) and the given default otherwise,
         recording the returned value in _resolved.
 
         Note this does not remove anything; the name is historic. Most thresholds in the library are
@@ -109,7 +104,7 @@ class Analysis_Settings:
         if key not in self.__slots__ or key.startswith('_'):
             raise KeyError(f'"{key}" is not a valid setting.')
         value = getattr(self, key)
-        if not value:
+        if value is None:
             value = default
         self._resolved[key] = value
         return value
@@ -121,8 +116,8 @@ class Analysis_Settings:
         file was written and dropping ones removed since.
 
         Settings pickled before pop recorded resolved values carry no _resolved entry, and every pop
-        on them would raise AttributeError without the default; ones pickled while indices_range was
-        still a slot carry a value for it, and setting it would raise AttributeError without the
+        on them would raise AttributeError without the default; ones pickled while indices_range or
+        scan_rate was still a slot carry a value for it, and setting it would raise AttributeError without the
         skip. The settings object is nested inside a pickled injection and restores itself, so
         Injection.__setstate__ cannot cover either case.
         '''
@@ -130,8 +125,9 @@ class Analysis_Settings:
         _, slots = state
         for name, value in (slots or {}).items():
             # Skip attributes that are no longer slots: a .pkl is coupled to the class layout
-            # (architecture 8), and indices_range was removed once the window came to be derived
-            # from the chromatogram at the call site. hasattr on the type finds slot descriptors
+            # (architecture 8), indices_range was removed once the window came to be derived
+            # from the chromatogram at the call site, and scan_rate once the Chromatogram came to
+            # carry it. hasattr on the type finds slot descriptors
             # across the MRO, which self.__slots__ does not.
             if hasattr(type(self), name):
                 setattr(self, name, value)
