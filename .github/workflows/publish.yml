@@ -22,7 +22,7 @@ jobs:
           uv venv smoke
           uv pip install --python smoke/bin/python dist/*.whl
           smoke/bin/python -c "import pygecko.parsers, pygecko.analysis, pygecko.visualization, pygecko.data_handling, pygecko.gc_tools, pygecko.reaction; print(pygecko.__version__)"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist/
